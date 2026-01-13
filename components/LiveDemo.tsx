@@ -46,7 +46,7 @@ const tokenColors: Record<string, string> = {
 export default function LiveDemo() {
   const [charIndex, setCharIndex] = useState(0);
   const [step, setStep] = useState(0);
-  const [isLooping, setIsLooping] = useState(true);
+  const [isLooping] = useState(true);
 
   // Reset animation
   const resetAnimation = useCallback(() => {
@@ -64,7 +64,6 @@ export default function LiveDemo() {
       }, 25);
       return () => clearTimeout(timeout);
     } else if (step === 0) {
-      // Code finished typing, start hierarchy animation
       const timeout = setTimeout(() => setStep(1), 400);
       return () => clearTimeout(timeout);
     }
@@ -74,11 +73,10 @@ export default function LiveDemo() {
   useEffect(() => {
     if (!isLooping) return;
 
-    if (step >= 1 && step < 4) {
-      const timeout = setTimeout(() => setStep(prev => prev + 1), 600);
+    if (step >= 1 && step < 5) {
+      const timeout = setTimeout(() => setStep(prev => prev + 1), 500);
       return () => clearTimeout(timeout);
-    } else if (step === 4) {
-      // Full animation complete, wait then restart
+    } else if (step === 5) {
       const timeout = setTimeout(() => resetAnimation(), 6000);
       return () => clearTimeout(timeout);
     }
@@ -90,7 +88,7 @@ export default function LiveDemo() {
     const elements: React.ReactElement[] = [];
     let currentSpan: { chars: string; type: string } = { chars: '', type: '' };
 
-    typedChars.forEach((item, index) => {
+    typedChars.forEach((item) => {
       if (item.type !== currentSpan.type) {
         if (currentSpan.chars) {
           elements.push(
@@ -130,9 +128,9 @@ export default function LiveDemo() {
 
         <div className="grid lg:grid-cols-2 gap-6 lg:gap-8">
           {/* Left: Code Panel */}
-          <div className="bg-[#0d1117] rounded-xl border border-gray-800 overflow-hidden">
+          <div className="bg-[#0d1117] rounded-2xl border border-gray-800/80 overflow-hidden shadow-2xl shadow-black/50">
             {/* Editor header */}
-            <div className="flex items-center gap-2 px-4 py-3 bg-[#161b22] border-b border-gray-800">
+            <div className="flex items-center gap-2 px-4 py-3 bg-[#161b22] border-b border-gray-800/80">
               <div className="flex gap-1.5">
                 <div className="w-3 h-3 rounded-full bg-[#ff5f56]"></div>
                 <div className="w-3 h-3 rounded-full bg-[#ffbd2e]"></div>
@@ -142,7 +140,7 @@ export default function LiveDemo() {
             </div>
 
             {/* Code content */}
-            <div className="p-5 font-mono text-sm leading-relaxed min-h-[200px]">
+            <div className="p-6 font-mono text-sm leading-relaxed min-h-[280px]">
               <pre className="whitespace-pre-wrap">
                 {renderCode()}
                 <span className={`inline-block w-2 h-5 ml-0.5 bg-blue-400 ${charIndex < flatCode.length ? 'animate-pulse' : 'opacity-0'}`}></span>
@@ -151,121 +149,150 @@ export default function LiveDemo() {
           </div>
 
           {/* Right: Visual Hierarchy */}
-          <div className="bg-[#0d1117] rounded-xl border border-gray-800 p-5 lg:p-6 min-h-[200px]">
-            {step >= 1 ? (
-              <div className="space-y-4">
-                {/* Holdco */}
-                <div className="animate-fadeIn">
-                  <div className="bg-gradient-to-r from-blue-900/40 to-blue-800/20 border border-blue-700/50 rounded-lg p-4">
-                    <div className="flex items-start justify-between">
+          <div className="bg-[#0d1117] rounded-2xl border border-gray-800/80 overflow-hidden shadow-2xl shadow-black/50 min-h-[280px]">
+            {/* Header */}
+            <div className="px-5 py-3 bg-[#161b22] border-b border-gray-800/80 flex items-center justify-between">
+              <span className="text-sm text-gray-400 font-medium">Corporate Structure</span>
+              {step >= 1 && (
+                <span className="animate-fadeIn text-xs font-mono text-gray-500">TSLA</span>
+              )}
+            </div>
+
+            <div className="p-5">
+              {step >= 1 ? (
+                <div className="relative">
+                  {/* Summary Stats Bar */}
+                  <div className="animate-fadeIn mb-5 flex items-center justify-between px-4 py-3 rounded-lg bg-gradient-to-r from-gray-800/50 to-gray-900/50 border border-gray-700/50">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center">
+                        <svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        </svg>
+                      </div>
                       <div>
-                        <div className="font-semibold text-white">Tesla, Inc.</div>
-                        <div className="text-xs text-gray-400 mt-1">
-                          <span className="text-blue-400">Holdco</span> · Delaware
-                        </div>
+                        <div className="text-white font-semibold">Tesla, Inc.</div>
+                        <div className="text-xs text-gray-500">3 entities · 3 instruments</div>
                       </div>
-                      <div className="text-right">
-                        <div className="text-xs text-gray-500">Total Debt</div>
-                        <div className="text-sm font-semibold text-blue-400">$0</div>
-                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-lg font-bold text-white">$8.5B</div>
+                      <div className="text-xs text-gray-500">Total Debt</div>
                     </div>
                   </div>
-                </div>
 
-                {/* Connection Lines */}
-                {step >= 2 && (
-                  <div className="animate-fadeIn flex justify-center">
-                    <div className="flex items-center gap-4">
-                      <div className="w-16 h-px bg-gray-700"></div>
-                      <div className="w-2 h-2 rounded-full bg-gray-600"></div>
-                      <div className="w-16 h-px bg-gray-700"></div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Operating Companies */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {step >= 2 && (
-                    <div className="animate-fadeIn">
-                      <div className="bg-gradient-to-r from-emerald-900/40 to-emerald-800/20 border border-emerald-700/50 rounded-lg p-4">
-                        <div className="flex items-start justify-between mb-3">
-                          <div>
-                            <div className="font-semibold text-white text-sm">Tesla Motors</div>
-                            <div className="text-xs text-gray-400">
-                              <span className="text-emerald-400">OpCo</span>
-                            </div>
+                  {/* Org Chart */}
+                  <div className="relative">
+                    {/* Parent Entity */}
+                    {step >= 2 && (
+                      <div className="animate-fadeIn mb-3">
+                        <div className="relative p-4 rounded-xl bg-gradient-to-br from-blue-950/80 to-blue-900/40 border border-blue-500/30 shadow-lg shadow-blue-500/5">
+                          <div className="absolute -top-2 left-4">
+                            <span className="px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider bg-blue-500 text-white rounded">Parent</span>
                           </div>
-                          <div className="text-right">
-                            <div className="text-xs text-gray-500">Debt</div>
-                            <div className="text-sm font-semibold text-emerald-400">$7.3B</div>
+                          <div className="flex items-center justify-between mt-1">
+                            <div>
+                              <div className="font-semibold text-white">Tesla, Inc.</div>
+                              <div className="text-xs text-blue-300/70 mt-0.5">Delaware · Public (NASDAQ)</div>
+                            </div>
+                            <div className="text-right">
+                              <div className="text-xs text-gray-500">Direct Debt</div>
+                              <div className="text-sm font-semibold text-blue-400">—</div>
+                            </div>
                           </div>
                         </div>
-
-                        {step >= 3 && (
-                          <div className="animate-fadeIn space-y-2">
-                            <div className="bg-black/30 rounded px-3 py-2 border border-gray-700/50">
-                              <div className="text-xs text-gray-300">5.3% Senior Notes 2025</div>
-                              <div className="text-xs text-gray-500">$5.5B</div>
-                            </div>
-                            <div className="bg-black/30 rounded px-3 py-2 border border-gray-700/50">
-                              <div className="text-xs text-gray-300">2.0% Conv Notes</div>
-                              <div className="text-xs text-gray-500">$1.8B</div>
-                            </div>
-                          </div>
-                        )}
                       </div>
-                    </div>
-                  )}
+                    )}
 
-                  {step >= 3 && (
-                    <div className="animate-fadeIn">
-                      <div className="bg-gradient-to-r from-violet-900/40 to-violet-800/20 border border-violet-700/50 rounded-lg p-4">
-                        <div className="flex items-start justify-between mb-3">
-                          <div>
-                            <div className="font-semibold text-white text-sm">Tesla Energy</div>
-                            <div className="text-xs text-gray-400">
-                              <span className="text-violet-400">OpCo</span>
+                    {/* Connector Lines SVG */}
+                    {step >= 3 && (
+                      <div className="animate-fadeIn flex justify-center my-2">
+                        <svg width="200" height="24" className="text-gray-600">
+                          <path d="M100 0 L100 8 L40 8 L40 24" fill="none" stroke="currentColor" strokeWidth="1.5" />
+                          <path d="M100 8 L160 8 L160 24" fill="none" stroke="currentColor" strokeWidth="1.5" />
+                          <circle cx="100" cy="4" r="2" fill="currentColor" />
+                        </svg>
+                      </div>
+                    )}
+
+                    {/* Subsidiaries */}
+                    <div className="grid grid-cols-2 gap-3">
+                      {step >= 3 && (
+                        <div className="animate-fadeIn">
+                          <div className="p-3 rounded-xl bg-gradient-to-br from-emerald-950/80 to-emerald-900/30 border border-emerald-500/30 shadow-lg shadow-emerald-500/5">
+                            <div className="flex items-start justify-between mb-2">
+                              <div>
+                                <div className="font-medium text-white text-sm">Tesla Motors</div>
+                                <div className="text-[10px] text-emerald-400/70">Subsidiary</div>
+                              </div>
+                              <div className="text-right">
+                                <div className="text-sm font-semibold text-emerald-400">$7.3B</div>
+                              </div>
                             </div>
-                          </div>
-                          <div className="text-right">
-                            <div className="text-xs text-gray-500">Debt</div>
-                            <div className="text-sm font-semibold text-violet-400">$1.2B</div>
+
+                            {step >= 4 && (
+                              <div className="animate-fadeIn space-y-1.5 pt-2 border-t border-emerald-800/50">
+                                <div className="flex items-center justify-between text-xs">
+                                  <span className="text-gray-400">5.3% Notes &apos;25</span>
+                                  <span className="text-gray-300 font-medium">$5.5B</span>
+                                </div>
+                                <div className="flex items-center justify-between text-xs">
+                                  <span className="text-gray-400">2.0% Conv</span>
+                                  <span className="text-gray-300 font-medium">$1.8B</span>
+                                </div>
+                              </div>
+                            )}
                           </div>
                         </div>
+                      )}
 
-                        {step >= 4 && (
-                          <div className="animate-fadeIn space-y-2">
-                            <div className="bg-black/30 rounded px-3 py-2 border border-gray-700/50">
-                              <div className="text-xs text-gray-300">Credit Facility</div>
-                              <div className="text-xs text-gray-500">$1.2B</div>
+                      {step >= 3 && (
+                        <div className="animate-fadeIn" style={{ animationDelay: '150ms' }}>
+                          <div className="p-3 rounded-xl bg-gradient-to-br from-violet-950/80 to-violet-900/30 border border-violet-500/30 shadow-lg shadow-violet-500/5">
+                            <div className="flex items-start justify-between mb-2">
+                              <div>
+                                <div className="font-medium text-white text-sm">Tesla Energy</div>
+                                <div className="text-[10px] text-violet-400/70">Subsidiary</div>
+                              </div>
+                              <div className="text-right">
+                                <div className="text-sm font-semibold text-violet-400">$1.2B</div>
+                              </div>
                             </div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
 
-                {/* Guarantee indicator */}
-                {step >= 4 && (
-                  <div className="animate-fadeIn text-center pt-2">
-                    <span className="inline-flex items-center gap-1.5 text-xs text-gray-500">
-                      <svg className="w-3.5 h-3.5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                      </svg>
-                      All subsidiaries guaranteed by Tesla, Inc.
-                    </span>
+                            {step >= 4 && (
+                              <div className="animate-fadeIn space-y-1.5 pt-2 border-t border-violet-800/50">
+                                <div className="flex items-center justify-between text-xs">
+                                  <span className="text-gray-400">Credit Facility</span>
+                                  <span className="text-gray-300 font-medium">$1.2B</span>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Footer info */}
+                    {step >= 5 && (
+                      <div className="animate-fadeIn mt-4 flex items-center justify-center gap-4 text-[11px] text-gray-500">
+                        <span className="flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                          Guarantees verified
+                        </span>
+                        <span>·</span>
+                        <span>Source: 10-K Filing</span>
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-            ) : (
-              <div className="h-full flex items-center justify-center text-gray-600">
-                <div className="text-center">
-                  <div className="w-8 h-8 border-2 border-gray-700 border-t-blue-500 rounded-full animate-spin mx-auto mb-3"></div>
-                  <span className="text-sm">Fetching structure...</span>
                 </div>
-              </div>
-            )}
+              ) : (
+                <div className="h-full min-h-[220px] flex items-center justify-center text-gray-600">
+                  <div className="text-center">
+                    <div className="w-8 h-8 border-2 border-gray-700 border-t-blue-500 rounded-full animate-spin mx-auto mb-3"></div>
+                    <span className="text-sm">Fetching structure...</span>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
