@@ -122,7 +122,7 @@ export default function LiveDemo() {
             See It In Action
           </h2>
           <p className="text-gray-400 text-lg">
-            One API call. Complete debt structure.
+            Structured credit data, ready for your AI agent.
           </p>
         </div>
 
