@@ -1,5 +1,7 @@
 // app/page.tsx
 
+import LiveDemo from '@/components/LiveDemo';
+
 export default function Home() {
   return (
     <main className="min-h-screen bg-black text-white">
@@ -30,6 +32,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Live Demo Section */}
+      <LiveDemo />
 
       {/* Integrations Section */}
       <section className="px-6 py-20 border-t border-gray-800">
