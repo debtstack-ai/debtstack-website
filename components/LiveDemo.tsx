@@ -350,151 +350,154 @@ function MaturityWallDemo({ step }: { step: number }) {
 
 // Bond Yields Demo Component - CHTR across capital structure
 function BondYieldsDemo({ step }: { step: number }) {
-  // Bond data showing yields across different structural positions
-  const bonds = [
-    {
-      issuer: 'Charter Operating',
-      type: 'Senior Secured',
-      position: 'OpCo',
-      coupon: '4.908%',
-      maturity: '2029',
-      yield: 5.12,
-      spread: 142,
-      rating: 'BB+',
-      color: 'emerald'
-    },
-    {
-      issuer: 'CCO Holdings',
-      type: 'Senior Unsecured',
-      position: 'Intermediate',
-      coupon: '5.125%',
-      maturity: '2029',
-      yield: 5.87,
-      spread: 217,
-      rating: 'BB',
-      color: 'amber'
-    },
-    {
-      issuer: 'CCO Holdings',
-      type: 'Senior Unsecured',
-      position: 'Intermediate',
-      coupon: '4.750%',
-      maturity: '2032',
-      yield: 6.24,
-      spread: 254,
-      rating: 'BB',
-      color: 'amber'
-    },
-    {
-      issuer: 'Charter Comm Inc',
-      type: 'Senior Unsecured',
-      position: 'HoldCo',
-      coupon: '5.750%',
-      maturity: '2031',
-      yield: 6.89,
-      spread: 319,
-      rating: 'BB-',
-      color: 'red'
-    },
-  ];
-
-  const maxYield = 8;
-  const minYield = 4;
-  const yieldRange = maxYield - minYield;
-
   return (
-    <div className="p-5">
+    <div className="p-4">
       {step >= 1 ? (
-        <div className="relative">
-          {/* Summary Stats Bar */}
-          <div className="animate-fadeIn mb-4 flex items-center justify-between px-4 py-3 rounded-lg bg-gradient-to-r from-gray-800/50 to-gray-900/50 border border-gray-700/50">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center">
-                <svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+        <div className="relative flex gap-4">
+          {/* Left: Mini Corporate Structure */}
+          <div className="w-[140px] flex-shrink-0">
+            <div className="text-[10px] text-gray-500 uppercase tracking-wider mb-2 text-center">Structure</div>
+
+            {/* HoldCo */}
+            {step >= 1 && (
+              <div className="animate-fadeIn">
+                <div className="p-2 rounded-lg bg-gradient-to-br from-blue-950/80 to-blue-900/40 border border-blue-500/30 text-center">
+                  <div className="text-[9px] text-blue-400 font-semibold uppercase">HoldCo</div>
+                  <div className="text-[10px] text-white font-medium mt-0.5">Charter Comm</div>
+                  <div className="text-[10px] text-red-400 font-semibold">6.89%</div>
+                </div>
+              </div>
+            )}
+
+            {/* Connector */}
+            {step >= 2 && (
+              <div className="animate-fadeIn flex justify-center">
+                <svg width="2" height="12" className="text-gray-600">
+                  <path d="M1 0 L1 12" stroke="currentColor" strokeWidth="1.5" />
                 </svg>
               </div>
-              <div>
-                <div className="text-white font-semibold">Charter Communications</div>
-                <div className="text-xs text-gray-500">Yield comparison across structure</div>
+            )}
+
+            {/* Intermediate */}
+            {step >= 2 && (
+              <div className="animate-fadeIn">
+                <div className="p-2 rounded-lg bg-gradient-to-br from-amber-950/80 to-amber-900/30 border border-amber-500/30 text-center">
+                  <div className="text-[9px] text-amber-400 font-semibold uppercase">Intermediate</div>
+                  <div className="text-[10px] text-white font-medium mt-0.5">CCO Holdings</div>
+                  <div className="text-[10px] text-amber-400 font-semibold">5.87-6.24%</div>
+                </div>
               </div>
-            </div>
-            <div className="text-right">
-              <div className="text-lg font-bold text-white">+177 bps</div>
-              <div className="text-xs text-gray-500">HoldCo vs OpCo spread</div>
-            </div>
+            )}
+
+            {/* Connector */}
+            {step >= 3 && (
+              <div className="animate-fadeIn flex justify-center">
+                <svg width="2" height="12" className="text-gray-600">
+                  <path d="M1 0 L1 12" stroke="currentColor" strokeWidth="1.5" />
+                </svg>
+              </div>
+            )}
+
+            {/* OpCo */}
+            {step >= 3 && (
+              <div className="animate-fadeIn">
+                <div className="p-2 rounded-lg bg-gradient-to-br from-emerald-950/80 to-emerald-900/30 border border-emerald-500/30 text-center">
+                  <div className="text-[9px] text-emerald-400 font-semibold uppercase">OpCo</div>
+                  <div className="text-[10px] text-white font-medium mt-0.5">Charter Operating</div>
+                  <div className="text-[10px] text-emerald-400 font-semibold">5.12%</div>
+                </div>
+              </div>
+            )}
+
+            {/* Arrow indicator */}
+            {step >= 4 && (
+              <div className="animate-fadeIn mt-3 text-center">
+                <div className="text-[9px] text-gray-500">Recovery Priority</div>
+                <div className="text-lg text-gray-600">↑</div>
+                <div className="text-[9px] text-emerald-400">Higher</div>
+              </div>
+            )}
           </div>
 
-          {/* Yield Chart */}
-          <div className="space-y-2.5">
-            {bonds.map((bond, index) => (
-              step >= index + 1 && (
-                <div key={`${bond.issuer}-${bond.maturity}`} className="animate-fadeIn" style={{ animationDelay: `${index * 100}ms` }}>
-                  <div className="p-3 rounded-lg bg-gray-800/30 border border-gray-700/50">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <span className={`px-1.5 py-0.5 text-[9px] font-semibold uppercase rounded ${
-                          bond.color === 'emerald' ? 'bg-emerald-500/20 text-emerald-400' :
-                          bond.color === 'amber' ? 'bg-amber-500/20 text-amber-400' :
-                          'bg-red-500/20 text-red-400'
-                        }`}>
-                          {bond.position}
-                        </span>
-                        <span className="text-xs text-white font-medium">{bond.type}</span>
-                        <span className="text-[10px] text-gray-500">{bond.coupon} &apos;{bond.maturity.slice(-2)}</span>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <span className="text-[10px] text-gray-500">+{bond.spread} bps</span>
-                        <span className={`text-sm font-bold ${
-                          bond.color === 'emerald' ? 'text-emerald-400' :
-                          bond.color === 'amber' ? 'text-amber-400' :
-                          'text-red-400'
-                        }`}>
-                          {bond.yield.toFixed(2)}%
-                        </span>
-                      </div>
+          {/* Right: Bond Details */}
+          <div className="flex-1 min-w-0">
+            <div className="text-[10px] text-gray-500 uppercase tracking-wider mb-2">Bond Yields</div>
+
+            <div className="space-y-2">
+              {/* OpCo Bond */}
+              {step >= 3 && (
+                <div className="animate-fadeIn p-2.5 rounded-lg bg-gray-800/30 border border-emerald-500/30">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-[10px] text-emerald-400 font-semibold">Sr Secured &apos;29</div>
+                      <div className="text-[9px] text-gray-500">Charter Operating</div>
                     </div>
-                    {/* Yield bar visualization */}
-                    <div className="relative h-2 bg-gray-700/50 rounded-full overflow-hidden">
-                      <div
-                        className={`absolute left-0 top-0 h-full rounded-full transition-all duration-500 ${
-                          bond.color === 'emerald' ? 'bg-gradient-to-r from-emerald-600 to-emerald-400' :
-                          bond.color === 'amber' ? 'bg-gradient-to-r from-amber-600 to-amber-400' :
-                          'bg-gradient-to-r from-red-600 to-red-400'
-                        }`}
-                        style={{ width: `${((bond.yield - minYield) / yieldRange) * 100}%` }}
-                      />
+                    <div className="text-right">
+                      <div className="text-sm font-bold text-emerald-400">5.12%</div>
+                      <div className="text-[9px] text-gray-500">+142 bps</div>
                     </div>
                   </div>
                 </div>
-              )
-            ))}
-          </div>
+              )}
 
-          {/* Scale */}
-          {step >= 3 && (
-            <div className="animate-fadeIn mt-3 flex justify-between text-[10px] text-gray-600 px-1">
-              <span>4%</span>
-              <span>5%</span>
-              <span>6%</span>
-              <span>7%</span>
-              <span>8%</span>
+              {/* Intermediate Bonds */}
+              {step >= 4 && (
+                <div className="animate-fadeIn p-2.5 rounded-lg bg-gray-800/30 border border-amber-500/30">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-[10px] text-amber-400 font-semibold">Sr Unsecured &apos;29</div>
+                      <div className="text-[9px] text-gray-500">CCO Holdings</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-sm font-bold text-amber-400">5.87%</div>
+                      <div className="text-[9px] text-gray-500">+217 bps</div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {step >= 4 && (
+                <div className="animate-fadeIn p-2.5 rounded-lg bg-gray-800/30 border border-amber-500/30" style={{ animationDelay: '100ms' }}>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-[10px] text-amber-400 font-semibold">Sr Unsecured &apos;32</div>
+                      <div className="text-[9px] text-gray-500">CCO Holdings</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-sm font-bold text-amber-400">6.24%</div>
+                      <div className="text-[9px] text-gray-500">+254 bps</div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* HoldCo Bond */}
+              {step >= 5 && (
+                <div className="animate-fadeIn p-2.5 rounded-lg bg-gray-800/30 border border-red-500/30">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-[10px] text-red-400 font-semibold">Sr Unsecured &apos;31</div>
+                      <div className="text-[9px] text-gray-500">Charter Comm Inc</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-sm font-bold text-red-400">6.89%</div>
+                      <div className="text-[9px] text-gray-500">+319 bps</div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
-          )}
 
-          {/* Insight Box */}
-          {step >= 5 && (
-            <div className="animate-fadeIn mt-4">
-              <div className="p-3 rounded-lg bg-blue-950/40 border border-blue-500/30">
-                <div className="flex gap-2 text-xs">
-                  <span>💡</span>
-                  <p className="text-blue-200/90">
-                    <span className="font-semibold">Structural premium:</span> HoldCo unsecured trades 177bps wide of OpCo secured, reflecting subordination risk.
-                  </p>
+            {/* Spread comparison */}
+            {step >= 6 && (
+              <div className="animate-fadeIn mt-3 p-2 rounded-lg bg-blue-950/40 border border-blue-500/30">
+                <div className="flex items-center justify-between text-[10px]">
+                  <span className="text-blue-200">HoldCo vs OpCo spread:</span>
+                  <span className="text-white font-bold">+177 bps</span>
                 </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       ) : (
         <div className="h-full min-h-[220px] flex items-center justify-center text-gray-600">
