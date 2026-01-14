@@ -209,17 +209,6 @@ function StructureDemo({ step }: { step: number }) {
               </div>
             )}
 
-            {/* Footer info */}
-            {step >= 6 && (
-              <div className="animate-fadeIn mt-4 flex items-center justify-center gap-4 text-[11px] text-gray-500">
-                <span className="flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-                  Structural subordination risk
-                </span>
-                <span>·</span>
-                <span>Source: 10-K Filing</span>
-              </div>
-            )}
           </div>
         </div>
       ) : (
@@ -322,19 +311,6 @@ function MaturityWallDemo({ step }: { step: number }) {
             </div>
           )}
 
-          {/* Insight Box */}
-          {step >= 5 && (
-            <div className="animate-fadeIn mt-4">
-              <div className="p-3 rounded-lg bg-amber-950/40 border border-amber-500/30">
-                <div className="flex gap-2 text-xs">
-                  <span>⚠️</span>
-                  <p className="text-amber-200/90">
-                    <span className="font-semibold">2027-2028 concentration:</span> $28B maturing in 2 years - refinancing risk elevated.
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       ) : (
         <div className="h-full min-h-[220px] flex items-center justify-center text-gray-600">
@@ -488,15 +464,6 @@ function BondYieldsDemo({ step }: { step: number }) {
               )}
             </div>
 
-            {/* Spread comparison */}
-            {step >= 6 && (
-              <div className="animate-fadeIn mt-3 p-2 rounded-lg bg-blue-950/40 border border-blue-500/30">
-                <div className="flex items-center justify-between text-[10px]">
-                  <span className="text-blue-200">HoldCo vs OpCo spread:</span>
-                  <span className="text-white font-bold">+177 bps</span>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       ) : (
