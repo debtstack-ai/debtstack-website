@@ -4,7 +4,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 
 // Demo definitions
-type DemoId = 'structure' | 'distressed' | 'covenants';
+type DemoId = 'structure' | 'maturity' | 'covenants';
 
 interface Demo {
   id: DemoId;
@@ -26,16 +26,15 @@ const demos: Demo[] = [
     ],
   },
   {
-    id: 'distressed',
-    title: 'Risk Screening',
+    id: 'maturity',
+    title: 'Maturity Wall',
     codeLines: [
       { tokens: [{ text: 'from', type: 'keyword' }, { text: ' debtstack ', type: 'default' }, { text: 'import', type: 'keyword' }, { text: ' DebtStackClient', type: 'class' }] },
       { tokens: [{ text: '', type: 'default' }] },
       { tokens: [{ text: 'client', type: 'variable' }, { text: ' = ', type: 'default' }, { text: 'DebtStackClient', type: 'class' }, { text: '(', type: 'default' }, { text: 'api_key', type: 'param' }, { text: '=', type: 'default' }, { text: '"sk_live_..."', type: 'string' }, { text: ')', type: 'default' }] },
       { tokens: [{ text: '', type: 'default' }] },
-      { tokens: [{ text: '# Screen for structural subordination', type: 'comment' }] },
-      { tokens: [{ text: 'tickers', type: 'variable' }, { text: ' = ', type: 'default' }, { text: '["CHTR", "DAL", "HCA"]', type: 'string' }] },
-      { tokens: [{ text: 'risks', type: 'variable' }, { text: ' = ', type: 'default' }, { text: 'client', type: 'variable' }, { text: '.', type: 'default' }, { text: 'analyze_structural_risk', type: 'method' }, { text: '(', type: 'default' }, { text: 'tickers', type: 'variable' }, { text: ')', type: 'default' }] },
+      { tokens: [{ text: '# Get debt maturity schedule', type: 'comment' }] },
+      { tokens: [{ text: 'maturities', type: 'variable' }, { text: ' = ', type: 'default' }, { text: 'client', type: 'variable' }, { text: '.', type: 'default' }, { text: 'get_maturity_wall', type: 'method' }, { text: '(', type: 'default' }, { text: '"CHTR"', type: 'string' }, { text: ')', type: 'default' }] },
     ],
   },
   {
@@ -223,101 +222,102 @@ function StructureDemo({ step }: { step: number }) {
   );
 }
 
-// Risk Screening Demo Component - CHTR, DAL, HCA
-function DistressedDemo({ step }: { step: number }) {
+// Maturity Wall Demo Component - CHTR
+function MaturityWallDemo({ step }: { step: number }) {
+  // Maturity data for CHTR (illustrative based on typical cable company debt)
+  const maturities = [
+    { year: 2025, amount: 3.2, secured: 1.5, unsecured: 1.7 },
+    { year: 2026, amount: 8.5, secured: 2.1, unsecured: 6.4 },
+    { year: 2027, amount: 12.8, secured: 3.2, unsecured: 9.6 },
+    { year: 2028, amount: 15.2, secured: 4.8, unsecured: 10.4 },
+    { year: 2029, amount: 11.3, secured: 2.9, unsecured: 8.4 },
+    { year: '2030+', amount: 46.0, secured: 0, unsecured: 46.0 },
+  ];
+  const maxAmount = 46;
+
   return (
     <div className="p-5">
       {step >= 1 ? (
-        <div className="space-y-3">
-          {/* CHTR - HIGH RISK */}
-          {step >= 1 && (
-            <div className="animate-fadeIn">
-              <div className="p-4 rounded-xl bg-gradient-to-r from-red-950/60 to-red-900/20 border-l-4 border-red-500">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-white">Charter Communications</span>
-                      <span className="text-xs text-gray-500">CHTR</span>
-                    </div>
-                    <div className="mt-2 space-y-1 text-xs text-gray-400">
-                      <div>$56B at HoldCo level (58%)</div>
-                      <div>OpCo debt guaranteed by HoldCo</div>
-                      <div>Structural sub: <span className="text-red-400 font-medium">High exposure</span></div>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-lg">🔴</span>
-                      <span className="text-red-400 font-bold text-sm">HIGH RISK</span>
-                    </div>
-                  </div>
-                </div>
+        <div className="relative">
+          {/* Summary Stats Bar */}
+          <div className="animate-fadeIn mb-5 flex items-center justify-between px-4 py-3 rounded-lg bg-gradient-to-r from-gray-800/50 to-gray-900/50 border border-gray-700/50">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center">
+                <svg className="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <div>
+                <div className="text-white font-semibold">Charter Communications</div>
+                <div className="text-xs text-gray-500">CHTR · 16 instruments</div>
               </div>
             </div>
-          )}
-
-          {/* DAL - MEDIUM RISK */}
-          {step >= 2 && (
-            <div className="animate-fadeIn">
-              <div className="p-4 rounded-xl bg-gradient-to-r from-amber-950/60 to-amber-900/20 border-l-4 border-amber-500">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-white">Delta Air Lines</span>
-                      <span className="text-xs text-gray-500">DAL</span>
-                    </div>
-                    <div className="mt-2 space-y-1 text-xs text-gray-400">
-                      <div>Mixed debt placement</div>
-                      <div>16 entities, 14 instruments</div>
-                      <div>Structural sub: <span className="text-amber-400 font-medium">Moderate</span></div>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-lg">🟡</span>
-                      <span className="text-amber-400 font-bold text-sm">MEDIUM</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+            <div className="text-right">
+              <div className="text-lg font-bold text-white">$97B</div>
+              <div className="text-xs text-gray-500">Total Debt</div>
             </div>
-          )}
+          </div>
 
-          {/* HCA - LOW RISK */}
-          {step >= 3 && (
-            <div className="animate-fadeIn">
-              <div className="p-4 rounded-xl bg-gradient-to-r from-emerald-950/60 to-emerald-900/20 border-l-4 border-emerald-500">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-white">HCA Healthcare</span>
-                      <span className="text-xs text-gray-500">HCA</span>
+          {/* Maturity Wall Chart */}
+          <div className="space-y-2">
+            {maturities.map((item, index) => (
+              step >= index + 1 && (
+                <div key={item.year} className="animate-fadeIn" style={{ animationDelay: `${index * 100}ms` }}>
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 text-xs text-gray-500 font-mono">{item.year}</div>
+                    <div className="flex-1 h-7 bg-gray-800/50 rounded overflow-hidden flex">
+                      {/* Secured portion */}
+                      {item.secured > 0 && (
+                        <div
+                          className="h-full bg-gradient-to-r from-blue-600 to-blue-500 flex items-center justify-end pr-1"
+                          style={{ width: `${(item.secured / maxAmount) * 100}%` }}
+                        >
+                          {item.secured >= 2 && (
+                            <span className="text-[10px] text-white font-medium">${item.secured}B</span>
+                          )}
+                        </div>
+                      )}
+                      {/* Unsecured portion */}
+                      <div
+                        className="h-full bg-gradient-to-r from-amber-600 to-amber-500 flex items-center justify-end pr-2"
+                        style={{ width: `${(item.unsecured / maxAmount) * 100}%` }}
+                      >
+                        {item.unsecured >= 3 && (
+                          <span className="text-[10px] text-white font-medium">${item.unsecured}B</span>
+                        )}
+                      </div>
                     </div>
-                    <div className="mt-2 space-y-1 text-xs text-gray-400">
-                      <div>Simple 2-entity structure</div>
-                      <div>Strong guarantee coverage</div>
-                      <div>Structural sub: <span className="text-emerald-400 font-medium">Limited</span></div>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-lg">🟢</span>
-                      <span className="text-emerald-400 font-bold text-sm">LOW RISK</span>
+                    <div className="w-14 text-right">
+                      <span className="text-sm font-semibold text-white">${item.amount}B</span>
                     </div>
                   </div>
                 </div>
+              )
+            ))}
+          </div>
+
+          {/* Legend */}
+          {step >= 4 && (
+            <div className="animate-fadeIn mt-4 flex items-center justify-center gap-6 text-xs">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded bg-gradient-to-r from-blue-600 to-blue-500"></div>
+                <span className="text-gray-400">Secured</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded bg-gradient-to-r from-amber-600 to-amber-500"></div>
+                <span className="text-gray-400">Unsecured</span>
               </div>
             </div>
           )}
 
           {/* Insight Box */}
-          {step >= 4 && (
+          {step >= 5 && (
             <div className="animate-fadeIn mt-4">
-              <div className="p-3 rounded-lg bg-blue-950/40 border border-blue-500/30">
+              <div className="p-3 rounded-lg bg-amber-950/40 border border-amber-500/30">
                 <div className="flex gap-2 text-xs">
-                  <span>💡</span>
-                  <p className="text-blue-200/90">
-                    <span className="font-semibold">Insight:</span> CHTR&apos;s unsecured HoldCo notes rank behind $13.5B of secured OpCo debt in recovery.
+                  <span>⚠️</span>
+                  <p className="text-amber-200/90">
+                    <span className="font-semibold">2027-2028 concentration:</span> $28B maturing in 2 years - refinancing risk elevated.
                   </p>
                 </div>
               </div>
@@ -328,7 +328,7 @@ function DistressedDemo({ step }: { step: number }) {
         <div className="h-full min-h-[220px] flex items-center justify-center text-gray-600">
           <div className="text-center">
             <div className="w-8 h-8 border-2 border-gray-700 border-t-blue-500 rounded-full animate-spin mx-auto mb-3"></div>
-            <span className="text-sm">Analyzing risk...</span>
+            <span className="text-sm">Loading maturities...</span>
           </div>
         </div>
       )}
@@ -560,8 +560,8 @@ export default function LiveDemo() {
     switch (activeDemo) {
       case 'structure':
         return <StructureDemo step={step} />;
-      case 'distressed':
-        return <DistressedDemo step={step} />;
+      case 'maturity':
+        return <MaturityWallDemo step={step} />;
       case 'covenants':
         return <CovenantsDemo step={step} />;
       default:
@@ -628,13 +628,13 @@ export default function LiveDemo() {
             <div className="px-5 py-3 bg-[#161b22] border-b border-gray-800/80 flex items-center justify-between">
               <span className="text-sm text-gray-400 font-medium">
                 {activeDemo === 'structure' && 'Corporate Structure'}
-                {activeDemo === 'distressed' && 'Risk Analysis'}
+                {activeDemo === 'maturity' && 'Maturity Schedule'}
                 {activeDemo === 'covenants' && 'Covenant Status'}
               </span>
               {step >= 1 && (
                 <span className="animate-fadeIn text-xs font-mono text-gray-500">
                   {activeDemo === 'structure' && 'CHTR'}
-                  {activeDemo === 'distressed' && '3 companies'}
+                  {activeDemo === 'maturity' && 'CHTR'}
                   {activeDemo === 'covenants' && '3 companies'}
                 </span>
               )}
