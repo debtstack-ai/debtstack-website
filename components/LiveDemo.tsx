@@ -4,7 +4,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 
 // Demo definitions
-type DemoId = 'structure' | 'maturity' | 'covenants';
+type DemoId = 'structure' | 'maturity' | 'yields';
 
 interface Demo {
   id: DemoId;
@@ -38,16 +38,15 @@ const demos: Demo[] = [
     ],
   },
   {
-    id: 'covenants',
-    title: 'Covenant Monitor',
+    id: 'yields',
+    title: 'Bond Yields',
     codeLines: [
       { tokens: [{ text: 'from', type: 'keyword' }, { text: ' debtstack ', type: 'default' }, { text: 'import', type: 'keyword' }, { text: ' DebtStackClient', type: 'class' }] },
       { tokens: [{ text: '', type: 'default' }] },
       { tokens: [{ text: 'client', type: 'variable' }, { text: ' = ', type: 'default' }, { text: 'DebtStackClient', type: 'class' }, { text: '(', type: 'default' }, { text: 'api_key', type: 'param' }, { text: '=', type: 'default' }, { text: '"sk_live_..."', type: 'string' }, { text: ')', type: 'default' }] },
       { tokens: [{ text: '', type: 'default' }] },
-      { tokens: [{ text: '# Monitor covenant headroom', type: 'comment' }] },
-      { tokens: [{ text: 'tickers', type: 'variable' }, { text: ' = ', type: 'default' }, { text: '["AAL", "DAL", "CCL"]', type: 'string' }] },
-      { tokens: [{ text: 'status', type: 'variable' }, { text: ' = ', type: 'default' }, { text: 'client', type: 'variable' }, { text: '.', type: 'default' }, { text: 'check_covenant_headroom', type: 'method' }, { text: '(', type: 'default' }, { text: 'tickers', type: 'variable' }, { text: ')', type: 'default' }] },
+      { tokens: [{ text: '# Compare yields across capital structure', type: 'comment' }] },
+      { tokens: [{ text: 'yields', type: 'variable' }, { text: ' = ', type: 'default' }, { text: 'client', type: 'variable' }, { text: '.', type: 'default' }, { text: 'get_bond_yields', type: 'method' }, { text: '(', type: 'default' }, { text: '"CHTR"', type: 'string' }, { text: ')', type: 'default' }] },
     ],
   },
 ];
@@ -349,110 +348,148 @@ function MaturityWallDemo({ step }: { step: number }) {
   );
 }
 
-// Covenant Monitor Demo Component - AAL, DAL, CCL
-function CovenantsDemo({ step }: { step: number }) {
+// Bond Yields Demo Component - CHTR across capital structure
+function BondYieldsDemo({ step }: { step: number }) {
+  // Bond data showing yields across different structural positions
+  const bonds = [
+    {
+      issuer: 'Charter Operating',
+      type: 'Senior Secured',
+      position: 'OpCo',
+      coupon: '4.908%',
+      maturity: '2029',
+      yield: 5.12,
+      spread: 142,
+      rating: 'BB+',
+      color: 'emerald'
+    },
+    {
+      issuer: 'CCO Holdings',
+      type: 'Senior Unsecured',
+      position: 'Intermediate',
+      coupon: '5.125%',
+      maturity: '2029',
+      yield: 5.87,
+      spread: 217,
+      rating: 'BB',
+      color: 'amber'
+    },
+    {
+      issuer: 'CCO Holdings',
+      type: 'Senior Unsecured',
+      position: 'Intermediate',
+      coupon: '4.750%',
+      maturity: '2032',
+      yield: 6.24,
+      spread: 254,
+      rating: 'BB',
+      color: 'amber'
+    },
+    {
+      issuer: 'Charter Comm Inc',
+      type: 'Senior Unsecured',
+      position: 'HoldCo',
+      coupon: '5.750%',
+      maturity: '2031',
+      yield: 6.89,
+      spread: 319,
+      rating: 'BB-',
+      color: 'red'
+    },
+  ];
+
+  const maxYield = 8;
+  const minYield = 4;
+  const yieldRange = maxYield - minYield;
+
   return (
     <div className="p-5">
       {step >= 1 ? (
-        <div className="space-y-3">
-          {/* AAL - WARNING */}
-          {step >= 1 && (
-            <div className="animate-fadeIn">
-              <div className="p-4 rounded-xl bg-gradient-to-r from-amber-950/60 to-amber-900/20 border border-amber-500/40">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-white">American Airlines</span>
-                      <span className="text-xs text-gray-500">AAL</span>
+        <div className="relative">
+          {/* Summary Stats Bar */}
+          <div className="animate-fadeIn mb-4 flex items-center justify-between px-4 py-3 rounded-lg bg-gradient-to-r from-gray-800/50 to-gray-900/50 border border-gray-700/50">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center">
+                <svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+              </div>
+              <div>
+                <div className="text-white font-semibold">Charter Communications</div>
+                <div className="text-xs text-gray-500">Yield comparison across structure</div>
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="text-lg font-bold text-white">+177 bps</div>
+              <div className="text-xs text-gray-500">HoldCo vs OpCo spread</div>
+            </div>
+          </div>
+
+          {/* Yield Chart */}
+          <div className="space-y-2.5">
+            {bonds.map((bond, index) => (
+              step >= index + 1 && (
+                <div key={`${bond.issuer}-${bond.maturity}`} className="animate-fadeIn" style={{ animationDelay: `${index * 100}ms` }}>
+                  <div className="p-3 rounded-lg bg-gray-800/30 border border-gray-700/50">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <span className={`px-1.5 py-0.5 text-[9px] font-semibold uppercase rounded ${
+                          bond.color === 'emerald' ? 'bg-emerald-500/20 text-emerald-400' :
+                          bond.color === 'amber' ? 'bg-amber-500/20 text-amber-400' :
+                          'bg-red-500/20 text-red-400'
+                        }`}>
+                          {bond.position}
+                        </span>
+                        <span className="text-xs text-white font-medium">{bond.type}</span>
+                        <span className="text-[10px] text-gray-500">{bond.coupon} &apos;{bond.maturity.slice(-2)}</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="text-[10px] text-gray-500">+{bond.spread} bps</span>
+                        <span className={`text-sm font-bold ${
+                          bond.color === 'emerald' ? 'text-emerald-400' :
+                          bond.color === 'amber' ? 'text-amber-400' :
+                          'text-red-400'
+                        }`}>
+                          {bond.yield.toFixed(2)}%
+                        </span>
+                      </div>
                     </div>
-                    <div className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
-                      <div className="text-gray-400">Current Leverage</div>
-                      <div className="text-white font-medium">5.8x</div>
-                      <div className="text-gray-400">Max Leverage</div>
-                      <div className="text-white font-medium">6.0x</div>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-2xl font-bold text-amber-400">3%</div>
-                    <div className="text-[10px] text-gray-500 uppercase tracking-wider">Headroom</div>
-                    <div className="mt-1 flex items-center gap-1 justify-end">
-                      <span>🟡</span>
-                      <span className="text-amber-400 font-semibold text-xs">WARNING</span>
+                    {/* Yield bar visualization */}
+                    <div className="relative h-2 bg-gray-700/50 rounded-full overflow-hidden">
+                      <div
+                        className={`absolute left-0 top-0 h-full rounded-full transition-all duration-500 ${
+                          bond.color === 'emerald' ? 'bg-gradient-to-r from-emerald-600 to-emerald-400' :
+                          bond.color === 'amber' ? 'bg-gradient-to-r from-amber-600 to-amber-400' :
+                          'bg-gradient-to-r from-red-600 to-red-400'
+                        }`}
+                        style={{ width: `${((bond.yield - minYield) / yieldRange) * 100}%` }}
+                      />
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
-          )}
+              )
+            ))}
+          </div>
 
-          {/* DAL - SAFE */}
-          {step >= 2 && (
-            <div className="animate-fadeIn">
-              <div className="p-4 rounded-xl bg-gradient-to-r from-emerald-950/60 to-emerald-900/20 border border-emerald-500/40">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-white">Delta Air Lines</span>
-                      <span className="text-xs text-gray-500">DAL</span>
-                    </div>
-                    <div className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
-                      <div className="text-gray-400">Current Leverage</div>
-                      <div className="text-white font-medium">4.2x</div>
-                      <div className="text-gray-400">Max Leverage</div>
-                      <div className="text-white font-medium">5.5x</div>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-2xl font-bold text-emerald-400">31%</div>
-                    <div className="text-[10px] text-gray-500 uppercase tracking-wider">Headroom</div>
-                    <div className="mt-1 flex items-center gap-1 justify-end">
-                      <span>🟢</span>
-                      <span className="text-emerald-400 font-semibold text-xs">SAFE</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* CCL - SAFE */}
+          {/* Scale */}
           {step >= 3 && (
-            <div className="animate-fadeIn">
-              <div className="p-4 rounded-xl bg-gradient-to-r from-emerald-950/60 to-emerald-900/20 border border-emerald-500/40">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-white">Carnival Corporation</span>
-                      <span className="text-xs text-gray-500">CCL</span>
-                    </div>
-                    <div className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
-                      <div className="text-gray-400">Interest Coverage</div>
-                      <div className="text-white font-medium">3.5x</div>
-                      <div className="text-gray-400">Min Coverage</div>
-                      <div className="text-white font-medium">2.0x</div>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-2xl font-bold text-emerald-400">75%</div>
-                    <div className="text-[10px] text-gray-500 uppercase tracking-wider">Headroom</div>
-                    <div className="mt-1 flex items-center gap-1 justify-end">
-                      <span>🟢</span>
-                      <span className="text-emerald-400 font-semibold text-xs">SAFE</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+            <div className="animate-fadeIn mt-3 flex justify-between text-[10px] text-gray-600 px-1">
+              <span>4%</span>
+              <span>5%</span>
+              <span>6%</span>
+              <span>7%</span>
+              <span>8%</span>
             </div>
           )}
 
-          {/* Alert Box */}
-          {step >= 4 && (
+          {/* Insight Box */}
+          {step >= 5 && (
             <div className="animate-fadeIn mt-4">
-              <div className="p-3 rounded-lg bg-gray-800/40 border border-gray-600/30">
+              <div className="p-3 rounded-lg bg-blue-950/40 border border-blue-500/30">
                 <div className="flex gap-2 text-xs">
-                  <span>📊</span>
-                  <p className="text-gray-300/90">
-                    <span className="text-gray-500">Note:</span> Leverage ratios are illustrative. Covenant thresholds based on typical credit agreement terms.
+                  <span>💡</span>
+                  <p className="text-blue-200/90">
+                    <span className="font-semibold">Structural premium:</span> HoldCo unsecured trades 177bps wide of OpCo secured, reflecting subordination risk.
                   </p>
                 </div>
               </div>
@@ -463,7 +500,7 @@ function CovenantsDemo({ step }: { step: number }) {
         <div className="h-full min-h-[220px] flex items-center justify-center text-gray-600">
           <div className="text-center">
             <div className="w-8 h-8 border-2 border-gray-700 border-t-blue-500 rounded-full animate-spin mx-auto mb-3"></div>
-            <span className="text-sm">Checking covenants...</span>
+            <span className="text-sm">Loading yields...</span>
           </div>
         </div>
       )}
@@ -575,8 +612,8 @@ export default function LiveDemo() {
         return <StructureDemo step={step} />;
       case 'maturity':
         return <MaturityWallDemo step={step} />;
-      case 'covenants':
-        return <CovenantsDemo step={step} />;
+      case 'yields':
+        return <BondYieldsDemo step={step} />;
       default:
         return <StructureDemo step={step} />;
     }
@@ -642,13 +679,13 @@ export default function LiveDemo() {
               <span className="text-sm text-gray-400 font-medium">
                 {activeDemo === 'structure' && 'Corporate Structure'}
                 {activeDemo === 'maturity' && 'Maturity Schedule'}
-                {activeDemo === 'covenants' && 'Covenant Status'}
+                {activeDemo === 'yields' && 'Bond Yields'}
               </span>
               {step >= 1 && (
                 <span className="animate-fadeIn text-xs font-mono text-gray-500">
                   {activeDemo === 'structure' && 'CHTR'}
                   {activeDemo === 'maturity' && 'CHTR'}
-                  {activeDemo === 'covenants' && '3 companies'}
+                  {activeDemo === 'yields' && 'CHTR · 4 bonds'}
                 </span>
               )}
             </div>
