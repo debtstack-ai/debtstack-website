@@ -128,77 +128,90 @@ function StructureDemo({ step }: { step: number }) {
               </div>
             )}
 
-            {/* Connector Lines SVG */}
+            {/* Connector Line to Intermediate HoldCo */}
             {step >= 3 && (
               <div className="animate-fadeIn flex justify-center my-2">
-                <svg width="200" height="24" className="text-gray-600">
-                  <path d="M100 0 L100 8 L40 8 L40 24" fill="none" stroke="currentColor" strokeWidth="1.5" />
-                  <path d="M100 8 L160 8 L160 24" fill="none" stroke="currentColor" strokeWidth="1.5" />
+                <svg width="200" height="20" className="text-gray-600">
+                  <path d="M100 0 L100 20" fill="none" stroke="currentColor" strokeWidth="1.5" />
                   <circle cx="100" cy="4" r="2" fill="currentColor" />
                 </svg>
               </div>
             )}
 
-            {/* Subsidiaries */}
-            <div className="grid grid-cols-2 gap-3">
-              {step >= 3 && (
-                <div className="animate-fadeIn">
-                  <div className="p-3 rounded-xl bg-gradient-to-br from-amber-950/80 to-amber-900/30 border border-amber-500/30 shadow-lg shadow-amber-500/5">
-                    <div className="flex items-start justify-between mb-2">
-                      <div>
-                        <div className="font-medium text-white text-sm">CCO Holdings, LLC</div>
-                        <div className="text-[10px] text-amber-400/70">Intermediate HoldCo</div>
+            {/* Intermediate HoldCo - CCO Holdings */}
+            {step >= 3 && (
+              <div className="animate-fadeIn mb-3">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-amber-950/80 to-amber-900/30 border border-amber-500/30 shadow-lg shadow-amber-500/5">
+                  <div className="absolute -top-2 left-4">
+                    <span className="px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider bg-amber-600 text-white rounded">Intermediate</span>
+                  </div>
+                  <div className="flex items-start justify-between mb-2">
+                    <div>
+                      <div className="font-medium text-white text-sm">CCO Holdings, LLC</div>
+                      <div className="text-[10px] text-amber-400/70">Intermediate HoldCo</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-sm font-semibold text-amber-400">$27.3B</div>
+                    </div>
+                  </div>
+
+                  {step >= 4 && (
+                    <div className="animate-fadeIn space-y-1.5 pt-2 border-t border-amber-800/50">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-gray-400">Sr Unsecured Notes</span>
+                        <span className="text-gray-300 font-medium">$27.3B</span>
                       </div>
-                      <div className="text-right">
-                        <div className="text-sm font-semibold text-amber-400">$27.3B</div>
+                      <div className="text-[10px] text-amber-400/70">Guarantor for OpCo debt</div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Connector Line to OpCo */}
+            {step >= 4 && (
+              <div className="animate-fadeIn flex justify-center my-2">
+                <svg width="200" height="20" className="text-gray-600">
+                  <path d="M100 0 L100 20" fill="none" stroke="currentColor" strokeWidth="1.5" />
+                </svg>
+              </div>
+            )}
+
+            {/* OpCo - Charter Operating */}
+            {step >= 4 && (
+              <div className="animate-fadeIn">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-emerald-950/80 to-emerald-900/30 border border-emerald-500/30 shadow-lg shadow-emerald-500/5">
+                  <div className="absolute -top-2 left-4">
+                    <span className="px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider bg-emerald-600 text-white rounded">OpCo</span>
+                  </div>
+                  <div className="flex items-start justify-between mb-2">
+                    <div>
+                      <div className="font-medium text-white text-sm">Charter Operating, LLC</div>
+                      <div className="text-[10px] text-emerald-400/70">Operating Company</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-sm font-semibold text-emerald-400">$13.5B</div>
+                    </div>
+                  </div>
+
+                  {step >= 5 && (
+                    <div className="animate-fadeIn space-y-1.5 pt-2 border-t border-emerald-800/50">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-gray-400">Term Loans A/B</span>
+                        <span className="text-gray-300 font-medium">$9.7B</span>
+                      </div>
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-gray-400">Secured Notes</span>
+                        <span className="text-gray-300 font-medium">$3.8B</span>
                       </div>
                     </div>
-
-                    {step >= 4 && (
-                      <div className="animate-fadeIn space-y-1.5 pt-2 border-t border-amber-800/50">
-                        <div className="flex items-center justify-between text-xs">
-                          <span className="text-gray-400">Sr Unsecured Notes</span>
-                          <span className="text-gray-300 font-medium">$27.3B</span>
-                        </div>
-                        <div className="text-[10px] text-amber-400/70">Guarantor for OpCo debt</div>
-                      </div>
-                    )}
-                  </div>
+                  )}
                 </div>
-              )}
-
-              {step >= 3 && (
-                <div className="animate-fadeIn" style={{ animationDelay: '150ms' }}>
-                  <div className="p-3 rounded-xl bg-gradient-to-br from-emerald-950/80 to-emerald-900/30 border border-emerald-500/30 shadow-lg shadow-emerald-500/5">
-                    <div className="flex items-start justify-between mb-2">
-                      <div>
-                        <div className="font-medium text-white text-sm">Charter Operating</div>
-                        <div className="text-[10px] text-emerald-400/70">OpCo</div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-sm font-semibold text-emerald-400">$13.5B</div>
-                      </div>
-                    </div>
-
-                    {step >= 4 && (
-                      <div className="animate-fadeIn space-y-1.5 pt-2 border-t border-emerald-800/50">
-                        <div className="flex items-center justify-between text-xs">
-                          <span className="text-gray-400">Term Loans A/B</span>
-                          <span className="text-gray-300 font-medium">$9.7B</span>
-                        </div>
-                        <div className="flex items-center justify-between text-xs">
-                          <span className="text-gray-400">Secured Notes</span>
-                          <span className="text-gray-300 font-medium">$3.8B</span>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
+              </div>
+            )}
 
             {/* Footer info */}
-            {step >= 5 && (
+            {step >= 6 && (
               <div className="animate-fadeIn mt-4 flex items-center justify-center gap-4 text-[11px] text-gray-500">
                 <span className="flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
@@ -502,8 +515,8 @@ export default function LiveDemo() {
 
   // Step progression
   useEffect(() => {
-    if (step >= 1 && step < 5) {
-      const delays = [500, 500, 700, 900];
+    if (step >= 1 && step < 6) {
+      const delays = [500, 500, 500, 600, 800];
       const timeout = setTimeout(() => setStep(prev => prev + 1), delays[step - 1] || 500);
       return () => clearTimeout(timeout);
     }
@@ -511,7 +524,7 @@ export default function LiveDemo() {
 
   // Auto-rotation
   useEffect(() => {
-    if (!autoRotate || step < 5) return;
+    if (!autoRotate || step < 6) return;
 
     const timeout = setTimeout(() => {
       const currentIndex = demos.findIndex(d => d.id === activeDemo);
