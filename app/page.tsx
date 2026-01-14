@@ -82,20 +82,47 @@ export default function Home() {
           <p className="text-center text-gray-500 mb-12 text-sm uppercase tracking-widest">Works with your stack</p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             <div className="group text-center p-8 rounded-2xl glass-card transition-all duration-300 cursor-default">
-              <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">🦜</div>
-              <p className="text-gray-400 group-hover:text-white transition-colors">LangChain</p>
+              <div className="mb-4 flex justify-center group-hover:scale-110 transition-transform duration-300">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 border border-emerald-500/30 flex items-center justify-center">
+                  <svg className="w-6 h-6 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <path d="M13 10V3L4 14h7v7l9-11h-7z" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+              </div>
+              <p className="text-gray-400 group-hover:text-white transition-colors font-medium">LangChain</p>
             </div>
             <div className="group text-center p-8 rounded-2xl glass-card transition-all duration-300 cursor-default">
-              <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">🤖</div>
-              <p className="text-gray-400 group-hover:text-white transition-colors">MCP</p>
+              <div className="mb-4 flex justify-center group-hover:scale-110 transition-transform duration-300">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500/20 to-orange-600/10 border border-orange-500/30 flex items-center justify-center">
+                  <svg className="w-6 h-6 text-orange-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+              </div>
+              <p className="text-gray-400 group-hover:text-white transition-colors font-medium">MCP</p>
             </div>
             <div className="group text-center p-8 rounded-2xl glass-card transition-all duration-300 cursor-default">
-              <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">🦙</div>
-              <p className="text-gray-400 group-hover:text-white transition-colors">LlamaIndex</p>
+              <div className="mb-4 flex justify-center group-hover:scale-110 transition-transform duration-300">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500/20 to-purple-600/10 border border-purple-500/30 flex items-center justify-center">
+                  <svg className="w-6 h-6 text-purple-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <circle cx="12" cy="12" r="3"/>
+                    <path d="M12 2v4m0 12v4m10-10h-4M6 12H2m15.07-7.07l-2.83 2.83M9.76 14.24l-2.83 2.83m0-10.14l2.83 2.83m4.48 4.48l2.83 2.83" strokeLinecap="round"/>
+                  </svg>
+                </div>
+              </div>
+              <p className="text-gray-400 group-hover:text-white transition-colors font-medium">LlamaIndex</p>
             </div>
             <div className="group text-center p-8 rounded-2xl glass-card transition-all duration-300 cursor-default">
-              <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">⚡</div>
-              <p className="text-gray-400 group-hover:text-white transition-colors">REST API</p>
+              <div className="mb-4 flex justify-center group-hover:scale-110 transition-transform duration-300">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/30 flex items-center justify-center">
+                  <svg className="w-6 h-6 text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <path d="M4 6h16M4 12h16M4 18h10" strokeLinecap="round"/>
+                    <circle cx="19" cy="18" r="2"/>
+                    <path d="M17 18h-3" strokeLinecap="round"/>
+                  </svg>
+                </div>
+              </div>
+              <p className="text-gray-400 group-hover:text-white transition-colors font-medium">REST API</p>
             </div>
           </div>
         </div>
