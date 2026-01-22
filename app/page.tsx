@@ -3,6 +3,7 @@
 
 import LiveDemo from '@/components/LiveDemo';
 import { useEffect, useRef, useState } from 'react';
+import { SignInButton, SignUpButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 
 export default function Home() {
   const sectionsRef = useRef<(HTMLElement | null)[]>([]);
@@ -79,9 +80,24 @@ export default function Home() {
             <a href="#demo" className="text-gray-400 hover:text-white transition text-sm font-medium">
               Demo
             </a>
-            <a href="#waitlist" className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-500 transition">
-              Get Access
-            </a>
+            <SignedOut>
+              <SignInButton mode="modal">
+                <button className="text-gray-400 hover:text-white transition text-sm font-medium">
+                  Sign In
+                </button>
+              </SignInButton>
+              <SignUpButton mode="modal">
+                <button className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-500 transition">
+                  Get Access
+                </button>
+              </SignUpButton>
+            </SignedOut>
+            <SignedIn>
+              <a href="/dashboard" className="text-gray-400 hover:text-white transition text-sm font-medium">
+                Dashboard
+              </a>
+              <UserButton afterSignOutUrl="/" />
+            </SignedIn>
           </nav>
         </div>
       </header>
