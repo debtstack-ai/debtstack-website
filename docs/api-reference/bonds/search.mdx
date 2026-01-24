@@ -1,0 +1,233 @@
+---
+title: Search Bonds
+api: GET /v1/bonds
+description: 'Filter and retrieve bond instruments'
+---
+
+## Overview
+
+Search and filter bonds across all companies by yield, seniority, maturity, and more. Perfect for yield hunting, bond screening, and credit analysis.
+
+## Request
+
+### Company Filters
+
+<ParamField query="ticker" type="string">
+  Comma-separated list of company tickers.
+
+  Example: `RIG,VAL,DO`
+</ParamField>
+
+<ParamField query="sector" type="string">
+  Filter by company sector.
+
+  Example: `Energy`
+</ParamField>
+
+### Bond Identifiers
+
+<ParamField query="cusip" type="string">
+  Comma-separated list of CUSIPs.
+
+  Example: `893830AK8,89157VAG8`
+</ParamField>
+
+### Structure Filters
+
+<ParamField query="seniority" type="string">
+  Seniority level: `senior_secured`, `senior_unsecured`, `subordinated`
+</ParamField>
+
+<ParamField query="security_type" type="string">
+  Security type: `first_lien`, `second_lien`, `unsecured`
+</ParamField>
+
+<ParamField query="instrument_type" type="string">
+  Instrument type: `senior_notes`, `term_loan_b`, `revolver`, etc.
+</ParamField>
+
+<ParamField query="issuer_type" type="string">
+  Issuer entity type: `holdco`, `opco`, `subsidiary`
+</ParamField>
+
+<ParamField query="rate_type" type="string">
+  Interest rate type: `fixed`, `floating`
+</ParamField>
+
+### Interest Rate Filters
+
+<ParamField query="min_coupon" type="number">
+  Minimum coupon rate (%).
+</ParamField>
+
+<ParamField query="max_coupon" type="number">
+  Maximum coupon rate (%).
+</ParamField>
+
+### Pricing Filters
+
+<ParamField query="min_ytm" type="number">
+  Minimum yield to maturity (%).
+</ParamField>
+
+<ParamField query="max_ytm" type="number">
+  Maximum yield to maturity (%).
+</ParamField>
+
+<ParamField query="min_spread" type="integer">
+  Minimum spread to treasury (bps).
+</ParamField>
+
+<ParamField query="max_spread" type="integer">
+  Maximum spread to treasury (bps).
+</ParamField>
+
+<ParamField query="has_pricing" type="boolean">
+  Only return bonds with pricing data.
+</ParamField>
+
+### Maturity Filters
+
+<ParamField query="maturity_before" type="string">
+  Maturity before date (YYYY-MM-DD).
+</ParamField>
+
+<ParamField query="maturity_after" type="string">
+  Maturity after date (YYYY-MM-DD).
+</ParamField>
+
+### Other Filters
+
+<ParamField query="min_outstanding" type="integer">
+  Minimum outstanding amount (cents).
+</ParamField>
+
+<ParamField query="has_guarantors" type="boolean">
+  Only return bonds with guarantors.
+</ParamField>
+
+<ParamField query="currency" type="string" default="USD">
+  Currency code.
+</ParamField>
+
+### Response Options
+
+<ParamField query="fields" type="string">
+  Comma-separated fields to return.
+
+  Example: `name,cusip,coupon_rate,maturity_date,pricing`
+</ParamField>
+
+<ParamField query="sort" type="string">
+  Sort field. Prefix `-` for descending.
+
+  Example: `-pricing.ytm`
+</ParamField>
+
+<ParamField query="limit" type="integer" default="50">
+  Results per page. Maximum 100.
+</ParamField>
+
+<ParamField query="offset" type="integer" default="0">
+  Pagination offset.
+</ParamField>
+
+## Examples
+
+### High-Yield Bond Screen
+
+<CodeGroup>
+```bash curl
+curl "https://api.debtstack.ai/v1/bonds?seniority=senior_unsecured&min_ytm=8.0&has_pricing=true&fields=name,cusip,company_ticker,coupon_rate,maturity_date,pricing&sort=-pricing.ytm" \
+  -H "X-API-Key: ds_xxxxx"
+```
+
+```python Python
+import requests
+
+response = requests.get(
+    "https://api.debtstack.ai/v1/bonds",
+    params={
+        "seniority": "senior_unsecured",
+        "min_ytm": 8.0,
+        "has_pricing": True,
+        "fields": "name,cusip,company_ticker,coupon_rate,maturity_date,pricing",
+        "sort": "-pricing.ytm"
+    },
+    headers={"X-API-Key": "ds_xxxxx"}
+)
+
+for bond in response.json()["data"]:
+    print(f"{bond['company_ticker']} {bond['name']}: {bond['pricing']['ytm']:.2f}% YTM")
+```
+</CodeGroup>
+
+### Response
+
+```json
+{
+  "data": [
+    {
+      "name": "8.00% Senior Notes due 2027",
+      "cusip": "893830AK8",
+      "company_ticker": "RIG",
+      "coupon_rate": 8.0,
+      "maturity_date": "2027-02-01",
+      "pricing": {
+        "last_price": 94.25,
+        "ytm": 9.42,
+        "spread": 512,
+        "staleness_days": 1
+      }
+    },
+    {
+      "name": "6.875% Senior Notes due 2026",
+      "cusip": "89157VAG8",
+      "company_ticker": "ATUS",
+      "coupon_rate": 6.875,
+      "maturity_date": "2026-03-01",
+      "pricing": {
+        "last_price": 91.50,
+        "ytm": 8.75,
+        "spread": 485,
+        "staleness_days": 0
+      }
+    }
+  ],
+  "meta": {
+    "total": 23,
+    "limit": 50,
+    "offset": 0
+  }
+}
+```
+
+## More Examples
+
+### Secured First-Lien Bonds
+
+```bash
+curl "https://api.debtstack.ai/v1/bonds?seniority=senior_secured&security_type=first_lien&fields=name,company_ticker,outstanding,collateral" \
+  -H "X-API-Key: ds_xxxxx"
+```
+
+### Company's Maturity Profile
+
+```bash
+curl "https://api.debtstack.ai/v1/bonds?ticker=CHTR&sort=maturity_date&fields=name,maturity_date,outstanding,seniority" \
+  -H "X-API-Key: ds_xxxxx"
+```
+
+### Floating Rate Debt
+
+```bash
+curl "https://api.debtstack.ai/v1/bonds?rate_type=floating&fields=name,company_ticker,benchmark,spread_bps,floor_bps" \
+  -H "X-API-Key: ds_xxxxx"
+```
+
+### Bonds with Guarantees
+
+```bash
+curl "https://api.debtstack.ai/v1/bonds?has_guarantors=true&fields=name,company_ticker,seniority,guarantor_count" \
+  -H "X-API-Key: ds_xxxxx"
+```

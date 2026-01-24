@@ -1,0 +1,252 @@
+---
+title: Resolve Bond
+api: GET /v1/bonds/resolve
+description: 'Map between bond identifiers and descriptions'
+---
+
+## Overview
+
+Resolve bond identifiers (CUSIP, ISIN) or free-text descriptions to structured bond data. Useful for looking up bonds by CUSIP or matching user queries to specific instruments.
+
+## Request
+
+<ParamField query="q" type="string">
+  Free-text search query.
+
+  Example: `RIG 8% 2027`
+</ParamField>
+
+<ParamField query="cusip" type="string">
+  Exact CUSIP lookup.
+
+  Example: `893830AK8`
+</ParamField>
+
+<ParamField query="isin" type="string">
+  Exact ISIN lookup.
+
+  Example: `US893830AK85`
+</ParamField>
+
+<ParamField query="ticker" type="string">
+  Filter by company ticker.
+
+  Example: `RIG`
+</ParamField>
+
+<ParamField query="coupon" type="number">
+  Filter by coupon rate (%).
+
+  Example: `8.0`
+</ParamField>
+
+<ParamField query="maturity_year" type="integer">
+  Filter by maturity year.
+
+  Example: `2027`
+</ParamField>
+
+<ParamField query="match_mode" type="string" default="fuzzy">
+  Match mode: `exact` or `fuzzy`
+</ParamField>
+
+<ParamField query="limit" type="integer" default="5">
+  Maximum number of matches.
+</ParamField>
+
+## Response
+
+<ResponseField name="data" type="object">
+  <Expandable title="properties">
+    <ResponseField name="query" type="string">
+      The original query.
+    </ResponseField>
+    <ResponseField name="matches" type="array">
+      Array of matching bonds with confidence scores.
+    </ResponseField>
+    <ResponseField name="exact_match" type="boolean">
+      Whether an exact match was found.
+    </ResponseField>
+    <ResponseField name="suggestions" type="array">
+      Helpful suggestions if no exact match.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+## Examples
+
+### Free-Text Query
+
+<CodeGroup>
+```bash curl
+curl "https://api.debtstack.ai/v1/bonds/resolve?q=RIG%208%25%202027" \
+  -H "X-API-Key: ds_xxxxx"
+```
+
+```python Python
+import requests
+
+response = requests.get(
+    "https://api.debtstack.ai/v1/bonds/resolve",
+    params={"q": "RIG 8% 2027"},
+    headers={"X-API-Key": "ds_xxxxx"}
+)
+
+match = response.json()["data"]["matches"][0]
+print(f"CUSIP: {match['bond']['cusip']}")
+print(f"Name: {match['bond']['name']}")
+```
+</CodeGroup>
+
+### Response
+
+```json
+{
+  "data": {
+    "query": "RIG 8% 2027",
+    "matches": [
+      {
+        "confidence": 0.95,
+        "bond": {
+          "id": "uuid-123",
+          "name": "8.00% Senior Notes due 2027",
+          "cusip": "893830AK8",
+          "isin": "US893830AK85",
+          "company_ticker": "RIG",
+          "company_name": "Transocean Ltd.",
+          "coupon_rate": 8.0,
+          "maturity_date": "2027-02-01",
+          "seniority": "senior_unsecured",
+          "outstanding": 68810000000
+        }
+      }
+    ],
+    "exact_match": false,
+    "suggestions": []
+  }
+}
+```
+
+### CUSIP Lookup
+
+```bash
+curl "https://api.debtstack.ai/v1/bonds/resolve?cusip=893830AK8" \
+  -H "X-API-Key: ds_xxxxx"
+```
+
+Response:
+
+```json
+{
+  "data": {
+    "query": "893830AK8",
+    "matches": [
+      {
+        "confidence": 1.0,
+        "bond": {
+          "id": "uuid-123",
+          "name": "8.00% Senior Notes due 2027",
+          "cusip": "893830AK8",
+          "isin": "US893830AK85",
+          "company_ticker": "RIG",
+          "company_name": "Transocean Ltd.",
+          "coupon_rate": 8.0,
+          "maturity_date": "2027-02-01",
+          "seniority": "senior_unsecured",
+          "issuer": {
+            "name": "Transocean International Limited",
+            "entity_type": "finco"
+          },
+          "guarantor_count": 5,
+          "outstanding": 68810000000
+        }
+      }
+    ],
+    "exact_match": true
+  }
+}
+```
+
+### Handling Fuzzy Matches
+
+When the query is ambiguous, multiple matches may be returned:
+
+```bash
+curl "https://api.debtstack.ai/v1/bonds/resolve?q=AAPL%205%25" \
+  -H "X-API-Key: ds_xxxxx"
+```
+
+Response:
+
+```json
+{
+  "data": {
+    "query": "AAPL 5%",
+    "matches": [
+      {
+        "confidence": 0.85,
+        "bond": {
+          "name": "4.65% Notes due 2046",
+          "cusip": "037833CP8",
+          "coupon_rate": 4.65,
+          "maturity_date": "2046-02-23"
+        }
+      },
+      {
+        "confidence": 0.80,
+        "bond": {
+          "name": "4.50% Notes due 2036",
+          "cusip": "037833CQ6",
+          "coupon_rate": 4.50,
+          "maturity_date": "2036-02-23"
+        }
+      }
+    ],
+    "exact_match": false,
+    "suggestions": [
+      "Be more specific with maturity year"
+    ]
+  }
+}
+```
+
+## Use Cases
+
+### Map User Input to CUSIP
+
+```python
+def get_cusip(query):
+    """Convert user query to CUSIP."""
+    response = requests.get(
+        f"{BASE_URL}/bonds/resolve",
+        params={"q": query, "limit": 1},
+        headers={"X-API-Key": API_KEY}
+    )
+
+    matches = response.json()["data"]["matches"]
+    if matches and matches[0]["confidence"] > 0.8:
+        return matches[0]["bond"]["cusip"]
+    return None
+
+# Usage
+cusip = get_cusip("RIG 8% 2027")
+print(cusip)  # "893830AK8"
+```
+
+### Validate CUSIP
+
+```python
+def validate_cusip(cusip):
+    """Check if CUSIP exists in database."""
+    response = requests.get(
+        f"{BASE_URL}/bonds/resolve",
+        params={"cusip": cusip},
+        headers={"X-API-Key": API_KEY}
+    )
+
+    return response.json()["data"]["exact_match"]
+
+# Usage
+is_valid = validate_cusip("893830AK8")
+print(is_valid)  # True
+```

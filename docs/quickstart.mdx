@@ -1,0 +1,174 @@
+---
+title: Quickstart
+description: 'Get started with the DebtStack API in 5 minutes'
+---
+
+## Prerequisites
+
+You'll need:
+- A DebtStack account ([sign up free](https://debtstack.ai))
+- Your API key from the [dashboard](https://debtstack.ai/dashboard)
+
+## Make Your First Request
+
+### Using curl
+
+```bash
+curl "https://api.debtstack.ai/v1/companies?ticker=AAPL&fields=ticker,name,total_debt,net_leverage_ratio" \
+  -H "X-API-Key: ds_xxxxx"
+```
+
+### Using Python
+
+```python
+import requests
+
+API_KEY = "ds_xxxxx"
+BASE_URL = "https://api.debtstack.ai/v1"
+
+response = requests.get(
+    f"{BASE_URL}/companies",
+    params={
+        "ticker": "AAPL",
+        "fields": "ticker,name,total_debt,net_leverage_ratio"
+    },
+    headers={"X-API-Key": API_KEY}
+)
+
+data = response.json()
+print(data)
+```
+
+### Response
+
+```json
+{
+  "data": [
+    {
+      "ticker": "AAPL",
+      "name": "Apple Inc.",
+      "total_debt": 10650000000000,
+      "net_leverage_ratio": 0.8
+    }
+  ],
+  "meta": {
+    "total": 1,
+    "limit": 50,
+    "offset": 0
+  }
+}
+```
+
+<Note>
+  All monetary amounts are in **cents** to avoid floating-point issues.
+  $106.5 billion = 10,650,000,000,000 cents.
+</Note>
+
+## Common Queries
+
+### Find High-Yield Bonds
+
+```python
+# Bonds yielding more than 8%
+response = requests.get(
+    f"{BASE_URL}/bonds",
+    params={
+        "min_ytm": 8.0,
+        "has_pricing": True,
+        "fields": "name,cusip,company_ticker,coupon_rate,pricing",
+        "sort": "-pricing.ytm"
+    },
+    headers={"X-API-Key": API_KEY}
+)
+```
+
+### Search SEC Documents
+
+```python
+# Find covenant language in credit agreements
+response = requests.get(
+    f"{BASE_URL}/documents/search",
+    params={
+        "q": "maintenance covenant",
+        "section_type": "credit_agreement",
+        "ticker": "CHTR"
+    },
+    headers={"X-API-Key": API_KEY}
+)
+```
+
+### Get Bond Guarantors
+
+```python
+# Who guarantees this bond?
+response = requests.post(
+    f"{BASE_URL}/entities/traverse",
+    headers={
+        "X-API-Key": API_KEY,
+        "Content-Type": "application/json"
+    },
+    json={
+        "start": {"type": "bond", "id": "893830AK8"},
+        "relationships": ["guarantees"],
+        "direction": "inbound"
+    }
+)
+```
+
+## Response Format
+
+All API responses follow this structure:
+
+```json
+{
+  "data": [...],  // The requested data
+  "meta": {
+    "total": 100,     // Total matching records
+    "limit": 50,      // Page size
+    "offset": 0,      // Current offset
+    "request_id": "req_abc123"
+  }
+}
+```
+
+## Error Handling
+
+Errors return a consistent format:
+
+```json
+{
+  "error": {
+    "code": "INVALID_TICKER",
+    "message": "Company ticker 'XYZ' not found in database",
+    "details": {
+      "ticker": "XYZ",
+      "suggestion": "Did you mean 'XOM'?"
+    }
+  }
+}
+```
+
+| HTTP Status | Error Code | Description |
+|-------------|------------|-------------|
+| 400 | `INVALID_PARAMETER` | Invalid query parameter |
+| 401 | `UNAUTHORIZED` | Invalid or missing API key |
+| 404 | `INVALID_TICKER` | Company not found |
+| 429 | `RATE_LIMITED` | Too many requests |
+| 500 | `INTERNAL_ERROR` | Server error |
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Authentication" icon="key" href="/authentication">
+    Learn about API keys and rate limits
+  </Card>
+  <Card title="API Reference" icon="book" href="/api-reference/overview">
+    Explore all available endpoints
+  </Card>
+  <Card title="AI Agent Guide" icon="robot" href="/guides/ai-agents">
+    Build AI agents with DebtStack
+  </Card>
+  <Card title="Data Model" icon="sitemap" href="/concepts/data-model">
+    Understand the data structure
+  </Card>
+</CardGroup>

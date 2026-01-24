@@ -1,0 +1,104 @@
+---
+title: Introduction
+description: 'Credit data API built for AI agents'
+---
+
+# Welcome to DebtStack
+
+DebtStack provides structured corporate debt data optimized for AI agents and LLM workflows. Query corporate structure, debt instruments, guarantees, and pricing data through a simple REST API.
+
+## What We Offer
+
+<CardGroup cols={2}>
+  <Card
+    title="Structured Data"
+    icon="database"
+  >
+    189 companies, 2,849 debt instruments, 5,750+ document sections, and 4,881 guarantees extracted from SEC filings
+  </Card>
+  <Card
+    title="AI-Optimized"
+    icon="robot"
+  >
+    Field selection, powerful filters, and consistent JSON responses designed for LLM consumption
+  </Card>
+  <Card
+    title="Real-Time Pricing"
+    icon="chart-line"
+  >
+    Bond pricing from FINRA TRACE with yield-to-maturity and spread calculations
+  </Card>
+  <Card
+    title="Document Search"
+    icon="file-magnifying-glass"
+  >
+    Full-text search across SEC filings including indentures, credit agreements, and debt footnotes
+  </Card>
+</CardGroup>
+
+## Quick Example
+
+Find the highest-leverage company among the MAG7:
+
+```python
+import requests
+
+response = requests.get(
+    "https://api.debtstack.ai/v1/companies",
+    params={
+        "ticker": "AAPL,MSFT,GOOGL,AMZN,NVDA,META,TSLA",
+        "fields": "ticker,name,net_leverage_ratio",
+        "sort": "-net_leverage_ratio",
+        "limit": 1
+    },
+    headers={"X-API-Key": "ds_xxxxx"}
+)
+
+print(response.json())
+# {"data": [{"ticker": "TSLA", "name": "Tesla, Inc.", "net_leverage_ratio": 1.8}]}
+```
+
+## 8 Core Primitives
+
+DebtStack offers 8 atomic API endpoints that can answer any credit analysis question:
+
+| Primitive | Endpoint | Purpose |
+|-----------|----------|---------|
+| Search Companies | `GET /v1/companies` | Filter companies by leverage, sector, debt metrics |
+| Search Bonds | `GET /v1/bonds` | Find bonds by yield, seniority, maturity |
+| Resolve Bond | `GET /v1/bonds/resolve` | Map CUSIP/ISIN to bond details |
+| Bond Pricing | `GET /v1/pricing` | Get YTM, spreads, last trade |
+| Company Changes | `GET /v1/companies/{ticker}/changes` | Track debt structure changes |
+| Traverse Entities | `POST /v1/entities/traverse` | Follow guarantor chains |
+| Search Documents | `GET /v1/documents/search` | Full-text search SEC filings |
+| Batch | `POST /v1/batch` | Execute multiple operations |
+
+## Integrations
+
+<CardGroup cols={3}>
+  <Card title="LangChain" icon="link" href="/guides/langchain">
+    Use DebtStack as a tool in your LangChain agents
+  </Card>
+  <Card title="MCP" icon="plug" href="/guides/mcp">
+    Model Context Protocol integration for Claude
+  </Card>
+  <Card title="REST API" icon="code" href="/api-reference/overview">
+    Direct API access with any HTTP client
+  </Card>
+</CardGroup>
+
+## Getting Started
+
+<Steps>
+  <Step title="Create an account">
+    Sign up at [debtstack.ai](https://debtstack.ai) to get your API key
+  </Step>
+  <Step title="Make your first request">
+    Try the quickstart guide to query company data
+  </Step>
+  <Step title="Explore the API">
+    Browse the full API reference for all endpoints
+  </Step>
+</Steps>
+
+Ready to start? Check out the [Quickstart Guide](/quickstart).

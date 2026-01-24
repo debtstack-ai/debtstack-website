@@ -1,0 +1,259 @@
+---
+title: Bond Pricing
+api: GET /v1/pricing
+description: 'Get bond pricing from FINRA TRACE'
+---
+
+## Overview
+
+Retrieve bond pricing data including last trade price, yield to maturity (YTM), and spread to treasury. Pricing data is sourced from FINRA TRACE.
+
+<Note>
+  Bond pricing is available on Pro tier and above. Free tier users can access pricing through the `/v1/bonds` endpoint with `has_pricing=true`.
+</Note>
+
+## Request
+
+<ParamField query="ticker" type="string">
+  Comma-separated company tickers.
+
+  Example: `RIG,VAL`
+</ParamField>
+
+<ParamField query="cusip" type="string">
+  Comma-separated CUSIPs.
+
+  Example: `893830AK8,89157VAG8`
+</ParamField>
+
+<ParamField query="date" type="string">
+  Pricing as of date (YYYY-MM-DD).
+</ParamField>
+
+<ParamField query="date_from" type="string">
+  Historical pricing start date.
+</ParamField>
+
+<ParamField query="date_to" type="string">
+  Historical pricing end date.
+</ParamField>
+
+<ParamField query="aggregation" type="string" default="latest">
+  Aggregation mode: `latest`, `daily`, `weekly`
+</ParamField>
+
+<ParamField query="min_ytm" type="number">
+  Minimum YTM (%).
+</ParamField>
+
+<ParamField query="max_ytm" type="number">
+  Maximum YTM (%).
+</ParamField>
+
+<ParamField query="min_spread" type="integer">
+  Minimum spread (bps).
+</ParamField>
+
+<ParamField query="fields" type="string">
+  Fields to return.
+</ParamField>
+
+<ParamField query="sort" type="string">
+  Sort field.
+
+  Example: `-ytm`
+</ParamField>
+
+<ParamField query="limit" type="integer" default="50">
+  Results per page.
+</ParamField>
+
+## Response
+
+<ResponseField name="data" type="array">
+  Array of pricing objects.
+
+  <Expandable title="properties">
+    <ResponseField name="cusip" type="string">
+      Bond CUSIP.
+    </ResponseField>
+    <ResponseField name="bond_name" type="string">
+      Bond name.
+    </ResponseField>
+    <ResponseField name="last_price" type="number">
+      Last trade price (% of par).
+    </ResponseField>
+    <ResponseField name="last_trade_date" type="string">
+      Date of last trade.
+    </ResponseField>
+    <ResponseField name="ytm" type="number">
+      Yield to maturity (%).
+    </ResponseField>
+    <ResponseField name="spread" type="integer">
+      Spread to treasury (bps).
+    </ResponseField>
+    <ResponseField name="staleness_days" type="integer">
+      Days since last trade.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+## Examples
+
+### Current Pricing for Company
+
+<CodeGroup>
+```bash curl
+curl "https://api.debtstack.ai/v1/pricing?ticker=RIG&aggregation=latest&fields=cusip,bond_name,last_price,ytm,spread,staleness_days" \
+  -H "X-API-Key: ds_xxxxx"
+```
+
+```python Python
+import requests
+
+response = requests.get(
+    "https://api.debtstack.ai/v1/pricing",
+    params={
+        "ticker": "RIG",
+        "aggregation": "latest",
+        "fields": "cusip,bond_name,last_price,ytm,spread"
+    },
+    headers={"X-API-Key": "ds_xxxxx"}
+)
+
+for bond in response.json()["data"]:
+    print(f"{bond['cusip']}: {bond['last_price']:.2f} ({bond['ytm']:.2f}% YTM)")
+```
+</CodeGroup>
+
+### Response
+
+```json
+{
+  "data": [
+    {
+      "cusip": "893830AK8",
+      "bond_name": "8.00% Senior Notes due 2027",
+      "last_price": 94.25,
+      "ytm": 9.42,
+      "spread": 512,
+      "staleness_days": 1
+    },
+    {
+      "cusip": "893830AL6",
+      "bond_name": "7.50% Senior Notes due 2031",
+      "last_price": 87.50,
+      "ytm": 9.85,
+      "spread": 548,
+      "staleness_days": 2
+    }
+  ],
+  "meta": {
+    "total": 8,
+    "priced_count": 6,
+    "stale_count": 2,
+    "as_of": "2026-01-23T16:00:00Z"
+  }
+}
+```
+
+### Historical Pricing
+
+```bash
+curl "https://api.debtstack.ai/v1/pricing?cusip=893830AK8&date_from=2026-01-01&date_to=2026-01-15&aggregation=daily" \
+  -H "X-API-Key: ds_xxxxx"
+```
+
+Response:
+
+```json
+{
+  "data": [
+    {
+      "date": "2026-01-15",
+      "cusip": "893830AK8",
+      "last_price": 94.25,
+      "ytm": 9.42,
+      "spread": 512
+    },
+    {
+      "date": "2026-01-14",
+      "cusip": "893830AK8",
+      "last_price": 94.50,
+      "ytm": 9.38,
+      "spread": 508
+    },
+    {
+      "date": "2026-01-13",
+      "cusip": "893830AK8",
+      "last_price": 95.00,
+      "ytm": 9.28,
+      "spread": 498
+    }
+  ],
+  "meta": {
+    "total": 11
+  }
+}
+```
+
+### High-Yield Screen
+
+Find bonds with YTM > 10%:
+
+```bash
+curl "https://api.debtstack.ai/v1/pricing?min_ytm=10.0&sort=-ytm&limit=20" \
+  -H "X-API-Key: ds_xxxxx"
+```
+
+## Use Cases
+
+### Compare Bond Yields
+
+```python
+# Get pricing for multiple bonds
+response = requests.get(
+    f"{BASE_URL}/pricing",
+    params={
+        "cusip": "893830AK8,893830AL6",
+        "fields": "cusip,bond_name,ytm,spread,maturity_date"
+    },
+    headers={"X-API-Key": API_KEY}
+)
+
+bonds = sorted(response.json()["data"], key=lambda x: x["ytm"])
+print("Bonds by YTM (ascending):")
+for bond in bonds:
+    print(f"  {bond['bond_name']}: {bond['ytm']:.2f}% ({bond['spread']}bps spread)")
+```
+
+### Track Price Changes
+
+```python
+# Get 2-week price history
+response = requests.get(
+    f"{BASE_URL}/pricing",
+    params={
+        "cusip": "893830AK8",
+        "date_from": "2026-01-09",
+        "date_to": "2026-01-23",
+        "aggregation": "daily"
+    },
+    headers={"X-API-Key": API_KEY}
+)
+
+history = response.json()["data"]
+if len(history) >= 2:
+    first = history[-1]["last_price"]
+    last = history[0]["last_price"]
+    change = last - first
+    print(f"2-week price change: {change:+.2f} ({first:.2f} -> {last:.2f})")
+```
+
+## Notes
+
+- Pricing data is from FINRA TRACE
+- `staleness_days` indicates how fresh the pricing is
+- Bonds without recent trades may not have pricing
+- YTM calculations assume hold to maturity
+- Spread is calculated against the interpolated treasury curve

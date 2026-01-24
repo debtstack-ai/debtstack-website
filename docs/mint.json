@@ -1,0 +1,123 @@
+{
+  "$schema": "https://mintlify.com/schema.json",
+  "name": "DebtStack",
+  "logo": {
+    "dark": "/logo/logo-dark.png",
+    "light": "/logo/logo-light.png"
+  },
+  "favicon": "/favicon.svg",
+  "colors": {
+    "primary": "#3B82F6",
+    "light": "#60A5FA",
+    "dark": "#1D4ED8",
+    "anchors": {
+      "from": "#3B82F6",
+      "to": "#8B5CF6"
+    }
+  },
+  "topbarLinks": [
+    {
+      "name": "Dashboard",
+      "url": "https://debtstack.ai/dashboard"
+    }
+  ],
+  "topbarCtaButton": {
+    "name": "Get API Key",
+    "url": "https://debtstack.ai/dashboard"
+  },
+  "tabs": [
+    {
+      "name": "API Reference",
+      "url": "api-reference"
+    }
+  ],
+  "anchors": [
+    {
+      "name": "GitHub",
+      "icon": "github",
+      "url": "https://github.com/debtstack"
+    },
+    {
+      "name": "Community",
+      "icon": "discord",
+      "url": "https://discord.gg/debtstack"
+    }
+  ],
+  "navigation": [
+    {
+      "group": "Get Started",
+      "pages": [
+        "introduction",
+        "quickstart",
+        "authentication"
+      ]
+    },
+    {
+      "group": "Core Concepts",
+      "pages": [
+        "concepts/data-model",
+        "concepts/field-selection",
+        "concepts/pagination"
+      ]
+    },
+    {
+      "group": "Guides",
+      "pages": [
+        "guides/ai-agents",
+        "guides/langchain",
+        "guides/mcp"
+      ]
+    },
+    {
+      "group": "API Reference",
+      "pages": [
+        "api-reference/overview"
+      ]
+    },
+    {
+      "group": "Companies",
+      "pages": [
+        "api-reference/companies/search",
+        "api-reference/companies/changes"
+      ]
+    },
+    {
+      "group": "Bonds",
+      "pages": [
+        "api-reference/bonds/search",
+        "api-reference/bonds/resolve",
+        "api-reference/bonds/pricing"
+      ]
+    },
+    {
+      "group": "Entities",
+      "pages": [
+        "api-reference/entities/traverse"
+      ]
+    },
+    {
+      "group": "Documents",
+      "pages": [
+        "api-reference/documents/search"
+      ]
+    },
+    {
+      "group": "Batch",
+      "pages": [
+        "api-reference/batch/operations"
+      ]
+    }
+  ],
+  "footerSocials": {
+    "twitter": "https://twitter.com/debtstack",
+    "github": "https://github.com/debtstack",
+    "linkedin": "https://linkedin.com/company/debtstack"
+  },
+  "api": {
+    "baseUrl": "https://api.debtstack.ai",
+    "auth": {
+      "method": "key",
+      "name": "X-API-Key"
+    }
+  }
+}

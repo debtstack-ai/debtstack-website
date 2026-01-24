@@ -1,0 +1,231 @@
+---
+title: Company Changes
+api: GET /v1/companies/{ticker}/changes
+description: 'Track debt structure changes over time'
+---
+
+## Overview
+
+Compare current company data against a historical snapshot to identify changes in debt structure, new issuances, maturities, and metric shifts.
+
+## Request
+
+<ParamField path="ticker" type="string" required>
+  Company ticker symbol.
+
+  Example: `RIG`
+</ParamField>
+
+<ParamField query="since" type="string" required>
+  Compare changes since this date (YYYY-MM-DD format).
+
+  Example: `2025-10-01`
+</ParamField>
+
+## Response
+
+<ResponseField name="data" type="object">
+  <Expandable title="properties">
+    <ResponseField name="ticker" type="string">
+      Company ticker.
+    </ResponseField>
+    <ResponseField name="company_name" type="string">
+      Company name.
+    </ResponseField>
+    <ResponseField name="snapshot_date" type="string">
+      Date of the historical snapshot used for comparison.
+    </ResponseField>
+    <ResponseField name="current_date" type="string">
+      Current data date.
+    </ResponseField>
+    <ResponseField name="changes" type="object">
+      <Expandable title="properties">
+        <ResponseField name="new_debt" type="array">
+          Debt instruments added since snapshot.
+        </ResponseField>
+        <ResponseField name="removed_debt" type="array">
+          Debt instruments removed (matured, repaid, etc.).
+        </ResponseField>
+        <ResponseField name="entity_changes" type="object">
+          Count and details of entity changes.
+        </ResponseField>
+        <ResponseField name="metric_changes" type="object">
+          Changes in key metrics (total_debt, leverage, etc.).
+        </ResponseField>
+        <ResponseField name="pricing_changes" type="array">
+          Price/yield changes for bonds with pricing.
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+    <ResponseField name="summary" type="object">
+      Summary of debt added, removed, and net change.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+## Examples
+
+<CodeGroup>
+```bash curl
+curl "https://api.debtstack.ai/v1/companies/RIG/changes?since=2025-10-01" \
+  -H "X-API-Key: ds_xxxxx"
+```
+
+```python Python
+import requests
+
+response = requests.get(
+    "https://api.debtstack.ai/v1/companies/RIG/changes",
+    params={"since": "2025-10-01"},
+    headers={"X-API-Key": "ds_xxxxx"}
+)
+
+changes = response.json()["data"]["changes"]
+
+# Check for new issuances
+for bond in changes.get("new_debt", []):
+    print(f"New: {bond['name']} - ${bond['principal']/100_000_000_000:.1f}B")
+
+# Check leverage change
+if "net_leverage_ratio" in changes.get("metric_changes", {}):
+    prev = changes["metric_changes"]["net_leverage_ratio"]["previous"]
+    curr = changes["metric_changes"]["net_leverage_ratio"]["current"]
+    print(f"Leverage: {prev}x -> {curr}x")
+```
+
+```javascript JavaScript
+const response = await fetch(
+  "https://api.debtstack.ai/v1/companies/RIG/changes?since=2025-10-01",
+  {
+    headers: { "X-API-Key": "ds_xxxxx" }
+  }
+);
+
+const data = await response.json();
+console.log(data.data.changes);
+```
+</CodeGroup>
+
+### Response
+
+```json
+{
+  "data": {
+    "ticker": "RIG",
+    "company_name": "Transocean Ltd.",
+    "snapshot_date": "2025-10-01",
+    "current_date": "2026-01-18",
+    "changes": {
+      "new_debt": [
+        {
+          "name": "9.00% Senior Secured Notes due 2029",
+          "cusip": "893830AM4",
+          "principal": 50000000000,
+          "seniority": "senior_secured",
+          "issue_date": "2025-11-15"
+        }
+      ],
+      "removed_debt": [
+        {
+          "name": "6.50% Senior Notes due 2025",
+          "cusip": "893830AE2",
+          "principal": 30000000000,
+          "reason": "matured"
+        }
+      ],
+      "entity_changes": {
+        "added": 2,
+        "removed": 0,
+        "added_entities": [
+          {
+            "name": "Transocean Offshore Services Ltd.",
+            "entity_type": "subsidiary"
+          }
+        ]
+      },
+      "metric_changes": {
+        "total_debt": {
+          "previous": 720000000000,
+          "current": 750000000000,
+          "change": 30000000000,
+          "change_pct": 4.2
+        },
+        "net_leverage_ratio": {
+          "previous": 3.9,
+          "current": 4.2,
+          "change": 0.3
+        }
+      },
+      "pricing_changes": [
+        {
+          "cusip": "893830AK8",
+          "name": "8.00% Senior Notes due 2027",
+          "previous_price": 96.50,
+          "current_price": 94.25,
+          "price_change": -2.25,
+          "previous_ytm": 8.75,
+          "current_ytm": 9.42,
+          "ytm_change": 0.67
+        }
+      ]
+    },
+    "summary": {
+      "debt_added": 50000000000,
+      "debt_removed": 30000000000,
+      "net_debt_change": 20000000000,
+      "new_issuances": 1,
+      "maturities": 1,
+      "entity_changes": 2
+    }
+  },
+  "meta": {
+    "snapshot_type": "quarterly",
+    "days_between": 109
+  }
+}
+```
+
+## Use Cases
+
+### Monitor New Issuances
+
+```python
+response = requests.get(
+    f"{BASE_URL}/companies/CHTR/changes",
+    params={"since": "2025-07-01"},
+    headers={"X-API-Key": API_KEY}
+)
+
+for bond in response.json()["data"]["changes"].get("new_debt", []):
+    amount = bond["principal"] / 100_000_000_000
+    print(f"New issuance: {bond['name']} - ${amount:.1f}B")
+```
+
+### Track Leverage Changes
+
+```python
+metrics = response.json()["data"]["changes"].get("metric_changes", {})
+
+if "net_leverage_ratio" in metrics:
+    prev = metrics["net_leverage_ratio"]["previous"]
+    curr = metrics["net_leverage_ratio"]["current"]
+    direction = "increased" if curr > prev else "decreased"
+    print(f"Net leverage {direction}: {prev}x -> {curr}x")
+```
+
+### Identify Maturing Debt
+
+```python
+removed = response.json()["data"]["changes"].get("removed_debt", [])
+matured = [d for d in removed if d.get("reason") == "matured"]
+
+total_matured = sum(d["principal"] for d in matured)
+print(f"{len(matured)} bonds matured totaling ${total_matured/100_000_000_000:.1f}B")
+```
+
+## Notes
+
+- Snapshots are created quarterly by default
+- If no snapshot exists for the exact date, the closest available snapshot is used
+- Pricing changes only shown for bonds with pricing data in both periods
+- Credit cost: 2 credits per request

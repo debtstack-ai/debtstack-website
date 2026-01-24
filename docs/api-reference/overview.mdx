@@ -1,0 +1,125 @@
+---
+title: API Overview
+description: 'DebtStack REST API reference'
+---
+
+## Base URL
+
+```
+https://api.debtstack.ai/v1
+```
+
+## Authentication
+
+All requests require an API key in the `X-API-Key` header:
+
+```bash
+curl "https://api.debtstack.ai/v1/companies" \
+  -H "X-API-Key: ds_xxxxx"
+```
+
+## Endpoints
+
+DebtStack provides 8 core primitives:
+
+### Companies
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/v1/companies` | Search and filter companies |
+| GET | `/v1/companies/{ticker}/changes` | Track debt structure changes |
+
+### Bonds
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/v1/bonds` | Search and filter bonds |
+| GET | `/v1/bonds/resolve` | Resolve CUSIP/ISIN to bond details |
+| GET | `/v1/pricing` | Get bond pricing data |
+
+### Entities
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/v1/entities/traverse` | Traverse entity relationships |
+
+### Documents
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/v1/documents/search` | Full-text search SEC filings |
+
+### Batch
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/v1/batch` | Execute multiple operations |
+
+## Response Format
+
+### Success
+
+```json
+{
+  "data": [...],
+  "meta": {
+    "total": 100,
+    "limit": 50,
+    "offset": 0,
+    "request_id": "req_abc123"
+  }
+}
+```
+
+### Error
+
+```json
+{
+  "error": {
+    "code": "INVALID_TICKER",
+    "message": "Company ticker 'XYZ' not found",
+    "details": {
+      "suggestion": "Did you mean 'XOM'?"
+    }
+  }
+}
+```
+
+## Common Parameters
+
+These parameters are available on most list endpoints:
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `fields` | string | Comma-separated list of fields to return |
+| `sort` | string | Sort field (prefix `-` for descending) |
+| `limit` | integer | Results per page (max 100) |
+| `offset` | integer | Pagination offset |
+| `format` | string | Response format: `json` (default) or `csv` |
+
+## Rate Limits
+
+| Tier | Limit |
+|------|-------|
+| Free | 10 requests/minute |
+| Pro | 120 requests/minute |
+| Enterprise | Custom |
+
+Rate limit headers are included in all responses:
+
+```
+X-RateLimit-Limit: 120
+X-RateLimit-Remaining: 115
+X-RateLimit-Reset: 1706140800
+```
+
+## Credit Usage
+
+Each endpoint consumes credits:
+
+| Endpoint | Credits |
+|----------|---------|
+| Companies, Bonds, Resolve, Pricing | 1 |
+| Changes | 2 |
+| Traverse, Documents | 3 |
+| Batch | Sum of operations |

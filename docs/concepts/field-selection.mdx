@@ -1,0 +1,197 @@
+---
+title: Field Selection
+description: 'Request only the data you need'
+---
+
+## Overview
+
+DebtStack supports field selection on most endpoints, allowing you to request only the fields you need. This reduces response size and is especially useful for AI agents that need to optimize context windows.
+
+## Using Field Selection
+
+Add the `fields` parameter with a comma-separated list of field names:
+
+```bash
+curl "https://api.debtstack.ai/v1/companies?ticker=AAPL&fields=ticker,name,net_leverage_ratio" \
+  -H "X-API-Key: ds_xxxxx"
+```
+
+Response:
+
+```json
+{
+  "data": [
+    {
+      "ticker": "AAPL",
+      "name": "Apple Inc.",
+      "net_leverage_ratio": 0.8
+    }
+  ]
+}
+```
+
+## Available Fields by Endpoint
+
+### Companies (`GET /v1/companies`)
+
+**Identifiers:**
+- `ticker` - Stock ticker symbol
+- `name` - Company name
+- `cik` - SEC CIK number
+- `sector` - Business sector
+- `industry` - Industry classification
+
+**Debt Metrics:**
+- `total_debt` - Total debt (cents)
+- `secured_debt` - Secured debt (cents)
+- `unsecured_debt` - Unsecured debt (cents)
+- `net_debt` - Net debt (cents)
+
+**Leverage Metrics:**
+- `leverage_ratio` - Total Debt / EBITDA
+- `net_leverage_ratio` - Net Debt / EBITDA
+- `interest_coverage` - EBITDA / Interest Expense
+- `secured_leverage` - Secured Debt / EBITDA
+
+**Structure:**
+- `entity_count` - Number of entities
+- `guarantor_count` - Number of guarantors
+- `subordination_risk` - Structural subordination risk level
+- `subordination_score` - Numeric subordination score
+
+**Flags:**
+- `has_structural_sub` - Has structural subordination
+- `has_floating_rate` - Has floating rate debt
+- `has_near_term_maturity` - Debt due within 24 months
+- `has_holdco_debt` - Has holding company debt
+- `has_opco_debt` - Has operating company debt
+
+**Maturity:**
+- `nearest_maturity` - Next maturity date
+- `weighted_avg_maturity` - Weighted average maturity (years)
+- `debt_due_1yr` - Debt maturing in 0-12 months
+- `debt_due_2yr` - Debt maturing in 12-24 months
+- `debt_due_3yr` - Debt maturing in 24-36 months
+
+### Bonds (`GET /v1/bonds`)
+
+**Identifiers:**
+- `id` - Internal ID
+- `name` - Bond name
+- `cusip` - CUSIP identifier
+- `isin` - ISIN identifier
+- `company_ticker` - Parent company ticker
+- `company_name` - Parent company name
+
+**Issuer:**
+- `issuer_name` - Issuing entity name
+- `issuer_type` - Entity type (holdco, opco, etc.)
+- `issuer_id` - Internal entity ID
+
+**Structure:**
+- `instrument_type` - Type (senior_notes, term_loan_b, etc.)
+- `seniority` - Seniority level
+- `security_type` - Security type (first_lien, unsecured, etc.)
+
+**Amounts:**
+- `commitment` - Total commitment (cents)
+- `principal` - Original principal (cents)
+- `outstanding` - Current outstanding (cents)
+- `currency` - Currency code
+
+**Interest:**
+- `rate_type` - Fixed or floating
+- `coupon_rate` - Coupon rate (%)
+- `spread_bps` - Spread over benchmark (bps)
+- `benchmark` - Reference rate (SOFR, LIBOR, etc.)
+- `floor_bps` - Interest rate floor (bps)
+
+**Dates:**
+- `issue_date` - Issue date
+- `maturity_date` - Maturity date
+
+**Pricing (nested):**
+- `pricing.last_price` - Last trade price
+- `pricing.ytm` - Yield to maturity (%)
+- `pricing.spread` - Spread to treasury (bps)
+- `pricing.staleness_days` - Days since last trade
+
+**Other:**
+- `guarantor_count` - Number of guarantors
+- `is_active` - Currently active
+- `is_drawn` - Drawn (for credit facilities)
+
+## Nested Fields
+
+Some fields are nested objects. Access nested fields with dot notation:
+
+```bash
+# Get only pricing fields
+curl "https://api.debtstack.ai/v1/bonds?ticker=RIG&fields=name,cusip,pricing.ytm,pricing.spread" \
+  -H "X-API-Key: ds_xxxxx"
+```
+
+Response:
+
+```json
+{
+  "data": [
+    {
+      "name": "8.00% Senior Notes due 2027",
+      "cusip": "893830AK8",
+      "pricing": {
+        "ytm": 9.42,
+        "spread": 512
+      }
+    }
+  ]
+}
+```
+
+## Best Practices
+
+<Tip>
+  Request only the fields you need to reduce response size and improve performance.
+</Tip>
+
+### For AI Agents
+
+When building AI agents, minimize context by selecting only relevant fields:
+
+```python
+# Good: Request specific fields
+response = requests.get(
+    f"{BASE_URL}/companies",
+    params={
+        "ticker": "AAPL,MSFT,GOOGL",
+        "fields": "ticker,name,net_leverage_ratio"  # Only what you need
+    }
+)
+
+# Avoid: Requesting all fields when you only need a few
+response = requests.get(
+    f"{BASE_URL}/companies",
+    params={"ticker": "AAPL,MSFT,GOOGL"}  # Returns all fields
+)
+```
+
+### Default Behavior
+
+If `fields` is not specified, all available fields are returned.
+
+### Invalid Fields
+
+Requesting an invalid field returns a 400 error with suggestions:
+
+```json
+{
+  "error": {
+    "code": "INVALID_PARAMETER",
+    "message": "Unknown field: 'leverage'. Did you mean 'leverage_ratio'?",
+    "details": {
+      "field": "leverage",
+      "valid_fields": ["leverage_ratio", "net_leverage_ratio", "secured_leverage"]
+    }
+  }
+}
+```

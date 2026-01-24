@@ -1,0 +1,298 @@
+---
+title: Search Documents
+api: GET /v1/documents/search
+description: 'Full-text search across SEC filings'
+---
+
+## Overview
+
+Search across SEC filing sections including debt footnotes, credit agreements, indentures, and MD&A sections. Find covenant language, guarantor lists, and specific debt terms.
+
+## Request
+
+<ParamField query="q" type="string" required>
+  Full-text search query.
+
+  Example: `maintenance covenant`, `subordinated`, `event of default`
+</ParamField>
+
+<ParamField query="ticker" type="string">
+  Comma-separated company tickers.
+
+  Example: `RIG,CHTR`
+</ParamField>
+
+<ParamField query="doc_type" type="string">
+  Filing type: `10-K`, `10-Q`, `8-K`
+</ParamField>
+
+<ParamField query="section_type" type="string">
+  Section type to search. See section types below.
+</ParamField>
+
+<ParamField query="filed_after" type="string">
+  Minimum filing date (YYYY-MM-DD).
+</ParamField>
+
+<ParamField query="filed_before" type="string">
+  Maximum filing date (YYYY-MM-DD).
+</ParamField>
+
+<ParamField query="fields" type="string">
+  Fields to return.
+
+  Example: `ticker,section_type,snippet,relevance_score`
+</ParamField>
+
+<ParamField query="sort" type="string" default="-relevance">
+  Sort order: `-relevance`, `-filing_date`, `filing_date`
+</ParamField>
+
+<ParamField query="limit" type="integer" default="50">
+  Results per page. Maximum 100.
+</ParamField>
+
+<ParamField query="offset" type="integer" default="0">
+  Pagination offset.
+</ParamField>
+
+## Section Types
+
+| Type | Description | Source |
+|------|-------------|--------|
+| `exhibit_21` | Subsidiary list | 10-K Exhibit 21 |
+| `debt_footnote` | Long-term debt details | 10-K/10-Q Notes |
+| `mda_liquidity` | Liquidity discussion | MD&A section |
+| `credit_agreement` | Full credit facility docs | 8-K Exhibit 10 |
+| `indenture` | Bond indentures | 8-K Exhibit 4 |
+| `guarantor_list` | Guarantor subsidiaries | Notes |
+| `covenants` | Financial covenants | Notes/Exhibits |
+
+## Response
+
+<ResponseField name="data" type="array">
+  Array of matching document sections.
+
+  <Expandable title="properties">
+    <ResponseField name="id" type="string">
+      Section ID.
+    </ResponseField>
+    <ResponseField name="ticker" type="string">
+      Company ticker.
+    </ResponseField>
+    <ResponseField name="company_name" type="string">
+      Company name.
+    </ResponseField>
+    <ResponseField name="doc_type" type="string">
+      Filing type.
+    </ResponseField>
+    <ResponseField name="filing_date" type="string">
+      Filing date.
+    </ResponseField>
+    <ResponseField name="section_type" type="string">
+      Section type.
+    </ResponseField>
+    <ResponseField name="section_title" type="string">
+      Section title.
+    </ResponseField>
+    <ResponseField name="snippet" type="string">
+      Highlighted snippet with matching terms in `<b>` tags.
+    </ResponseField>
+    <ResponseField name="relevance_score" type="number">
+      Search relevance score (0-1).
+    </ResponseField>
+    <ResponseField name="content" type="string">
+      Full section content (if requested).
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+## Examples
+
+### Search Debt Footnotes
+
+<CodeGroup>
+```bash curl
+curl "https://api.debtstack.ai/v1/documents/search?q=subordinated&section_type=debt_footnote&fields=ticker,section_type,snippet,relevance_score" \
+  -H "X-API-Key: ds_xxxxx"
+```
+
+```python Python
+import requests
+
+response = requests.get(
+    "https://api.debtstack.ai/v1/documents/search",
+    params={
+        "q": "subordinated",
+        "section_type": "debt_footnote",
+        "fields": "ticker,section_type,snippet,relevance_score"
+    },
+    headers={"X-API-Key": "ds_xxxxx"}
+)
+
+for doc in response.json()["data"]:
+    print(f"{doc['ticker']}: {doc['snippet'][:100]}...")
+```
+</CodeGroup>
+
+### Response
+
+```json
+{
+  "data": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440000",
+      "ticker": "RIG",
+      "company_name": "Transocean Ltd.",
+      "doc_type": "10-K",
+      "filing_date": "2025-02-15",
+      "section_type": "debt_footnote",
+      "section_title": "Note 9 - Long-Term Debt",
+      "snippet": "...senior <b>subordinated</b> notes due 2028 are structurally <b>subordinated</b> to all obligations of our operating subsidiaries...",
+      "relevance_score": 0.85
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440001",
+      "ticker": "CHTR",
+      "company_name": "Charter Communications, Inc.",
+      "doc_type": "10-K",
+      "filing_date": "2025-02-23",
+      "section_type": "debt_footnote",
+      "section_title": "Note 8 - Long-Term Debt",
+      "snippet": "...holdco notes are structurally <b>subordinated</b> to all obligations of CCO Holdings...",
+      "relevance_score": 0.78
+    }
+  ],
+  "meta": {
+    "query": "subordinated",
+    "total": 42,
+    "limit": 50,
+    "offset": 0
+  }
+}
+```
+
+### Search Credit Agreements
+
+Find maintenance covenants:
+
+```bash
+curl "https://api.debtstack.ai/v1/documents/search?q=maintenance%20covenant&section_type=credit_agreement&ticker=CHTR" \
+  -H "X-API-Key: ds_xxxxx"
+```
+
+### Search Indentures
+
+Find events of default:
+
+```bash
+curl "https://api.debtstack.ai/v1/documents/search?q=event%20of%20default&section_type=indenture&limit=10" \
+  -H "X-API-Key: ds_xxxxx"
+```
+
+### Get Full Document Content
+
+```python
+response = requests.get(
+    f"{BASE_URL}/documents/search",
+    params={
+        "q": "redemption",
+        "section_type": "indenture",
+        "ticker": "RIG",
+        "fields": "ticker,section_title,content",  # Include full content
+        "limit": 1
+    },
+    headers={"X-API-Key": API_KEY}
+)
+
+doc = response.json()["data"][0]
+print(f"Full content length: {len(doc['content'])} characters")
+```
+
+## Use Cases
+
+### Find Covenant Details
+
+```python
+def find_covenants(ticker):
+    """Find all covenant mentions for a company."""
+    response = requests.get(
+        f"{BASE_URL}/documents/search",
+        params={
+            "q": "leverage ratio OR interest coverage",
+            "ticker": ticker,
+            "section_type": "covenants,credit_agreement",
+            "sort": "-relevance"
+        },
+        headers={"X-API-Key": API_KEY}
+    )
+
+    return response.json()["data"]
+
+# Usage
+covenants = find_covenants("CHTR")
+for cov in covenants[:5]:
+    print(f"{cov['section_type']}: {cov['snippet'][:150]}...")
+```
+
+### Search for Specific Terms
+
+```python
+def search_filings(query, companies=None, section_type=None):
+    """Search SEC filings for specific terms."""
+    params = {
+        "q": query,
+        "fields": "ticker,filing_date,section_type,snippet,relevance_score",
+        "sort": "-relevance",
+        "limit": 20
+    }
+
+    if companies:
+        params["ticker"] = ",".join(companies)
+    if section_type:
+        params["section_type"] = section_type
+
+    response = requests.get(
+        f"{BASE_URL}/documents/search",
+        params=params,
+        headers={"X-API-Key": API_KEY}
+    )
+
+    return response.json()["data"]
+
+# Find change of control provisions
+results = search_filings("change of control", section_type="indenture")
+```
+
+### Monitor Filing Updates
+
+```python
+from datetime import datetime, timedelta
+
+def recent_filings(query, days=30):
+    """Find matches in recent filings."""
+    since = (datetime.now() - timedelta(days=days)).strftime("%Y-%m-%d")
+
+    response = requests.get(
+        f"{BASE_URL}/documents/search",
+        params={
+            "q": query,
+            "filed_after": since,
+            "sort": "-filing_date"
+        },
+        headers={"X-API-Key": API_KEY}
+    )
+
+    return response.json()["data"]
+
+# Find recent mentions of refinancing
+recent = recent_filings("refinancing OR amendment", days=90)
+```
+
+## Notes
+
+- Search uses PostgreSQL full-text search with relevance ranking
+- Snippets highlight matching terms with `<b>` tags
+- Credit agreements and indentures can be large (up to 500K chars)
+- Use `content` field sparingly to avoid large responses
+- Credit cost: 3 credits per request
