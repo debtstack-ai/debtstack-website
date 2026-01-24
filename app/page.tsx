@@ -2,41 +2,11 @@
 'use client';
 
 import LiveDemo from '@/components/LiveDemo';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { SignInButton, SignUpButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 
 export default function Home() {
   const sectionsRef = useRef<(HTMLElement | null)[]>([]);
-  const [email, setEmail] = useState('');
-  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
-  const [message, setMessage] = useState('');
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setStatus('loading');
-
-    try {
-      const response = await fetch('/api/waitlist', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setStatus('success');
-        setMessage('You\'re on the list!');
-        setEmail('');
-      } else {
-        setStatus('error');
-        setMessage(data.error || 'Something went wrong');
-      }
-    } catch {
-      setStatus('error');
-      setMessage('Failed to connect. Please try again.');
-    }
-  };
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -80,6 +50,12 @@ export default function Home() {
             <a href="#demo" className="text-gray-400 hover:text-white transition text-sm font-medium">
               Demo
             </a>
+            <a href="/explorer" className="text-gray-400 hover:text-white transition text-sm font-medium">
+              Explorer
+            </a>
+            <a href="/pricing" className="text-gray-400 hover:text-white transition text-sm font-medium">
+              Pricing
+            </a>
             <SignedOut>
               <SignInButton mode="modal">
                 <button className="text-gray-400 hover:text-white transition text-sm font-medium">
@@ -88,7 +64,7 @@ export default function Home() {
               </SignInButton>
               <SignUpButton mode="modal">
                 <button className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-500 transition">
-                  Get Access
+                  Start Free
                 </button>
               </SignUpButton>
             </SignedOut>
@@ -105,24 +81,51 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative px-6 py-24 md:py-40">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="inline-block mb-6 px-4 py-2 rounded-full glass-card text-sm text-blue-400 border border-blue-500/30">
-            Now in Private Beta
-          </div>
           <h1 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight">
             Credit Data
             <br />
             <span className="bg-gradient-to-r from-blue-400 via-blue-500 to-purple-500 bg-clip-text text-transparent">for AI Agents</span>
           </h1>
-          <p className="text-xl md:text-2xl text-gray-400 mb-12 max-w-2xl mx-auto">
+          <p className="text-xl md:text-2xl text-gray-400 mb-8 max-w-2xl mx-auto">
             Structured corporate debt data and pricing, optimized for LLMs and AI workflows.
           </p>
+
+          {/* Data Stats */}
+          <div className="flex flex-wrap justify-center gap-8 mb-12 text-sm">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-white">189</div>
+              <div className="text-gray-500">Companies</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-white">2,849</div>
+              <div className="text-gray-500">Debt Instruments</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-white">5,750+</div>
+              <div className="text-gray-500">Document Sections</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-white">4,881</div>
+              <div className="text-gray-500">Guarantees</div>
+            </div>
+          </div>
+
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a
-              href="#waitlist"
-              className="bg-blue-600 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-blue-500 transition glow-button"
-            >
-              Get Early Access
-            </a>
+            <SignedOut>
+              <SignUpButton mode="modal">
+                <button className="bg-blue-600 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-blue-500 transition glow-button">
+                  Start Free
+                </button>
+              </SignUpButton>
+            </SignedOut>
+            <SignedIn>
+              <a
+                href="/dashboard"
+                className="bg-blue-600 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-blue-500 transition glow-button"
+              >
+                Go to Dashboard
+              </a>
+            </SignedIn>
             <a
               href="https://docs.debtstack.ai"
               className="text-gray-300 px-8 py-4 rounded-xl text-lg font-semibold hover:text-white transition glass-card"
@@ -130,6 +133,7 @@ export default function Home() {
               View Docs
             </a>
           </div>
+          <p className="mt-4 text-sm text-gray-500">1,000 free API calls per month. No credit card required.</p>
         </div>
       </section>
 
@@ -193,50 +197,40 @@ export default function Home() {
 
       {/* CTA Section */}
       <section
-        id="waitlist"
+        id="get-started"
         ref={(el) => { sectionsRef.current[1] = el; }}
         className="relative px-6 py-32 border-t border-gray-800/30 opacity-0"
       >
         <div className="max-w-xl mx-auto text-center">
           <h2 className="text-3xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
-            Get Early Access
+            Ready to Build?
           </h2>
           <p className="text-lg text-gray-400 mb-10">
-            Join the waitlist. Launching soon with a free tier.
+            Start with 1,000 free API calls per month. No credit card required.
           </p>
-          {status === 'success' ? (
-            <div className="max-w-md mx-auto p-6 rounded-xl glass-card border border-green-500/30">
-              <div className="flex items-center justify-center gap-3">
-                <svg className="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                <span className="text-green-400 font-semibold">{message}</span>
-              </div>
-              <p className="text-gray-400 text-sm mt-2">We&apos;ll be in touch soon.</p>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
-                className="flex-1 px-6 py-4 rounded-xl bg-gray-900/50 border border-gray-700 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition backdrop-blur-sm"
-                required
-                disabled={status === 'loading'}
-              />
-              <button
-                type="submit"
-                disabled={status === 'loading'}
-                className="bg-blue-600 text-white px-8 py-4 rounded-xl font-semibold hover:bg-blue-500 transition whitespace-nowrap glow-button disabled:opacity-50 disabled:cursor-not-allowed"
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <SignedOut>
+              <SignUpButton mode="modal">
+                <button className="bg-blue-600 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-blue-500 transition glow-button">
+                  Create Free Account
+                </button>
+              </SignUpButton>
+            </SignedOut>
+            <SignedIn>
+              <a
+                href="/dashboard"
+                className="bg-blue-600 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-blue-500 transition glow-button"
               >
-                {status === 'loading' ? 'Joining...' : 'Join Waitlist'}
-              </button>
-            </form>
-          )}
-          {status === 'error' && (
-            <p className="text-red-400 text-sm mt-4">{message}</p>
-          )}
+                Go to Dashboard
+              </a>
+            </SignedIn>
+            <a
+              href="/pricing"
+              className="text-gray-300 px-8 py-4 rounded-xl text-lg font-semibold hover:text-white transition glass-card"
+            >
+              View Pricing
+            </a>
+          </div>
         </div>
       </section>
 
@@ -255,6 +249,24 @@ export default function Home() {
                 Demo
               </a>
               <a
+                href="/explorer"
+                className="hover:text-white transition"
+              >
+                Explorer
+              </a>
+              <a
+                href="/pricing"
+                className="hover:text-white transition"
+              >
+                Pricing
+              </a>
+              <a
+                href="https://docs.debtstack.ai"
+                className="hover:text-white transition"
+              >
+                Docs
+              </a>
+              <a
                 href="mailto:hello@debtstack.ai"
                 className="hover:text-white transition"
               >
@@ -263,7 +275,7 @@ export default function Home() {
             </div>
           </div>
           <div className="mt-8 pt-8 border-t border-gray-800/50 text-center text-sm text-gray-600">
-            © 2025 DebtStack
+            © 2026 DebtStack
           </div>
         </div>
       </footer>

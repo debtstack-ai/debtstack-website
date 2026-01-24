@@ -242,12 +242,20 @@ export default function Dashboard() {
             <p className="text-gray-400 mb-4">
               Upgrade to a paid plan for higher limits and pay-as-you-go overage.
             </p>
-            <a
-              href="/pricing"
-              className="inline-block px-6 py-3 rounded-lg bg-blue-600 hover:bg-blue-500 text-sm font-semibold transition"
-            >
-              View Pricing
-            </a>
+            <div className="flex gap-4">
+              <a
+                href="/pricing"
+                className="inline-block px-6 py-3 rounded-lg bg-blue-600 hover:bg-blue-500 text-sm font-semibold transition"
+              >
+                View Pricing
+              </a>
+              <a
+                href="mailto:hello@debtstack.ai"
+                className="inline-block px-6 py-3 rounded-lg bg-gray-800 hover:bg-gray-700 text-sm font-semibold transition"
+              >
+                Contact Sales
+              </a>
+            </div>
           </section>
         )}
       </div>
