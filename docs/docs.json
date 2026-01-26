@@ -10,11 +10,7 @@
   "colors": {
     "primary": "#3B82F6",
     "light": "#60A5FA",
-    "dark": "#1D4ED8",
-    "anchors": {
-      "from": "#3B82F6",
-      "to": "#8B5CF6"
-    }
+    "dark": "#1D4ED8"
   },
   "topbarLinks": [
     {
@@ -44,7 +40,7 @@
       "url": "https://discord.gg/debtstack"
     }
   ],
-  "navigation": [
+  "sidebar": [
     {
       "group": "Get Started",
       "pages": [
