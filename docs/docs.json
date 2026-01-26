@@ -22,89 +22,83 @@
     "name": "Get API Key",
     "url": "https://debtstack.ai/dashboard"
   },
-  "tabs": [
-    {
-      "name": "API Reference",
-      "url": "api-reference"
-    }
-  ],
-  "anchors": [
-    {
-      "name": "GitHub",
-      "icon": "github",
-      "url": "https://github.com/debtstack"
-    },
-    {
-      "name": "Community",
-      "icon": "discord",
-      "url": "https://discord.gg/debtstack"
-    }
-  ],
-  "sidebar": [
-    {
-      "group": "Get Started",
-      "pages": [
-        "introduction",
-        "quickstart",
-        "authentication"
-      ]
-    },
-    {
-      "group": "Core Concepts",
-      "pages": [
-        "concepts/data-model",
-        "concepts/field-selection",
-        "concepts/pagination"
-      ]
-    },
-    {
-      "group": "Guides",
-      "pages": [
-        "guides/ai-agents",
-        "guides/langchain",
-        "guides/mcp"
-      ]
-    },
-    {
-      "group": "API Reference",
-      "pages": [
-        "api-reference/overview"
-      ]
-    },
-    {
-      "group": "Companies",
-      "pages": [
-        "api-reference/companies/search",
-        "api-reference/companies/changes"
-      ]
-    },
-    {
-      "group": "Bonds",
-      "pages": [
-        "api-reference/bonds/search",
-        "api-reference/bonds/resolve",
-        "api-reference/bonds/pricing"
-      ]
-    },
-    {
-      "group": "Entities",
-      "pages": [
-        "api-reference/entities/traverse"
-      ]
-    },
-    {
-      "group": "Documents",
-      "pages": [
-        "api-reference/documents/search"
-      ]
-    },
-    {
-      "group": "Batch",
-      "pages": [
-        "api-reference/batch/operations"
-      ]
-    }
-  ],
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "quickstart",
+              "authentication"
+            ]
+          },
+          {
+            "group": "Core Concepts",
+            "pages": [
+              "concepts/data-model",
+              "concepts/field-selection",
+              "concepts/pagination"
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              "guides/ai-agents",
+              "guides/langchain",
+              "guides/mcp"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": [
+              "api-reference/overview"
+            ]
+          },
+          {
+            "group": "Companies",
+            "pages": [
+              "api-reference/companies/search",
+              "api-reference/companies/changes"
+            ]
+          },
+          {
+            "group": "Bonds",
+            "pages": [
+              "api-reference/bonds/search",
+              "api-reference/bonds/resolve",
+              "api-reference/bonds/pricing"
+            ]
+          },
+          {
+            "group": "Entities",
+            "pages": [
+              "api-reference/entities/traverse"
+            ]
+          },
+          {
+            "group": "Documents",
+            "pages": [
+              "api-reference/documents/search"
+            ]
+          },
+          {
+            "group": "Batch",
+            "pages": [
+              "api-reference/batch/operations"
+            ]
+          }
+        ]
+      }
+    ]
+  },
   "footerSocials": {
     "twitter": "https://twitter.com/debtstack",
     "github": "https://github.com/debtstack",
