@@ -50,11 +50,11 @@ export default function Home() {
             <a href="#demo" className="text-gray-400 hover:text-white transition text-sm font-medium">
               Demo
             </a>
-            <a href="/explorer" className="text-gray-400 hover:text-white transition text-sm font-medium">
-              Explorer
-            </a>
             <a href="/pricing" className="text-gray-400 hover:text-white transition text-sm font-medium">
               Pricing
+            </a>
+            <a href="https://kuyperiancapitalllc.mintlify.app" className="text-gray-400 hover:text-white transition text-sm font-medium">
+              Docs
             </a>
             <SignedOut>
               <SignInButton mode="modal">
@@ -249,19 +249,13 @@ export default function Home() {
                 Demo
               </a>
               <a
-                href="/explorer"
-                className="hover:text-white transition"
-              >
-                Explorer
-              </a>
-              <a
                 href="/pricing"
                 className="hover:text-white transition"
               >
                 Pricing
               </a>
               <a
-                href="https://docs.debtstack.ai"
+                href="https://kuyperiancapitalllc.mintlify.app"
                 className="hover:text-white transition"
               >
                 Docs
