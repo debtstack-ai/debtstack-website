@@ -93,15 +93,15 @@ export default function Home() {
           {/* Data Stats */}
           <div className="flex flex-wrap justify-center gap-8 mb-12 text-sm">
             <div className="text-center">
-              <div className="text-2xl font-bold text-white">189</div>
+              <div className="text-2xl font-bold text-white">201</div>
               <div className="text-gray-500">Companies</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-white">2,849</div>
+              <div className="text-2xl font-bold text-white">2,485</div>
               <div className="text-gray-500">Debt Instruments</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-white">5,750+</div>
+              <div className="text-2xl font-bold text-white">6,500+</div>
               <div className="text-gray-500">Document Sections</div>
             </div>
             <div className="text-center">
