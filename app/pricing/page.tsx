@@ -277,7 +277,7 @@ export default function PricingPage() {
             <div className="p-5 rounded-xl bg-gray-900/50 border border-gray-800">
               <h3 className="font-semibold mb-2">What data is included?</h3>
               <p className="text-gray-400 text-sm">
-                Free plans include 25 curated companies. Pro and Business plans include full access to 200+ companies, 2,485 debt instruments, and 6,500+ SEC document sections.
+                Free plans include 25 curated companies. Pro and Business plans include full access to 200+ companies, 2,500+ debt instruments, and 6,500+ SEC document sections.
               </p>
             </div>
           </div>
