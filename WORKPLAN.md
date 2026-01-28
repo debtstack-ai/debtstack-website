@@ -161,3 +161,40 @@ Each scenario includes:
 **Updated files:**
 - `docs/docs.json` - Added scenarios to Guides navigation (first in list)
 - `docs/guides/ai-agents.mdx` - Added tip linking to scenarios page
+
+### Database Stats Update
+
+Generalized stats to rounded numbers so they don't go stale:
+
+| Metric | Now Shows |
+|--------|-----------|
+| Companies | 200+ |
+| Entities | 5,000+ |
+| Debt Instruments | 2,500+ |
+| Guarantees | 5,000+ |
+| Document Sections | 6,500+ |
+| Collateral Records | 200+ |
+
+**Files updated:**
+- `app/page.tsx` - Hero stats
+- `app/pricing/page.tsx` - FAQ section
+- `docs/introduction.mdx` - Intro card
+- `docs/concepts/data-model.mdx` - Coverage table
+
+### Removed Explorer Page
+
+Removed `/explorer` page due to incomplete ownership structure data. Site now has cleaner navigation:
+
+- **Demo** (anchor on home page)
+- **Pricing**
+- **Docs** (links to Mintlify at kuyperiancapitalllc.mintlify.app)
+
+**Files changed:**
+- `app/explorer/page.tsx` - Deleted
+- `app/page.tsx` - Updated header and footer nav
+- `app/pricing/page.tsx` - Updated header and footer nav
+
+### Improved Intro Copy
+
+Updated Mintlify intro to emphasize credit-relevant documents:
+> "200+ companies, 2,500+ debt instruments, and full-text search across indentures, credit agreements, and SEC filings"
