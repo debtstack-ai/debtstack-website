@@ -39,12 +39,13 @@ export async function POST(request: NextRequest) {
       // User exists - we can't retrieve their API key (security)
       // They need to regenerate if they lost it
       // For now, return a placeholder indicating they have an account
+      // Free tier: 25 queries/day
       return NextResponse.json({
         api_key: null,
         api_key_prefix: null,
         tier: 'free',
-        credits_remaining: 1000,
-        credits_monthly_limit: 1000,
+        credits_remaining: 25,
+        credits_daily_limit: 25,
         is_new: false,
         message: 'Account exists. If you lost your API key, regenerate it below.',
       });

@@ -34,11 +34,11 @@ ds_a1b2c3d4e5f6789012345678abcdef12
 
 Rate limits are applied per API key based on your tier:
 
-| Tier | Rate Limit | Requests/Month |
-|------|------------|----------------|
-| Free | 10/min | 1,000 |
+| Tier | Rate Limit | Requests |
+|------|------------|----------|
+| Free | 10/min | 25/day |
 | Pro | 120/min | Unlimited |
-| Enterprise | Custom | Unlimited |
+| Business | Custom | Unlimited |
 
 ### Rate Limit Headers
 
@@ -106,23 +106,33 @@ Response:
 
 ## Pricing Tiers
 
-<CardGroup cols={2}>
+<CardGroup cols={3}>
   <Card title="Free" icon="gift">
     **$0/month**
-    - 1,000 API calls/month
-    - 10 requests/minute
-    - Basic support
+    - 25 queries/day
+    - 25 companies (curated sample)
+    - All endpoints
+    - Bond pricing (updated throughout trading day)
+    - For testing & evaluation
   </Card>
   <Card title="Pro" icon="rocket">
     **$49/month**
-    - Unlimited API calls
-    - 120 requests/minute
-    - Real-time bond pricing
-    - Priority support
+    - Unlimited queries
+    - 200+ companies (full coverage)
+    - Historical pricing trends
+    - For production agents & developers
+  </Card>
+  <Card title="Business" icon="building">
+    **$499/month**
+    - Priority support (24hr response)
+    - Custom company coverage requests
+    - 99.9% uptime SLA
+    - Dedicated onboarding
+    - For hedge funds, PE shops, credit teams
   </Card>
 </CardGroup>
 
-For Enterprise pricing with custom rate limits and dedicated support, [contact us](mailto:hello@debtstack.ai).
+For Business tier inquiries, [contact us](mailto:hello@debtstack.ai).
 
 ## Security Best Practices
 

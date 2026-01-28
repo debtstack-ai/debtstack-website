@@ -46,6 +46,7 @@
           {
             "group": "Guides",
             "pages": [
+              "guides/scenarios",
               "guides/ai-agents",
               "guides/langchain",
               "guides/mcp"

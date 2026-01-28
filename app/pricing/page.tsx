@@ -2,54 +2,88 @@
 'use client';
 
 import { SignUpButton, SignedIn, SignedOut, UserButton, SignInButton } from "@clerk/nextjs";
+import { useState } from "react";
 
 const tiers = [
   {
     name: 'Free',
+    tier: 'free',
     price: '$0',
-    period: '',
-    description: 'Explore the API and build prototypes.',
+    period: '/month',
+    description: 'For testing & evaluation.',
     features: [
-      '2-3 queries per day',
-      'Corporate structure data',
-      'Debt instruments & terms',
-      'SEC document search',
+      '25 queries/day',
+      '25 companies (curated sample)',
+      'All endpoints',
+      'Bond pricing (updated throughout trading day)',
     ],
-    cta: 'Start Free',
+    cta: 'Get started',
     highlighted: false,
   },
   {
     name: 'Pro',
+    tier: 'pro',
     price: '$49',
     period: '/month',
-    description: 'For developers building production applications.',
+    description: 'For production agents & developers.',
     features: [
+      'Everything in Free, plus:',
       'Unlimited queries',
-      'Real-time bond pricing',
-      'Higher rate limits',
-      'Priority support',
+      '200+ companies (full coverage)',
+      'Historical pricing trends',
     ],
-    cta: 'Get Pro',
+    cta: 'Sign up',
     highlighted: true,
   },
   {
-    name: 'Enterprise',
-    price: 'Custom',
-    period: '',
-    description: 'For organizations with advanced needs.',
+    name: 'Business',
+    tier: 'business',
+    price: '$499',
+    period: '/month',
+    description: 'For hedge funds, PE shops, credit teams.',
     features: [
-      'Everything in Pro',
-      'Historical pricing data',
-      'Custom integrations & SLA',
-      'Dedicated support',
+      'Everything in Pro, plus:',
+      'Priority support (24hr response)',
+      'Custom company coverage requests',
+      '99.9% uptime SLA',
+      'Dedicated onboarding',
     ],
-    cta: 'Contact Us',
+    cta: 'Contact sales',
     highlighted: false,
     isEnterprise: true,
   },
 ];
 
 export default function PricingPage() {
+  const [loading, setLoading] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleUpgrade = async (tier: 'pro' | 'business') => {
+    try {
+      setLoading(tier);
+      setError(null);
+
+      const response = await fetch('/api/stripe/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tier }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to create checkout session');
+      }
+
+      const { url } = await response.json();
+      if (url) {
+        window.location.href = url;
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Something went wrong');
+      setLoading(null);
+    }
+  };
+
   return (
     <main className="min-h-screen bg-black text-white">
       {/* Header */}
@@ -102,6 +136,15 @@ export default function PricingPage() {
         </div>
       </section>
 
+      {/* Error Message */}
+      {error && (
+        <div className="max-w-4xl mx-auto px-6 mb-8">
+          <div className="p-4 rounded-lg bg-red-900/20 border border-red-500/30 text-red-400 text-center">
+            {error}
+          </div>
+        </div>
+      )}
+
       {/* Pricing Cards */}
       <section className="px-6 pb-24">
         <div className="max-w-4xl mx-auto">
@@ -143,23 +186,56 @@ export default function PricingPage() {
                   ))}
                 </ul>
 
-                {'isEnterprise' in tier && tier.isEnterprise ? (
-                  <a
-                    href="mailto:hello@debtstack.ai"
-                    className="block w-full py-3 rounded-lg font-semibold text-center transition bg-gray-800 hover:bg-gray-700 text-white"
-                  >
-                    {tier.cta}
-                  </a>
-                ) : (
+                {tier.isEnterprise ? (
+                  // Business tier - Contact sales for signed out, upgrade for signed in
+                  <>
+                    <SignedOut>
+                      <a
+                        href="mailto:hello@debtstack.ai"
+                        className="block w-full py-3 rounded-lg font-semibold text-center transition bg-gray-800 hover:bg-gray-700 text-white"
+                      >
+                        {tier.cta}
+                      </a>
+                    </SignedOut>
+                    <SignedIn>
+                      <button
+                        onClick={() => handleUpgrade('business')}
+                        disabled={loading === 'business'}
+                        className="w-full py-3 rounded-lg font-semibold text-center transition bg-purple-600 hover:bg-purple-500 text-white disabled:opacity-50"
+                      >
+                        {loading === 'business' ? 'Loading...' : 'Upgrade to Business'}
+                      </button>
+                    </SignedIn>
+                  </>
+                ) : tier.tier === 'pro' ? (
+                  // Pro tier - Sign up for signed out, upgrade for signed in
                   <>
                     <SignedOut>
                       <SignUpButton mode="modal">
                         <button
-                          className={`w-full py-3 rounded-lg font-semibold transition ${
-                            tier.highlighted
-                              ? 'bg-blue-600 hover:bg-blue-500 text-white'
-                              : 'bg-gray-800 hover:bg-gray-700 text-white'
-                          }`}
+                          className="w-full py-3 rounded-lg font-semibold transition bg-blue-600 hover:bg-blue-500 text-white"
+                        >
+                          {tier.cta}
+                        </button>
+                      </SignUpButton>
+                    </SignedOut>
+                    <SignedIn>
+                      <button
+                        onClick={() => handleUpgrade('pro')}
+                        disabled={loading === 'pro'}
+                        className="w-full py-3 rounded-lg font-semibold text-center transition bg-blue-600 hover:bg-blue-500 text-white disabled:opacity-50"
+                      >
+                        {loading === 'pro' ? 'Loading...' : 'Upgrade to Pro'}
+                      </button>
+                    </SignedIn>
+                  </>
+                ) : (
+                  // Free tier - Sign up for signed out, dashboard for signed in
+                  <>
+                    <SignedOut>
+                      <SignUpButton mode="modal">
+                        <button
+                          className="w-full py-3 rounded-lg font-semibold transition bg-gray-800 hover:bg-gray-700 text-white"
                         >
                           {tier.cta}
                         </button>
@@ -168,11 +244,7 @@ export default function PricingPage() {
                     <SignedIn>
                       <a
                         href="/dashboard"
-                        className={`block w-full py-3 rounded-lg font-semibold text-center transition ${
-                          tier.highlighted
-                            ? 'bg-blue-600 hover:bg-blue-500 text-white'
-                            : 'bg-gray-800 hover:bg-gray-700 text-white'
-                        }`}
+                        className="block w-full py-3 rounded-lg font-semibold text-center transition bg-gray-800 hover:bg-gray-700 text-white"
                       >
                         Go to Dashboard
                       </a>
@@ -205,7 +277,7 @@ export default function PricingPage() {
             <div className="p-5 rounded-xl bg-gray-900/50 border border-gray-800">
               <h3 className="font-semibold mb-2">What data is included?</h3>
               <p className="text-gray-400 text-sm">
-                All plans include full access to 189 companies, 2,849 debt instruments, and 5,750+ SEC document sections.
+                Free plans include 25 curated companies. Pro and Business plans include full access to 200+ companies, 2,849 debt instruments, and 5,750+ SEC document sections.
               </p>
             </div>
           </div>

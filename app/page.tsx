@@ -133,7 +133,7 @@ export default function Home() {
               View Docs
             </a>
           </div>
-          <p className="mt-4 text-sm text-gray-500">1,000 free API calls per month. No credit card required.</p>
+          <p className="mt-4 text-sm text-gray-500">25 free queries per day. No credit card required.</p>
         </div>
       </section>
 
@@ -206,7 +206,7 @@ export default function Home() {
             Ready to Build?
           </h2>
           <p className="text-lg text-gray-400 mb-10">
-            Start with 1,000 free API calls per month. No credit card required.
+            Start with 25 free queries per day. No credit card required.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <SignedOut>

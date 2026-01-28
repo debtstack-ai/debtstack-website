@@ -1,0 +1,473 @@
+---
+title: Demo Scenarios
+description: 'Interactive examples showcasing DebtStack API capabilities'
+---
+
+## Overview
+
+These interactive scenarios demonstrate common credit analysis workflows. Each example uses live API calls you can run directly in the docs using the **Try It** panel on the right.
+
+<Tip>
+  Click "Try It" on any example to run the API call with your own API key. Modify parameters to explore different results.
+</Tip>
+
+---
+
+## Scenario 1: Bond Screener
+
+**Question:** *Find high-yield secured bonds backed by physical assets*
+
+### Use Case
+
+Yield hunting with downside protection. Physical collateral (equipment, real estate, vehicles) provides tangible recovery value if the company defaults. Senior secured bonds with asset backing typically have higher recovery rates than unsecured debt.
+
+### API Call
+
+<ParamField query="min_ytm" type="number" default="8.0">
+  Minimum yield to maturity (%). Set higher for more yield, lower for more results.
+</ParamField>
+
+<ParamField query="seniority" type="string" default="senior_secured">
+  Debt priority. Options: `senior_secured`, `senior_unsecured`, `subordinated`
+</ParamField>
+
+<ParamField query="has_pricing" type="boolean" default="true">
+  Only return bonds with current pricing data.
+</ParamField>
+
+<ParamField query="fields" type="string" default="name,ticker,pricing,collateral,maturity_date">
+  Fields to return. Use `collateral` to see asset backing details.
+</ParamField>
+
+<CodeGroup>
+```bash curl
+curl "https://api.debtstack.ai/v1/bonds?min_ytm=8.0&seniority=senior_secured&has_pricing=true&fields=name,ticker,pricing,collateral,maturity_date&sort=-pricing.ytm&limit=10" \
+  -H "X-API-Key: ds_xxxxx"
+```
+
+```python Python
+import requests
+
+response = requests.get(
+    "https://api.debtstack.ai/v1/bonds",
+    params={
+        "min_ytm": 8.0,
+        "seniority": "senior_secured",
+        "has_pricing": True,
+        "fields": "name,ticker,pricing,collateral,maturity_date",
+        "sort": "-pricing.ytm",
+        "limit": 10
+    },
+    headers={"X-API-Key": "ds_xxxxx"}
+)
+
+for bond in response.json()["data"]:
+    ytm = bond["pricing"]["ytm"]
+    collateral = bond.get("collateral", {}).get("type", "unspecified")
+    print(f"{bond['ticker']} {bond['name']}")
+    print(f"  YTM: {ytm:.2f}% | Collateral: {collateral}")
+    print(f"  Matures: {bond['maturity_date']}")
+```
+
+```javascript JavaScript
+const response = await fetch(
+  "https://api.debtstack.ai/v1/bonds?" + new URLSearchParams({
+    min_ytm: 8.0,
+    seniority: "senior_secured",
+    has_pricing: true,
+    fields: "name,ticker,pricing,collateral,maturity_date",
+    sort: "-pricing.ytm",
+    limit: 10
+  }),
+  { headers: { "X-API-Key": "ds_xxxxx" } }
+);
+
+const { data } = await response.json();
+data.forEach(bond => {
+  console.log(`${bond.ticker} ${bond.name}: ${bond.pricing.ytm}% YTM`);
+});
+```
+</CodeGroup>
+
+### Example Response
+
+<ResponseExample>
+```json
+{
+  "data": [
+    {
+      "name": "11.00% Senior Secured Notes due 2027",
+      "ticker": "RIG",
+      "maturity_date": "2027-09-15",
+      "pricing": {
+        "last_price": 98.50,
+        "ytm": 11.42,
+        "spread": 820,
+        "staleness_days": 0
+      },
+      "collateral": {
+        "type": "equipment",
+        "description": "First-priority lien on drilling rigs",
+        "assets": ["Deepwater Titan", "Deepwater Atlas"]
+      }
+    },
+    {
+      "name": "8.75% Senior Secured Notes due 2030",
+      "ticker": "VAL",
+      "maturity_date": "2030-04-01",
+      "pricing": {
+        "last_price": 92.25,
+        "ytm": 10.15,
+        "spread": 695,
+        "staleness_days": 1
+      },
+      "collateral": {
+        "type": "equipment",
+        "description": "First-lien on offshore drilling units",
+        "assets": ["Valaris DS-11", "Valaris DS-12"]
+      }
+    }
+  ],
+  "meta": {
+    "total": 47,
+    "limit": 10,
+    "offset": 0
+  }
+}
+```
+</ResponseExample>
+
+### What to Look For
+
+- **YTM > 8%** indicates higher risk/reward
+- **Collateral type**: `equipment`, `real_estate`, `vehicles` offer tangible recovery
+- **Staleness days**: Lower is better for accurate pricing
+
+---
+
+## Scenario 2: Corporate Structure
+
+**Question:** *Who guarantees this bond?*
+
+### Use Case
+
+Understanding structural subordination. When analyzing a bond, you need to know:
+- Which entities sit above/below the issuer in the corporate structure?
+- Who backs the debt with a guarantee?
+- Is the guarantee from the parent (holdco) or just operating subsidiaries?
+
+This matters because in bankruptcy, debt at the holdco level typically has worse recovery than debt at operating companies with real assets.
+
+### API Call
+
+<ParamField body="start" type="object" required>
+  Starting point for traversal.
+
+  ```json
+  {"type": "company", "ticker": "CHTR"}
+  ```
+</ParamField>
+
+<ParamField body="relationships" type="array" default='["parent_of", "guarantees"]'>
+  Relationships to traverse. Use `parent_of` for ownership, `guarantees` for debt backing.
+</ParamField>
+
+<ParamField body="depth" type="integer" default="2">
+  How many levels deep to traverse (1-10).
+</ParamField>
+
+<CodeGroup>
+```bash curl
+curl -X POST "https://api.debtstack.ai/v1/entities/traverse" \
+  -H "X-API-Key: ds_xxxxx" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "start": {"type": "company", "ticker": "CHTR"},
+    "relationships": ["parent_of", "guarantees"],
+    "depth": 2,
+    "fields": ["name", "entity_type", "jurisdiction", "is_guarantor", "debt_at_entity"]
+  }'
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    "https://api.debtstack.ai/v1/entities/traverse",
+    headers={
+        "X-API-Key": "ds_xxxxx",
+        "Content-Type": "application/json"
+    },
+    json={
+        "start": {"type": "company", "ticker": "CHTR"},
+        "relationships": ["parent_of", "guarantees"],
+        "depth": 2,
+        "fields": ["name", "entity_type", "jurisdiction", "is_guarantor", "debt_at_entity"]
+    }
+)
+
+data = response.json()["data"]
+print(f"Starting from: {data['start']['name']}")
+print(f"\nEntities in structure:")
+
+for entity in data["traversal"]["entities"]:
+    guarantor = "✓ Guarantor" if entity.get("is_guarantor") else ""
+    debt = entity.get("debt_at_entity", {})
+    debt_count = debt.get("count", 0)
+    print(f"  {entity['name']} ({entity['entity_type']}) {guarantor}")
+    if debt_count > 0:
+        print(f"    → {debt_count} debt instruments")
+```
+
+```javascript JavaScript
+const response = await fetch("https://api.debtstack.ai/v1/entities/traverse", {
+  method: "POST",
+  headers: {
+    "X-API-Key": "ds_xxxxx",
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    start: { type: "company", ticker: "CHTR" },
+    relationships: ["parent_of", "guarantees"],
+    depth: 2,
+    fields: ["name", "entity_type", "jurisdiction", "is_guarantor", "debt_at_entity"]
+  })
+});
+
+const { data } = await response.json();
+console.log(`Structure for ${data.start.name}:`);
+data.traversal.entities.forEach(e => {
+  console.log(`  ${e.name} (${e.entity_type}) ${e.is_guarantor ? '- Guarantor' : ''}`);
+});
+```
+</CodeGroup>
+
+### Example Response
+
+<ResponseExample>
+```json
+{
+  "data": {
+    "start": {
+      "type": "company",
+      "ticker": "CHTR",
+      "name": "Charter Communications, Inc."
+    },
+    "traversal": {
+      "relationships": ["parent_of", "guarantees"],
+      "direction": "outbound",
+      "depth": 2,
+      "entities": [
+        {
+          "id": "uuid-1",
+          "name": "CCO Holdings, LLC",
+          "entity_type": "holdco",
+          "jurisdiction": "Delaware",
+          "is_guarantor": true,
+          "debt_at_entity": {
+            "count": 12,
+            "total": 4850000000000
+          },
+          "level": 1
+        },
+        {
+          "id": "uuid-2",
+          "name": "CCO Holdings Capital Corp.",
+          "entity_type": "finco",
+          "jurisdiction": "Delaware",
+          "is_guarantor": false,
+          "debt_at_entity": {
+            "count": 8,
+            "total": 1920000000000
+          },
+          "level": 1
+        },
+        {
+          "id": "uuid-3",
+          "name": "Charter Communications Operating, LLC",
+          "entity_type": "opco",
+          "jurisdiction": "Delaware",
+          "is_guarantor": true,
+          "debt_at_entity": {
+            "count": 0,
+            "total": 0
+          },
+          "level": 2
+        }
+      ]
+    },
+    "summary": {
+      "total_entities": 3,
+      "max_depth": 2,
+      "total_guarantors": 2
+    }
+  }
+}
+```
+</ResponseExample>
+
+### What to Look For
+
+- **entity_type**: `holdco` (holding company), `opco` (operating company), `finco` (financing vehicle)
+- **is_guarantor**: Does this entity back the debt?
+- **debt_at_entity**: Where is debt actually issued? Higher in the structure = more structural subordination risk
+
+---
+
+## Scenario 3: Document Search
+
+**Question:** *What triggers a change of control?*
+
+### Use Case
+
+Deep dive into covenant language. Credit agreements and indentures contain critical provisions that affect bondholders:
+- Change of control puts (can you get your money back if the company is acquired?)
+- Restricted payments (how much cash can leak to equity?)
+- Asset sale covenants (what happens when they sell assets?)
+
+This API searches across thousands of SEC filings so you don't have to read 400-page indentures.
+
+### API Call
+
+<ParamField query="q" type="string" default="change of control">
+  Search query. Supports phrases and boolean operators.
+</ParamField>
+
+<ParamField query="ticker" type="string" default="CHTR">
+  Company ticker to search within.
+</ParamField>
+
+<ParamField query="section_type" type="string" default="indenture">
+  Document section type: `indenture`, `credit_agreement`, `risk_factors`, `mda`
+</ParamField>
+
+<ParamField query="limit" type="integer" default="5">
+  Number of results to return.
+</ParamField>
+
+<CodeGroup>
+```bash curl
+curl "https://api.debtstack.ai/v1/documents/search?q=change+of+control&ticker=CHTR&section_type=indenture&limit=5" \
+  -H "X-API-Key: ds_xxxxx"
+```
+
+```python Python
+import requests
+
+response = requests.get(
+    "https://api.debtstack.ai/v1/documents/search",
+    params={
+        "q": "change of control",
+        "ticker": "CHTR",
+        "section_type": "indenture",
+        "limit": 5
+    },
+    headers={"X-API-Key": "ds_xxxxx"}
+)
+
+for result in response.json()["data"]:
+    print(f"📄 {result['document']['title']}")
+    print(f"   Section: {result['section']['title']}")
+    print(f"   Filed: {result['document']['filed_date']}")
+    print(f"   Snippet: {result['snippet'][:200]}...")
+    print()
+```
+
+```javascript JavaScript
+const response = await fetch(
+  "https://api.debtstack.ai/v1/documents/search?" + new URLSearchParams({
+    q: "change of control",
+    ticker: "CHTR",
+    section_type: "indenture",
+    limit: 5
+  }),
+  { headers: { "X-API-Key": "ds_xxxxx" } }
+);
+
+const { data } = await response.json();
+data.forEach(result => {
+  console.log(`${result.document.title}`);
+  console.log(`  ${result.snippet.substring(0, 150)}...`);
+});
+```
+</CodeGroup>
+
+### Example Response
+
+<ResponseExample>
+```json
+{
+  "data": [
+    {
+      "document": {
+        "id": "doc-uuid-1",
+        "title": "Indenture - 4.750% Senior Notes due 2032",
+        "form_type": "8-K",
+        "filed_date": "2024-03-15",
+        "sec_url": "https://www.sec.gov/Archives/edgar/..."
+      },
+      "section": {
+        "title": "Change of Control",
+        "page": 45
+      },
+      "snippet": "Upon the occurrence of a Change of Control Triggering Event, each Holder will have the right to require the Company to repurchase all or any part of such Holder's Notes at a purchase price in cash equal to 101% of the principal amount...",
+      "relevance_score": 0.94
+    },
+    {
+      "document": {
+        "id": "doc-uuid-2",
+        "title": "Indenture - 5.125% Senior Notes due 2030",
+        "form_type": "8-K",
+        "filed_date": "2023-09-22",
+        "sec_url": "https://www.sec.gov/Archives/edgar/..."
+      },
+      "section": {
+        "title": "Definitions",
+        "page": 12
+      },
+      "snippet": "\"Change of Control\" means the occurrence of any of the following: (1) the direct or indirect sale, lease, transfer, conveyance or other disposition of all or substantially all of the assets of the Company...",
+      "relevance_score": 0.89
+    }
+  ],
+  "meta": {
+    "total": 23,
+    "query": "change of control",
+    "ticker": "CHTR",
+    "section_type": "indenture"
+  }
+}
+```
+</ResponseExample>
+
+### What to Look For
+
+- **101% put**: Standard change of control provision requires company to offer to buy back bonds at 101% of par
+- **Triggering events**: What actually counts as "change of control"? Often requires both ownership change AND rating downgrade
+- **Carve-outs**: Are there exceptions for certain types of transactions?
+
+---
+
+## Try More Queries
+
+Here are other document searches to try:
+
+| Query | What it finds |
+|-------|---------------|
+| `restricted payments` | Limits on dividends and buybacks |
+| `asset sale` | What happens when company sells assets |
+| `negative pledge` | Restrictions on granting liens |
+| `cross default` | When default on one debt triggers others |
+| `EBITDA definition` | How leverage is calculated |
+
+---
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="AI Agent Integration" icon="robot" href="/guides/ai-agents">
+    Build agents that use these API calls
+  </Card>
+  <Card title="Full API Reference" icon="book" href="/api-reference/overview">
+    See all available endpoints and parameters
+  </Card>
+</CardGroup>

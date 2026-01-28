@@ -2,26 +2,40 @@
 'use client';
 
 import { useUser, useAuth } from "@clerk/nextjs";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 
 interface UserData {
   api_key?: string;
   api_key_prefix?: string;
   tier: string;
   credits_remaining: number;
-  credits_monthly_limit: number;
+  credits_daily_limit?: number;
+  credits_monthly_limit?: number;
   created_at?: string;
 }
 
-export default function Dashboard() {
+function DashboardContent() {
   const { user, isLoaded: userLoaded } = useUser();
   const { getToken } = useAuth();
+  const searchParams = useSearchParams();
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showApiKey, setShowApiKey] = useState(false);
   const [copied, setCopied] = useState(false);
   const [regenerating, setRegenerating] = useState(false);
+  const [upgrading, setUpgrading] = useState(false);
+  const [showUpgradeSuccess, setShowUpgradeSuccess] = useState(false);
+
+  // Check for upgrade success
+  useEffect(() => {
+    if (searchParams.get('upgraded') === 'true') {
+      setShowUpgradeSuccess(true);
+      // Remove the query param from URL
+      window.history.replaceState({}, '', '/dashboard');
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     if (userLoaded && user) {
@@ -94,6 +108,54 @@ export default function Dashboard() {
     }
   };
 
+  const handleUpgrade = async (tier: 'pro' | 'business') => {
+    try {
+      setUpgrading(true);
+      setError(null);
+
+      const response = await fetch('/api/stripe/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tier }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to create checkout session');
+      }
+
+      const { url } = await response.json();
+      if (url) {
+        window.location.href = url;
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to start upgrade');
+      setUpgrading(false);
+    }
+  };
+
+  const handleManageBilling = async () => {
+    try {
+      setError(null);
+
+      const response = await fetch('/api/stripe/portal', {
+        method: 'POST',
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to open billing portal');
+      }
+
+      const { url } = await response.json();
+      if (url) {
+        window.location.href = url;
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to open billing portal');
+    }
+  };
+
   if (!userLoaded || loading) {
     return (
       <main className="min-h-screen bg-black text-white flex items-center justify-center">
@@ -131,6 +193,12 @@ export default function Dashboard() {
       {/* Dashboard Content */}
       <div className="max-w-4xl mx-auto px-6 py-12">
         <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
+
+        {showUpgradeSuccess && (
+          <div className="mb-6 p-4 rounded-lg bg-green-900/20 border border-green-500/30 text-green-400">
+            Welcome to {userData?.tier === 'business' ? 'Business' : 'Pro'}! Your account has been upgraded.
+          </div>
+        )}
 
         {error && (
           <div className="mb-6 p-4 rounded-lg bg-red-900/20 border border-red-500/30 text-red-400">
@@ -185,15 +253,21 @@ export default function Dashboard() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="p-4 rounded-lg bg-black border border-gray-700">
-              <p className="text-sm text-gray-400 mb-1">Credits Remaining</p>
+              <p className="text-sm text-gray-400 mb-1">Queries Remaining</p>
               <p className="text-2xl font-bold">
-                {userData?.credits_remaining?.toLocaleString() ?? '—'}
+                {userData?.tier === 'pro' || userData?.tier === 'business'
+                  ? 'Unlimited'
+                  : (userData?.credits_remaining?.toLocaleString() ?? '—')}
               </p>
             </div>
             <div className="p-4 rounded-lg bg-black border border-gray-700">
-              <p className="text-sm text-gray-400 mb-1">Monthly Limit</p>
+              <p className="text-sm text-gray-400 mb-1">
+                {userData?.tier === 'free' ? 'Daily Limit' : 'Query Limit'}
+              </p>
               <p className="text-2xl font-bold">
-                {userData?.credits_monthly_limit?.toLocaleString() ?? '—'}
+                {userData?.tier === 'pro' || userData?.tier === 'business'
+                  ? 'Unlimited'
+                  : (userData?.credits_daily_limit?.toLocaleString() ?? userData?.credits_monthly_limit?.toLocaleString() ?? '25')}
               </p>
             </div>
             <div className="p-4 rounded-lg bg-black border border-gray-700">
@@ -235,30 +309,77 @@ export default function Dashboard() {
           </div>
         </section>
 
-        {/* Pricing CTA */}
+        {/* Upgrade CTA for Free Users */}
         {userData?.tier === 'free' && (
           <section className="mt-8 p-6 rounded-xl bg-gradient-to-r from-blue-900/30 to-purple-900/30 border border-blue-500/30">
-            <h2 className="text-xl font-semibold mb-2">Need more credits?</h2>
+            <h2 className="text-xl font-semibold mb-2">Need more queries?</h2>
             <p className="text-gray-400 mb-4">
-              Upgrade to a paid plan for higher limits and pay-as-you-go overage.
+              Upgrade to Pro for unlimited queries and full company coverage (200+).
             </p>
-            <div className="flex gap-4">
-              <a
-                href="/pricing"
-                className="inline-block px-6 py-3 rounded-lg bg-blue-600 hover:bg-blue-500 text-sm font-semibold transition"
+            <div className="flex flex-wrap gap-4">
+              <button
+                onClick={() => handleUpgrade('pro')}
+                disabled={upgrading}
+                className="px-6 py-3 rounded-lg bg-blue-600 hover:bg-blue-500 text-sm font-semibold transition disabled:opacity-50"
               >
-                View Pricing
-              </a>
+                {upgrading ? 'Loading...' : 'Upgrade to Pro — $49/mo'}
+              </button>
+              <button
+                onClick={() => handleUpgrade('business')}
+                disabled={upgrading}
+                className="px-6 py-3 rounded-lg bg-purple-600 hover:bg-purple-500 text-sm font-semibold transition disabled:opacity-50"
+              >
+                {upgrading ? 'Loading...' : 'Upgrade to Business — $499/mo'}
+              </button>
               <a
                 href="mailto:hello@debtstack.ai"
-                className="inline-block px-6 py-3 rounded-lg bg-gray-800 hover:bg-gray-700 text-sm font-semibold transition"
+                className="px-6 py-3 rounded-lg bg-gray-800 hover:bg-gray-700 text-sm font-semibold transition"
               >
                 Contact Sales
               </a>
             </div>
           </section>
         )}
+
+        {/* Billing Management for Paid Users */}
+        {(userData?.tier === 'pro' || userData?.tier === 'business') && (
+          <section className="mt-8 p-6 rounded-xl bg-gray-900/50 border border-gray-800">
+            <h2 className="text-xl font-semibold mb-2">Billing</h2>
+            <p className="text-gray-400 mb-4">
+              Manage your subscription, update payment methods, or view invoices.
+            </p>
+            <div className="flex flex-wrap gap-4">
+              <button
+                onClick={handleManageBilling}
+                className="px-6 py-3 rounded-lg bg-gray-800 hover:bg-gray-700 text-sm font-semibold transition"
+              >
+                Manage Billing
+              </button>
+              {userData?.tier === 'pro' && (
+                <button
+                  onClick={() => handleUpgrade('business')}
+                  disabled={upgrading}
+                  className="px-6 py-3 rounded-lg bg-purple-600 hover:bg-purple-500 text-sm font-semibold transition disabled:opacity-50"
+                >
+                  {upgrading ? 'Loading...' : 'Upgrade to Business — $499/mo'}
+                </button>
+              )}
+            </div>
+          </section>
+        )}
       </div>
     </main>
+  );
+}
+
+export default function Dashboard() {
+  return (
+    <Suspense fallback={
+      <main className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="animate-pulse text-gray-400">Loading...</div>
+      </main>
+    }>
+      <DashboardContent />
+    </Suspense>
   );
 }

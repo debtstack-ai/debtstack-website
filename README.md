@@ -1,36 +1,81 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# DebtStack Website
 
-## Getting Started
+Marketing website, user dashboard, and billing for [DebtStack.ai](https://debtstack.ai) - the API for corporate debt structure data.
 
-First, run the development server:
+## Features
+
+- Landing page with product demo
+- Interactive data explorer
+- User dashboard with API key management
+- Stripe-powered billing (Free, Pro, Business tiers)
+- Mintlify documentation
+
+## Quick Start
 
 ```bash
+# Install dependencies
+npm install
+
+# Set up environment variables
+cp .env.example .env.local
+# Edit .env.local with your keys
+
+# Run development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment Variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Variable | Description |
+|----------|-------------|
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk public key |
+| `CLERK_SECRET_KEY` | Clerk secret key |
+| `STRIPE_SECRET_KEY` | Stripe secret key |
+| `BACKEND_URL` | Backend API URL |
+| `NEXT_PUBLIC_APP_URL` | This app's public URL |
 
-## Learn More
+## Tech Stack
 
-To learn more about Next.js, take a look at the following resources:
+- [Next.js 16](https://nextjs.org/) - React framework
+- [Clerk](https://clerk.com/) - Authentication
+- [Stripe](https://stripe.com/) - Payments
+- [Tailwind CSS](https://tailwindcss.com/) - Styling
+- [Mintlify](https://mintlify.com/) - Documentation
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Project Structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+├── app/
+│   ├── api/stripe/      # Stripe checkout & portal
+│   ├── api/user/        # User sync with backend
+│   ├── dashboard/       # User dashboard
+│   ├── explorer/        # Data explorer
+│   ├── pricing/         # Pricing page
+│   └── page.tsx         # Landing page
+├── docs/                # Mintlify docs (docs.debtstack.ai)
+├── lib/stripe.ts        # Stripe configuration
+└── public/              # Static assets
+```
 
-## Deploy on Vercel
+## Deployment
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Deployed on [Railway](https://railway.app). Push to `main` triggers automatic deployment.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Required Railway Environment Variables
+
+- `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
+- `CLERK_SECRET_KEY`
+- `STRIPE_SECRET_KEY`
+- `BACKEND_URL`
+- `NEXT_PUBLIC_APP_URL`
+
+## Related
+
+- **Backend API**: [credible-ai-production.up.railway.app](https://credible-ai-production.up.railway.app/docs)
+- **Documentation**: [docs.debtstack.ai](https://docs.debtstack.ai)
+
+## License
+
+Proprietary - All rights reserved.
