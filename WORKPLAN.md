@@ -187,7 +187,7 @@ Removed `/explorer` page due to incomplete ownership structure data. Site now ha
 
 - **Demo** (anchor on home page)
 - **Pricing**
-- **Docs** (links to Mintlify at kuyperiancapitalllc.mintlify.app)
+- **Docs** (links to Mintlify at docs.debtstack.ai)
 
 **Files changed:**
 - `app/explorer/page.tsx` - Deleted

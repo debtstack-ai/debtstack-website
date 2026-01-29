@@ -53,7 +53,7 @@ export default function Home() {
             <a href="/pricing" className="text-gray-400 hover:text-white transition text-sm font-medium">
               Pricing
             </a>
-            <a href="https://kuyperiancapitalllc.mintlify.app" className="text-gray-400 hover:text-white transition text-sm font-medium">
+            <a href="https://docs.debtstack.ai" className="text-gray-400 hover:text-white transition text-sm font-medium">
               Docs
             </a>
             <SignedOut>
@@ -255,7 +255,7 @@ export default function Home() {
                 Pricing
               </a>
               <a
-                href="https://kuyperiancapitalllc.mintlify.app"
+                href="https://docs.debtstack.ai"
                 className="hover:text-white transition"
               >
                 Docs

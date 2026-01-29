@@ -99,7 +99,7 @@ export default function PricingPage() {
             <a href="/pricing" className="text-white transition text-sm font-medium">
               Pricing
             </a>
-            <a href="https://kuyperiancapitalllc.mintlify.app" className="text-gray-400 hover:text-white transition text-sm font-medium">
+            <a href="https://docs.debtstack.ai" className="text-gray-400 hover:text-white transition text-sm font-medium">
               Docs
             </a>
             <SignedOut>
@@ -294,7 +294,7 @@ export default function PricingPage() {
             <div className="flex gap-8 text-gray-400">
               <a href="/#demo" className="hover:text-white transition">Demo</a>
               <a href="/pricing" className="hover:text-white transition">Pricing</a>
-              <a href="https://kuyperiancapitalllc.mintlify.app" className="hover:text-white transition">Docs</a>
+              <a href="https://docs.debtstack.ai" className="hover:text-white transition">Docs</a>
               <a href="mailto:hello@debtstack.ai" className="hover:text-white transition">Contact</a>
             </div>
           </div>
