@@ -90,7 +90,7 @@ export default function PricingPage() {
       <header className="relative px-6 py-4 border-b border-gray-800">
         <div className="max-w-6xl mx-auto flex justify-between items-center">
           <a href="/" className="flex items-center">
-            <img src="/logo-transparent.png" alt="DebtStack" className="h-16 md:h-24 w-auto" />
+            <img src="/logo-transparent.png" alt="DebtStack" className="h-32 md:h-48 w-auto" />
           </a>
           <nav className="flex items-center gap-6">
             <a href="/#demo" className="text-gray-400 hover:text-white transition text-sm font-medium">
@@ -289,7 +289,7 @@ export default function PricingPage() {
         <div className="max-w-4xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <a href="/">
-              <img src="/logo-transparent.png" alt="DebtStack" className="h-16 w-auto" />
+              <img src="/logo-transparent.png" alt="DebtStack" className="h-32 w-auto" />
             </a>
             <div className="flex gap-8 text-gray-400">
               <a href="/#demo" className="hover:text-white transition">Demo</a>

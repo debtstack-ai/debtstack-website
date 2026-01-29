@@ -181,7 +181,7 @@ function DashboardContent() {
       <header className="px-6 py-4 border-b border-gray-800">
         <div className="max-w-4xl mx-auto flex justify-between items-center">
           <a href="/" className="flex items-center">
-            <img src="/logo-transparent.png" alt="DebtStack" className="h-16 w-auto" />
+            <img src="/logo-transparent.png" alt="DebtStack" className="h-32 md:h-48 w-auto" />
           </a>
           <div className="flex items-center gap-4">
             <span className="text-gray-400 text-sm">{user.primaryEmailAddress?.emailAddress}</span>
