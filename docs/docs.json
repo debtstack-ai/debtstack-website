@@ -26,18 +26,11 @@
     "isHidden": true
   },
   "rounded": "default",
-  "styling": {
-    "customCss": "/custom.css"
+  "background": {
+    "style": "gradient"
   },
-  "font": {
-    "display": {
-      "family": "Inter",
-      "weight": 600
-    },
-    "body": {
-      "family": "Inter",
-      "weight": 400
-    }
+  "codeBlock": {
+    "mode": "dark"
   },
   "search": {
     "prompt": "Search docs..."
