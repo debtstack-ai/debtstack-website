@@ -1,17 +1,30 @@
 {
   "$schema": "https://mintlify.com/schema.json",
-  "theme": "mint",
+  "theme": "quill",
   "name": "DebtStack",
   "logo": {
     "dark": "/logo/logo-dark.png",
-    "light": "/logo/logo-light.png"
+    "light": "/logo/logo-light.png",
+    "href": "https://debtstack.ai"
   },
   "favicon": "/favicon.svg",
   "colors": {
     "primary": "#3B82F6",
     "light": "#60A5FA",
-    "dark": "#1D4ED8"
+    "dark": "#1D4ED8",
+    "background": {
+      "dark": "#0a0a0a",
+      "light": "#ffffff"
+    },
+    "anchors": {
+      "from": "#3B82F6",
+      "to": "#8B5CF6"
+    }
   },
+  "modeToggle": {
+    "default": "dark"
+  },
+  "rounded": "default",
   "topbarLinks": [
     {
       "name": "Dashboard",
