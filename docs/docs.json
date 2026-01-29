@@ -22,9 +22,23 @@
     }
   },
   "modeToggle": {
-    "default": "dark"
+    "default": "dark",
+    "isHidden": true
   },
   "rounded": "default",
+  "styling": {
+    "customCss": "/custom.css"
+  },
+  "font": {
+    "display": {
+      "family": "Inter",
+      "weight": 600
+    },
+    "body": {
+      "family": "Inter",
+      "weight": 400
+    }
+  },
   "search": {
     "prompt": "Search docs..."
   },

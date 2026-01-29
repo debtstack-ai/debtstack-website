@@ -1,0 +1,212 @@
+/* DebtStack Docs - Custom Styling to match debtstack.ai */
+
+/* ===== GLOBAL DARK THEME ===== */
+:root {
+  --background-dark: #0a0a0a;
+  --background-card: rgba(255, 255, 255, 0.05);
+  --border-subtle: rgba(255, 255, 255, 0.1);
+  --blue-primary: #3B82F6;
+  --purple-accent: #8B5CF6;
+  --glow-blue: rgba(59, 130, 246, 0.4);
+}
+
+/* Force dark background */
+.dark body,
+.dark main,
+.dark [class*="bg-background"] {
+  background-color: #0a0a0a !important;
+}
+
+/* ===== NAVIGATION / SIDEBAR ===== */
+.dark nav,
+.dark aside,
+.dark [class*="sidebar"] {
+  background-color: rgba(10, 10, 10, 0.95) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* ===== CARDS - Glassmorphism Effect ===== */
+.dark [class*="Card"],
+.dark [class*="card"],
+.dark .group {
+  background: rgba(255, 255, 255, 0.05) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  transition: all 0.3s ease;
+}
+
+.dark [class*="Card"]:hover,
+.dark [class*="card"]:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(100, 150, 255, 0.3) !important;
+  box-shadow: 0 8px 32px rgba(59, 130, 246, 0.15);
+  transform: translateY(-2px);
+}
+
+/* ===== CODE BLOCKS - GitHub Dark Style ===== */
+.dark pre,
+.dark [class*="codeblock"],
+.dark code[class*="language-"] {
+  background-color: #0d1117 !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 12px !important;
+}
+
+.dark pre::before,
+.dark [class*="codeblock"]::before {
+  background-color: #161b22 !important;
+}
+
+/* Inline code */
+.dark :not(pre) > code {
+  background-color: rgba(59, 130, 246, 0.15) !important;
+  border: 1px solid rgba(59, 130, 246, 0.2) !important;
+  color: #60A5FA !important;
+  border-radius: 6px !important;
+  padding: 2px 6px !important;
+}
+
+/* ===== BUTTONS - Blue Glow Effect ===== */
+.dark button[class*="primary"],
+.dark a[class*="primary"],
+.dark [class*="cta"] {
+  background: linear-gradient(135deg, #3B82F6, #2563EB) !important;
+  box-shadow: 0 0 25px rgba(59, 130, 246, 0.4) !important;
+  border: none !important;
+  transition: all 0.3s ease !important;
+}
+
+.dark button[class*="primary"]:hover,
+.dark a[class*="primary"]:hover,
+.dark [class*="cta"]:hover {
+  box-shadow: 0 0 40px rgba(59, 130, 246, 0.6), 0 0 60px rgba(59, 130, 246, 0.3) !important;
+  transform: translateY(-2px) !important;
+}
+
+/* ===== TABLES ===== */
+.dark table {
+  background: rgba(255, 255, 255, 0.02) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 12px !important;
+  overflow: hidden;
+}
+
+.dark th {
+  background: rgba(59, 130, 246, 0.1) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: #60A5FA !important;
+}
+
+.dark td {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+.dark tr:hover td {
+  background: rgba(255, 255, 255, 0.03) !important;
+}
+
+/* ===== HEADINGS - Gradient Text ===== */
+.dark h1 {
+  background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ===== LINKS - Blue Accent ===== */
+.dark a:not([class*="button"]):not([class*="Card"]) {
+  color: #60A5FA !important;
+  transition: color 0.2s ease;
+}
+
+.dark a:not([class*="button"]):not([class*="Card"]):hover {
+  color: #93C5FD !important;
+}
+
+/* ===== ACCORDION / EXPANDABLE ===== */
+.dark [class*="Accordion"],
+.dark details {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 12px !important;
+}
+
+/* ===== CALLOUTS / NOTES ===== */
+.dark [class*="Note"],
+.dark [class*="Warning"],
+.dark [class*="Tip"],
+.dark [class*="callout"] {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-left: 3px solid #3B82F6 !important;
+  border-radius: 0 12px 12px 0 !important;
+}
+
+/* ===== SEARCH ===== */
+.dark [class*="search"] input,
+.dark input[type="search"] {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 12px !important;
+}
+
+.dark [class*="search"] input:focus,
+.dark input[type="search"]:focus {
+  border-color: rgba(59, 130, 246, 0.5) !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+}
+
+/* ===== SCROLLBAR ===== */
+.dark ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* ===== API PLAYGROUND ===== */
+.dark [class*="playground"],
+.dark [class*="Playground"] {
+  background: #0d1117 !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 16px !important;
+}
+
+/* ===== FOOTER ===== */
+.dark footer {
+  background: transparent !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* ===== TABS ===== */
+.dark [role="tablist"] {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-radius: 12px !important;
+  padding: 4px !important;
+}
+
+.dark [role="tab"][aria-selected="true"] {
+  background: linear-gradient(135deg, #3B82F6, #2563EB) !important;
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.3) !important;
+}
+
+/* ===== BREADCRUMBS ===== */
+.dark [class*="breadcrumb"] {
+  color: #6b7280 !important;
+}
+
+/* ===== DIVIDERS ===== */
+.dark hr {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
