@@ -77,3 +77,4 @@ Deployed on [Railway](https://railway.app). Push to `main` triggers automatic de
 ## License
 
 Proprietary - All rights reserved.
+
