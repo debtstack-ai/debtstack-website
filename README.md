@@ -4,8 +4,7 @@ Marketing website, user dashboard, and billing for [DebtStack.ai](https://debtst
 
 ## Features
 
-- Landing page with product demo
-- Interactive data explorer
+- Landing page with live product demo
 - User dashboard with API key management
 - Stripe-powered billing (Free, Pro, Business tiers)
 - Mintlify documentation
@@ -51,7 +50,6 @@ Open [http://localhost:3000](http://localhost:3000).
 │   ├── api/stripe/      # Stripe checkout & portal
 │   ├── api/user/        # User sync with backend
 │   ├── dashboard/       # User dashboard
-│   ├── explorer/        # Data explorer
 │   ├── pricing/         # Pricing page
 │   └── page.tsx         # Landing page
 ├── docs/                # Mintlify docs (docs.debtstack.ai)

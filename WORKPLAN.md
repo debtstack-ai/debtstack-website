@@ -198,3 +198,9 @@ Removed `/explorer` page due to incomplete ownership structure data. Site now ha
 
 Updated Mintlify intro to emphasize credit-relevant documents:
 > "200+ companies, 2,500+ debt instruments, and full-text search across indentures, credit agreements, and SEC filings"
+
+### Updated Documentation Files
+
+Updated CLAUDE.md and README.md to reflect explorer removal:
+- Removed `explorer/` from project structure in both files
+- Changed "Interactive data explorer" to "Landing page with live product demo" in README.md

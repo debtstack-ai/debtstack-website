@@ -25,7 +25,6 @@ debtstack-website/
 │   │   ├── user/          # User sync with backend
 │   │   └── waitlist/      # Waitlist signup
 │   ├── dashboard/         # User dashboard (API key, usage, billing)
-│   ├── explorer/          # Data explorer tool
 │   ├── pricing/           # Pricing page
 │   └── page.tsx           # Landing page
 ├── docs/                   # Mintlify documentation (docs.debtstack.ai)
