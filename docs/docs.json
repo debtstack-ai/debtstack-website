@@ -25,6 +25,13 @@
     "default": "dark"
   },
   "rounded": "default",
+  "search": {
+    "prompt": "Search docs..."
+  },
+  "feedback": {
+    "thumbsRating": true,
+    "suggestEdit": true
+  },
   "topbarLinks": [
     {
       "name": "Dashboard",
