@@ -52,7 +52,6 @@ export async function GET(request: NextRequest) {
     const usersQuery = `
       SELECT
         id, email, api_key_prefix, tier,
-        credits_remaining, credits_monthly,
         stripe_customer_id, stripe_subscription_id,
         is_active, created_at, updated_at
       FROM users

@@ -23,7 +23,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 
     const pool = getPool();
     const result = await pool.query(
-      `SELECT id, email, api_key_prefix, tier, credits_remaining, credits_monthly,
+      `SELECT id, email, api_key_prefix, tier,
               stripe_customer_id, stripe_subscription_id, is_active, created_at, updated_at
        FROM users WHERE email = $1`,
       [decodedEmail]
@@ -72,14 +72,6 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       values.push(body.tier);
       paramIndex++;
 
-      // Update credits based on tier
-      if (body.tier === 'free') {
-        updates.push(`credits_monthly = 25`);
-        updates.push(`credits_remaining = 25`);
-      } else {
-        updates.push(`credits_monthly = -1`);
-        updates.push(`credits_remaining = -1`);
-      }
     }
 
     if (body.is_active !== undefined) {

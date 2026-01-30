@@ -21,11 +21,9 @@ export function getPool(): Pool {
 export interface DbUser {
   id: number;
   email: string;
-  api_key: string;
+  api_key_hash: string;
   api_key_prefix: string;
   tier: string;
-  credits_remaining: number;
-  credits_monthly: number;
   stripe_customer_id: string | null;
   stripe_subscription_id: string | null;
   is_active: boolean;
