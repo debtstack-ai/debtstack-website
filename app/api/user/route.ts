@@ -36,7 +36,18 @@ export async function POST(request: NextRequest) {
       }
     } catch (dbError) {
       // Database not configured, fall back to backend API
-      console.log('Database not available, using backend API');
+      const dbErrorMsg = dbError instanceof Error ? dbError.message : String(dbError);
+      console.error('Database error:', dbErrorMsg);
+      // Return error in response for debugging (remove in production)
+      return NextResponse.json({
+        api_key: null,
+        api_key_prefix: null,
+        tier: 'free',
+        credits_remaining: 25,
+        credits_daily_limit: 25,
+        is_new: false,
+        db_error: dbErrorMsg,
+      });
     }
 
     // User doesn't exist in DB, try to create via backend signup
