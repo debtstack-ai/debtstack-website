@@ -18,36 +18,29 @@ export async function POST(request: NextRequest) {
     try {
       const pool = getPool();
       const result = await pool.query(
-        `SELECT email, api_key, api_key_prefix, tier, credits_remaining, credits_monthly, is_active
+        `SELECT email, api_key_prefix, tier, is_active, created_at
          FROM users WHERE email = $1`,
         [email]
       );
 
       if (result.rows.length > 0) {
         const user = result.rows[0];
+        // Note: api_key is hashed in DB, we can only return the prefix
+        // Users see their full key only on first signup
         return NextResponse.json({
-          api_key: user.api_key,
+          api_key: null,
           api_key_prefix: user.api_key_prefix,
-          tier: user.tier,
-          credits_remaining: user.credits_remaining,
-          credits_monthly_limit: user.credits_monthly,
+          tier: user.tier || 'free',
+          credits_remaining: user.tier === 'free' ? 25 : -1,
+          credits_daily_limit: user.tier === 'free' ? 25 : undefined,
           is_new: false,
+          message: 'API key is stored securely. Use the prefix shown, or regenerate if you lost your key.',
         });
       }
     } catch (dbError) {
       // Database not configured, fall back to backend API
       const dbErrorMsg = dbError instanceof Error ? dbError.message : String(dbError);
       console.error('Database error:', dbErrorMsg);
-      // Return error in response for debugging (remove in production)
-      return NextResponse.json({
-        api_key: null,
-        api_key_prefix: null,
-        tier: 'free',
-        credits_remaining: 25,
-        credits_daily_limit: 25,
-        is_new: false,
-        db_error: dbErrorMsg,
-      });
     }
 
     // User doesn't exist in DB, try to create via backend signup

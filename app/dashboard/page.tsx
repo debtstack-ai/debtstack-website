@@ -242,6 +242,26 @@ function DashboardContent() {
                 {regenerating ? 'Regenerating...' : 'Regenerate API Key'}
               </button>
             </div>
+          ) : userData?.api_key_prefix ? (
+            <div className="space-y-4">
+              <div className="flex items-center gap-4">
+                <code className="flex-1 px-4 py-3 rounded-lg bg-black border border-gray-700 font-mono text-sm text-gray-400">
+                  {userData.api_key_prefix}{'•'.repeat(24)}
+                </code>
+              </div>
+
+              <p className="text-sm text-yellow-400">
+                Your API key is stored securely. If you lost your key, regenerate it below.
+              </p>
+
+              <button
+                onClick={regenerateApiKey}
+                disabled={regenerating}
+                className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-sm transition disabled:opacity-50"
+              >
+                {regenerating ? 'Regenerating...' : 'Regenerate API Key'}
+              </button>
+            </div>
           ) : (
             <p className="text-gray-400">Loading API key...</p>
           )}
