@@ -20,14 +20,13 @@ curl "https://api.debtstack.ai/v1/companies" \
 
 ## Endpoints
 
-DebtStack provides 8 core primitives:
+DebtStack provides 7 core primitives:
 
 ### Companies
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/v1/companies` | Search and filter companies |
-| GET | `/v1/companies/{ticker}/changes` | Track debt structure changes |
 
 ### Bonds
 
@@ -120,6 +119,5 @@ Each endpoint consumes credits:
 | Endpoint | Credits |
 |----------|---------|
 | Companies, Bonds, Resolve, Pricing | 1 |
-| Changes | 2 |
 | Traverse, Documents | 3 |
 | Batch | Sum of operations |

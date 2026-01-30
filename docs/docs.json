@@ -93,8 +93,7 @@
           {
             "group": "Companies",
             "pages": [
-              "api-reference/companies/search",
-              "api-reference/companies/changes"
+              "api-reference/companies/search"
             ]
           },
           {
