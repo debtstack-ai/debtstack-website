@@ -105,6 +105,18 @@
             ]
           },
           {
+            "group": "Financials",
+            "pages": [
+              "api-reference/financials/search"
+            ]
+          },
+          {
+            "group": "Collateral",
+            "pages": [
+              "api-reference/collateral/search"
+            ]
+          },
+          {
             "group": "Entities",
             "pages": [
               "api-reference/entities/traverse"
@@ -139,7 +151,7 @@
     "linkedin": "https://linkedin.com/company/debtstack"
   },
   "api": {
-    "baseUrl": "https://api.debtstack.ai",
+    "baseUrl": "https://credible-ai-production.up.railway.app",
     "auth": {
       "method": "key",
       "name": "X-API-Key"

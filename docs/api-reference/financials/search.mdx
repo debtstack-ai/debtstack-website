@@ -1,0 +1,118 @@
+---
+title: Search Financials
+api: GET /v1/financials
+description: Query quarterly financial statements (income, balance sheet, cash flow)
+---
+
+## Overview
+
+Retrieve quarterly financial statements from 10-Q and 10-K filings. Supports TTM (Trailing Twelve Months) calculations for accurate leverage ratios.
+
+**Credits:** 1 per request
+
+## Parameters
+
+<ParamField query="ticker" type="string">
+  Company ticker symbol (e.g., `AAPL`, `CHTR`)
+</ParamField>
+
+<ParamField query="period" type="string">
+  Period type: `TTM` for trailing twelve months, or specific quarter
+</ParamField>
+
+<ParamField query="fiscal_year" type="integer">
+  Filter by fiscal year (e.g., `2025`)
+</ParamField>
+
+<ParamField query="fiscal_quarter" type="integer">
+  Filter by fiscal quarter (1-4)
+</ParamField>
+
+<ParamField query="format" type="string">
+  Response format: `json` (default) or `csv`
+</ParamField>
+
+<ParamField query="fields" type="string">
+  Comma-separated list of fields to return
+</ParamField>
+
+## Examples
+
+### Get TTM Financials
+
+```bash
+curl -H "X-API-Key: $DEBTSTACK_API_KEY" \
+  "https://credible-ai-production.up.railway.app/v1/financials?ticker=AAPL&period=TTM"
+```
+
+### Get Specific Quarter
+
+```bash
+curl -H "X-API-Key: $DEBTSTACK_API_KEY" \
+  "https://credible-ai-production.up.railway.app/v1/financials?ticker=CHTR&fiscal_year=2025&fiscal_quarter=3"
+```
+
+### Compare Companies (CSV)
+
+```bash
+curl -H "X-API-Key: $DEBTSTACK_API_KEY" \
+  "https://credible-ai-production.up.railway.app/v1/financials?fiscal_year=2025&fiscal_quarter=3&format=csv"
+```
+
+## Response
+
+```json
+{
+  "data": [
+    {
+      "ticker": "AAPL",
+      "fiscal_year": 2025,
+      "fiscal_quarter": 3,
+      "filing_type": "10-Q",
+      "period_end_date": "2025-06-30",
+      "revenue": 85500000000,
+      "operating_income": 23100000000,
+      "net_income": 19870000000,
+      "ebitda": 28500000000,
+      "total_assets": 352000000000,
+      "total_liabilities": 290000000000,
+      "total_debt": 106500000000,
+      "cash_and_equivalents": 28500000000,
+      "operating_cash_flow": 24300000000,
+      "capex": 2800000000,
+      "free_cash_flow": 21500000000
+    }
+  ],
+  "meta": {
+    "total": 1,
+    "period": "TTM"
+  }
+}
+```
+
+## TTM Calculation Rules
+
+- **10-K filing**: Uses annual figures directly (already represents full year)
+- **10-Q filing**: Sums trailing 4 quarters
+- **<4 quarters available**: Annualized (flagged as `is_annualized: true`)
+- **No D&A data**: Uses operating income as proxy (flagged as `ebitda_estimated: true`)
+
+## Data Quality Metadata
+
+Request with `include_metadata=true` to get data quality indicators:
+
+```json
+{
+  "ticker": "AAPL",
+  "leverage_ratio": 0.63,
+  "_metadata": {
+    "leverage_data_quality": {
+      "ebitda_source": "annual_10k",
+      "ebitda_quarters": 4,
+      "is_annualized": false,
+      "ebitda_estimated": false,
+      "ttm_quarters": ["2025FY"]
+    }
+  }
+}
+```

@@ -1,0 +1,105 @@
+---
+title: Search Collateral
+api: GET /v1/collateral
+description: Query collateral securing debt instruments
+---
+
+## Overview
+
+Search and filter collateral records to understand what assets secure specific debt instruments. Essential for recovery analysis and understanding lien priority.
+
+**Credits:** 1 per request
+
+## Parameters
+
+<ParamField query="ticker" type="string">
+  Company ticker symbol (e.g., `RIG`, `CHTR`)
+</ParamField>
+
+<ParamField query="priority" type="string">
+  Lien priority: `first_lien`, `second_lien`, `unsecured`
+</ParamField>
+
+<ParamField query="collateral_type" type="string">
+  Type of collateral: `equipment`, `vehicles`, `real_estate`, `inventory`, `receivables`, `intellectual_property`
+</ParamField>
+
+<ParamField query="has_valuation" type="boolean">
+  Filter to collateral with valuation data
+</ParamField>
+
+<ParamField query="fields" type="string">
+  Comma-separated list of fields to return
+</ParamField>
+
+<ParamField query="limit" type="integer" default="50">
+  Maximum number of results (max: 100)
+</ParamField>
+
+## Examples
+
+### Find First-Lien Collateral
+
+```bash
+curl -H "X-API-Key: $DEBTSTACK_API_KEY" \
+  "https://credible-ai-production.up.railway.app/v1/collateral?ticker=RIG&priority=first_lien"
+```
+
+### Get Collateral with Valuations
+
+```bash
+curl -H "X-API-Key: $DEBTSTACK_API_KEY" \
+  "https://credible-ai-production.up.railway.app/v1/collateral?has_valuation=true&collateral_type=equipment"
+```
+
+### Filter by Collateral Type
+
+```bash
+curl -H "X-API-Key: $DEBTSTACK_API_KEY" \
+  "https://credible-ai-production.up.railway.app/v1/collateral?collateral_type=real_estate"
+```
+
+## Response
+
+```json
+{
+  "data": [
+    {
+      "id": "col_123abc",
+      "ticker": "RIG",
+      "debt_instrument_id": "di_456def",
+      "debt_instrument_name": "8.000% Senior Secured Notes due 2027",
+      "collateral_type": "equipment",
+      "description": "Offshore drilling rigs and related equipment",
+      "priority": "first_lien",
+      "valuation": 2500000000,
+      "valuation_date": "2024-12-31",
+      "valuation_source": "10-K filing",
+      "jurisdiction": "United States"
+    }
+  ],
+  "meta": {
+    "total": 15,
+    "limit": 50,
+    "offset": 0
+  }
+}
+```
+
+## Use Cases
+
+### Recovery Analysis
+
+Combine collateral data with entity traversal to understand recovery prospects:
+
+1. Find bonds for a company
+2. Query collateral for those bonds
+3. Assess lien priority and asset values
+
+### Structural Subordination
+
+Use collateral data to understand which subsidiaries pledge assets and which remain unencumbered.
+
+### Distressed Investing
+
+Screen for secured bonds with high collateral coverage ratios for potential recovery plays.

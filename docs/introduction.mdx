@@ -1,20 +1,33 @@
 ---
 title: Introduction
-description: 'Credit data API built for AI agents'
+description: 'The credit API for AI agents'
 ---
 
 # Welcome to DebtStack
 
-DebtStack provides structured corporate debt data optimized for AI agents and LLM workflows. Query corporate structure, debt instruments, guarantees, and pricing data through a simple REST API.
+Corporate structure and debt analysis is complex. Even with AI, achieving accuracy, speed, and cost-effectiveness requires significant engineering. DebtStack does this hard work once, giving you instant API access to pre-computed, quality-assured credit data.
 
-## What We Offer
+## The Problem
+
+Extracting accurate corporate structure and debt data from SEC filings is surprisingly hard:
+
+- **Accuracy challenges**: LLMs return malformed JSON, misinterpret amounts, confuse entity names
+- **Speed variability**: A single extraction can take 90-300 seconds with multiple LLM calls
+- **Cost uncertainty**: Ad-hoc extraction costs $0.03-0.50+ per company
+- **Expertise required**: Understanding 10-K structure, Exhibit 21, debt footnotes, VIEs
+
+**The Solution**: DebtStack runs extraction once with rigorous QA, then serves pre-computed data via fast API.
+
+## Current Database
+
+**201 companies | 5,374 entities | 3,056 debt instruments | 591 with CUSIP/ISIN | 13,862 document sections | 3,831 guarantees | 626 collateral records**
 
 <CardGroup cols={2}>
   <Card
     title="Structured Data"
     icon="database"
   >
-    200+ companies, 2,500+ debt instruments, and full-text search across indentures, credit agreements, and SEC filings
+    201+ companies, 3,056 debt instruments, and full-text search across indentures, credit agreements, and SEC filings
   </Card>
   <Card
     title="AI-Optimized"
@@ -32,9 +45,25 @@ DebtStack provides structured corporate debt data optimized for AI agents and LL
     title="Document Search"
     icon="file-magnifying-glass"
   >
-    Full-text search across SEC filings including indentures, credit agreements, and debt footnotes
+    Full-text search across 13,862 SEC filing sections including indentures and credit agreements
   </Card>
 </CardGroup>
+
+## Coverage
+
+S&P 100 and NASDAQ 100 companies across all sectors:
+
+| Sector | Sample Companies |
+|--------|------------------|
+| Tech | AAPL, MSFT, NVDA, GOOGL, META, AMZN, TSLA, ORCL, AVGO |
+| Financials | JPM, GS, BAC, WFC, MS |
+| Healthcare | JNJ, UNH, LLY, ABBV, MRK, IDXX, DXCM |
+| Consumer | WMT, COST, HD, MCD, KO, PEP, ORLY |
+| Telecom/Cable | CHTR, ATUS, TMUS, LUMN |
+| Energy | XOM, CVX, OXY |
+| Offshore Drilling | RIG, VAL, DO, NE |
+| Airlines | AAL, UAL, DAL |
+| Semiconductors | NVDA, AMD, AVGO, GFS, CDNS |
 
 ## Quick Example
 
@@ -44,7 +73,7 @@ Find the highest-leverage company among the MAG7:
 import requests
 
 response = requests.get(
-    "https://api.debtstack.ai/v1/companies",
+    "https://credible-ai-production.up.railway.app/v1/companies",
     params={
         "ticker": "AAPL,MSFT,GOOGL,AMZN,NVDA,META,TSLA",
         "fields": "ticker,name,net_leverage_ratio",
@@ -58,30 +87,39 @@ print(response.json())
 # {"data": [{"ticker": "TSLA", "name": "Tesla, Inc.", "net_leverage_ratio": 1.8}]}
 ```
 
-## 8 Core Primitives
+## 9 Core Primitives
 
-DebtStack offers 8 atomic API endpoints that can answer any credit analysis question:
+DebtStack offers 9 atomic API endpoints optimized for AI agents:
 
-| Primitive | Endpoint | Purpose |
-|-----------|----------|---------|
-| Search Companies | `GET /v1/companies` | Filter companies by leverage, sector, debt metrics |
-| Search Bonds | `GET /v1/bonds` | Find bonds by yield, seniority, maturity |
-| Resolve Bond | `GET /v1/bonds/resolve` | Map CUSIP/ISIN to bond details |
-| Bond Pricing | `GET /v1/pricing` | Get YTM, spreads, last trade |
-| Company Changes | `GET /v1/companies/{ticker}/changes` | Track debt structure changes |
-| Traverse Entities | `POST /v1/entities/traverse` | Follow guarantor chains |
-| Search Documents | `GET /v1/documents/search` | Full-text search SEC filings |
-| Batch | `POST /v1/batch` | Execute multiple operations |
+| Primitive | Endpoint | Credits | Purpose |
+|-----------|----------|---------|---------|
+| Search Companies | `GET /v1/companies` | 1 | Filter by leverage, sector, 15+ filters |
+| Search Bonds | `GET /v1/bonds` | 1 | Find by yield, seniority, maturity |
+| Resolve Bond | `GET /v1/bonds/resolve` | 1 | Map CUSIP/ISIN or free-text to bond |
+| Financials | `GET /v1/financials` | 1 | Quarterly income, balance, cash flow |
+| Collateral | `GET /v1/collateral` | 1 | Collateral securing debt |
+| Company Changes | `GET /v1/companies/{ticker}/changes` | 2 | Track debt structure changes |
+| Traverse Entities | `POST /v1/entities/traverse` | 3 | Follow guarantor chains |
+| Search Documents | `GET /v1/documents/search` | 3 | Full-text search SEC filings |
+| Batch | `POST /v1/batch` | Sum | Execute multiple operations |
+
+## Data Quality
+
+**Estimated data is always flagged.** When data cannot be extracted and must be inferred:
+
+- `issue_date_estimated: true` - Issue date inferred from maturity date
+- Future estimated fields follow the same pattern
+
+## Data Freshness
+
+DebtStack extracts directly from the latest SEC EDGAR filings, providing **12-18 months fresher data** than LLMs like ChatGPT or Gemini.
+
+| Source | Data Period | NVDA EBITDA Example |
+|--------|-------------|---------------------|
+| **DebtStack** | Nov 2025 (FY2026 Q3) | $121B |
+| Gemini/ChatGPT | Q1 2025 (knowledge cutoff) | $39B |
 
 ## Integrations
-
-Choose the integration that fits your workflow:
-
-| Integration | Best For | Setup |
-|-------------|----------|-------|
-| [**LangChain**](/guides/langchain) | Multi-step agent workflows, tool chaining | `pip install langchain` + tool config |
-| [**MCP**](/guides/mcp) | Claude Desktop, native Claude integration | Add to `claude_desktop_config.json` |
-| [**REST API**](/api-reference/overview) | Direct access, any language, full control | HTTP requests with API key |
 
 <CardGroup cols={3}>
   <Card title="LangChain" icon="link" href="/guides/langchain">

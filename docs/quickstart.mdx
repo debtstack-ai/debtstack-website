@@ -14,8 +14,12 @@ You'll need:
 ### Using curl
 
 ```bash
-curl "https://api.debtstack.ai/v1/companies?ticker=AAPL&fields=ticker,name,total_debt,net_leverage_ratio" \
-  -H "X-API-Key: ds_xxxxx"
+# Set your API key
+export DEBTSTACK_API_KEY="ds_your_api_key_here"
+
+# Search companies with field selection
+curl -H "X-API-Key: $DEBTSTACK_API_KEY" \
+  "https://credible-ai-production.up.railway.app/v1/companies?ticker=AAPL,MSFT,GOOGL&fields=ticker,name,net_leverage_ratio"
 ```
 
 ### Using Python
@@ -24,7 +28,7 @@ curl "https://api.debtstack.ai/v1/companies?ticker=AAPL&fields=ticker,name,total
 import requests
 
 API_KEY = "ds_xxxxx"
-BASE_URL = "https://api.debtstack.ai/v1"
+BASE_URL = "https://credible-ai-production.up.railway.app/v1"
 
 response = requests.get(
     f"{BASE_URL}/companies",
@@ -43,7 +47,7 @@ print(data)
 
 ```javascript
 const API_KEY = "ds_xxxxx";
-const BASE_URL = "https://api.debtstack.ai/v1";
+const BASE_URL = "https://credible-ai-production.up.railway.app/v1";
 
 const params = new URLSearchParams({
   ticker: "AAPL",
@@ -87,6 +91,12 @@ console.log(data);
 
 ### Find High-Yield Bonds
 
+```bash
+# Find high-yield senior unsecured bonds with pricing data
+curl -H "X-API-Key: $DEBTSTACK_API_KEY" \
+  "https://credible-ai-production.up.railway.app/v1/bonds?seniority=senior_unsecured&min_ytm=8.0&has_pricing=true"
+```
+
 ```python
 # Bonds yielding more than 8%
 response = requests.get(
@@ -94,6 +104,7 @@ response = requests.get(
     params={
         "min_ytm": 8.0,
         "has_pricing": True,
+        "seniority": "senior_unsecured",
         "fields": "name,cusip,company_ticker,coupon_rate,pricing",
         "sort": "-pricing.ytm"
     },
@@ -101,22 +112,71 @@ response = requests.get(
 )
 ```
 
+### Resolve Bond Identifiers
+
+```bash
+# Map trader shorthand to CUSIP
+curl -H "X-API-Key: $DEBTSTACK_API_KEY" \
+  "https://credible-ai-production.up.railway.app/v1/bonds/resolve?q=RIG%208%25%202027"
+
+# Lookup by CUSIP
+curl -H "X-API-Key: $DEBTSTACK_API_KEY" \
+  "https://credible-ai-production.up.railway.app/v1/bonds/resolve?cusip=89157VAG8"
+```
+
+### Get Financials (TTM)
+
+```bash
+# Get trailing twelve months financials for AAPL
+curl -H "X-API-Key: $DEBTSTACK_API_KEY" \
+  "https://credible-ai-production.up.railway.app/v1/financials?ticker=AAPL&period=TTM"
+
+# Get all Q3 2025 financials for comparison
+curl -H "X-API-Key: $DEBTSTACK_API_KEY" \
+  "https://credible-ai-production.up.railway.app/v1/financials?fiscal_year=2025&fiscal_quarter=3&format=csv"
+```
+
+### Find Collateral
+
+```bash
+# Find all first-lien collateral for RIG
+curl -H "X-API-Key: $DEBTSTACK_API_KEY" \
+  "https://credible-ai-production.up.railway.app/v1/collateral?ticker=RIG&priority=first_lien"
+
+# Get collateral with valuations
+curl -H "X-API-Key: $DEBTSTACK_API_KEY" \
+  "https://credible-ai-production.up.railway.app/v1/collateral?has_valuation=true&collateral_type=equipment"
+```
+
 ### Search SEC Documents
+
+```bash
+# Find covenant language in credit agreements
+curl -H "X-API-Key: $DEBTSTACK_API_KEY" \
+  "https://credible-ai-production.up.railway.app/v1/documents/search?q=event+of+default&ticker=RIG&section_type=indenture"
+```
 
 ```python
 # Find covenant language in credit agreements
 response = requests.get(
     f"{BASE_URL}/documents/search",
     params={
-        "q": "maintenance covenant",
-        "section_type": "credit_agreement",
-        "ticker": "CHTR"
+        "q": "restricted payment dividend",
+        "section_type": "indenture",
+        "ticker": "RIG"
     },
     headers={"X-API-Key": API_KEY}
 )
 ```
 
 ### Get Bond Guarantors
+
+```bash
+curl -X POST "https://credible-ai-production.up.railway.app/v1/entities/traverse" \
+  -H "X-API-Key: $DEBTSTACK_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"start":{"type":"bond","id":"893830AK8"},"relationships":["guarantees"]}'
+```
 
 ```python
 # Who guarantees this bond?
