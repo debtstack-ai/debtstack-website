@@ -1,6 +1,6 @@
 {
   "$schema": "https://mintlify.com/schema.json",
-  "theme": "quill",
+  "theme": "mint",
   "name": "DebtStack",
   "logo": {
     "dark": "/logo/logo-dark.png",
