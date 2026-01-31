@@ -117,6 +117,13 @@
             ]
           },
           {
+            "group": "Covenants",
+            "pages": [
+              "api-reference/covenants/search",
+              "api-reference/covenants/compare"
+            ]
+          },
+          {
             "group": "Batch",
             "pages": [
               "api-reference/batch/operations"

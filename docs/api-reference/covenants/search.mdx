@@ -1,0 +1,162 @@
+---
+title: Search Covenants
+api: GET /v1/covenants
+description: 'Search and filter structured covenant data'
+---
+
+## Overview
+
+Search and filter structured covenant data extracted from credit agreements and indentures. Returns financial covenants (leverage ratios, coverage tests), negative covenants (liens, asset sales), and protective covenants (change of control).
+
+## Request
+
+### Company Filters
+
+<ParamField query="ticker" type="string">
+  Filter by company ticker.
+
+  Example: `CHTR`
+</ParamField>
+
+### Covenant Filters
+
+<ParamField query="covenant_type" type="string">
+  Filter by covenant type: `financial`, `negative`, `incurrence`, `protective`
+</ParamField>
+
+<ParamField query="test_metric" type="string">
+  Filter by financial metric: `leverage_ratio`, `first_lien_leverage`, `interest_coverage`, `fixed_charge_coverage`
+</ParamField>
+
+<ParamField query="min_threshold" type="number">
+  Minimum threshold value.
+</ParamField>
+
+<ParamField query="max_threshold" type="number">
+  Maximum threshold value.
+</ParamField>
+
+<ParamField query="has_step_down" type="boolean">
+  Filter for covenants with scheduled tightening.
+</ParamField>
+
+### Response Options
+
+<ParamField query="fields" type="string">
+  Comma-separated fields to return.
+
+  Example: `covenant_name,threshold_value,threshold_type`
+</ParamField>
+
+<ParamField query="limit" type="integer" default="50">
+  Results per page. Maximum 100.
+</ParamField>
+
+<ParamField query="offset" type="integer" default="0">
+  Pagination offset.
+</ParamField>
+
+## Covenant Types
+
+| Type | Description | Examples |
+|------|-------------|----------|
+| `financial` | Maintenance or incurrence tests with numerical thresholds | Leverage ratio, interest coverage |
+| `negative` | Restrictions on company actions | Limitations on liens, debt, asset sales |
+| `incurrence` | Tests applied when taking specific actions | Debt incurrence ratio |
+| `protective` | Bondholder protection provisions | Change of control, make-whole |
+
+## Test Metrics
+
+| Metric | Description |
+|--------|-------------|
+| `leverage_ratio` | Total Debt / EBITDA |
+| `first_lien_leverage` | First Lien Debt / EBITDA |
+| `secured_leverage` | Secured Debt / EBITDA |
+| `net_leverage_ratio` | Net Debt / EBITDA |
+| `interest_coverage` | EBITDA / Interest Expense |
+| `fixed_charge_coverage` | (EBITDA - CapEx) / Fixed Charges |
+
+## Examples
+
+### Find Leverage Covenants
+
+<CodeGroup>
+```bash curl
+curl "https://api.debtstack.ai/v1/covenants?covenant_type=financial&test_metric=leverage_ratio" \
+  -H "X-API-Key: ds_xxxxx"
+```
+
+```python Python
+import requests
+
+response = requests.get(
+    "https://api.debtstack.ai/v1/covenants",
+    params={
+        "covenant_type": "financial",
+        "test_metric": "leverage_ratio"
+    },
+    headers={"X-API-Key": "ds_xxxxx"}
+)
+
+for cov in response.json()["data"]:
+    print(f"{cov['ticker']}: {cov['threshold_type']} {cov['threshold_value']}x leverage")
+```
+</CodeGroup>
+
+### Response
+
+```json
+{
+  "data": [
+    {
+      "id": "3be913dd-b4a7-4af6-8333-271caea2283c",
+      "ticker": "CHTR",
+      "company_name": "Charter Communications, Inc.",
+      "instrument_name": "Term A-7 Loan",
+      "cusip": null,
+      "covenant_type": "incurrence",
+      "covenant_name": "Leverage Ratio Incurrence Test",
+      "test_metric": "leverage_ratio",
+      "threshold_value": 6.0,
+      "threshold_type": "maximum",
+      "test_frequency": "incurrence",
+      "description": "The Company may incur Indebtedness if the Leverage Ratio would be not greater than 6.0 to 1.0",
+      "has_step_down": false,
+      "step_down_schedule": null,
+      "cure_period_days": null,
+      "put_price_pct": null,
+      "extraction_confidence": 0.95,
+      "source_document_date": "2024-12-09"
+    }
+  ],
+  "meta": {
+    "total": 125,
+    "limit": 50,
+    "offset": 0,
+    "covenant_types": ["financial", "negative", "incurrence", "protective"]
+  }
+}
+```
+
+## More Examples
+
+### Company's All Covenants
+
+```bash
+curl "https://api.debtstack.ai/v1/covenants?ticker=CHTR" \
+  -H "X-API-Key: ds_xxxxx"
+```
+
+### Change of Control Provisions
+
+```bash
+curl "https://api.debtstack.ai/v1/covenants?covenant_type=protective" \
+  -H "X-API-Key: ds_xxxxx"
+```
+
+### Tight Leverage Covenants (under 5x)
+
+```bash
+curl "https://api.debtstack.ai/v1/covenants?test_metric=leverage_ratio&max_threshold=5.0" \
+  -H "X-API-Key: ds_xxxxx"
+```
