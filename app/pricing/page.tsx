@@ -15,9 +15,14 @@ const tiers = [
     features: [
       'Pay per API call ($0.05-$0.15)',
       '60 requests/minute',
-      '200+ companies',
-      'All basic endpoints',
-      'Bond pricing data',
+      '200+ companies coverage',
+      '3,000+ debt instruments',
+      'Real-time bond pricing',
+      'Corporate structure data',
+      'Financial statements',
+      'Covenant data',
+      'Document search',
+      'No monthly commitment',
     ],
     cta: 'Get started',
     highlighted: false,
@@ -31,9 +36,14 @@ const tiers = [
     features: [
       'Unlimited API queries',
       '100 requests/minute',
-      '200+ companies',
-      'All basic endpoints',
-      'Bond pricing data',
+      '200+ companies coverage',
+      '3,000+ debt instruments',
+      'Real-time bond pricing',
+      'Corporate structure data',
+      'Financial statements',
+      'Covenant data',
+      'Document search',
+      'Email support (48hr)',
     ],
     cta: 'Sign up',
     highlighted: true,
@@ -180,7 +190,7 @@ export default function PricingPage() {
             {tiers.map((tier) => (
               <div
                 key={tier.name}
-                className={`relative p-8 rounded-2xl border ${
+                className={`relative p-8 rounded-2xl border flex flex-col ${
                   tier.highlighted
                     ? 'bg-gradient-to-b from-blue-900/30 to-gray-900/50 border-blue-500/50 scale-105'
                     : 'bg-gray-900/50 border-gray-800'
@@ -206,7 +216,7 @@ export default function PricingPage() {
                   <p className="text-sm text-gray-400 mt-3">{tier.description}</p>
                 </div>
 
-                <ul className="space-y-3 mb-8">
+                <ul className="space-y-3 mb-8 flex-grow">
                   {tier.features.map((feature, i) => (
                     <li key={i} className="flex items-start gap-3 text-sm text-gray-300">
                       <svg className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
