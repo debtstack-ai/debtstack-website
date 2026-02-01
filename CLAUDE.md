@@ -53,9 +53,10 @@ debtstack-website/
 - **Checkout**: `/api/stripe/checkout` creates Stripe sessions
 - **Portal**: `/api/stripe/portal` for subscription management
 - **Webhooks**: Handled by backend at `/v1/auth/webhook`
-- Price IDs:
-  - Pro ($49/mo): `price_1StwgYAmvjlETourYUAbKPlB`
-  - Business ($499/mo): `price_1SuFq6AmvjlETourFzfIesa5`
+- Price IDs (configured via environment variables):
+  - Pro ($199/mo): `STRIPE_PRO_PRICE_ID`
+  - Business ($499/mo): `STRIPE_BUSINESS_PRICE_ID`
+  - Credit Packages ($10, $25, $50, $100): `STRIPE_CREDITS_*_PRICE_ID`
 
 ### Backend Communication
 - Backend URL: `https://credible-ai-production.up.railway.app`
@@ -64,11 +65,11 @@ debtstack-website/
 
 ## Pricing Tiers
 
-| Tier | Price | Queries | Companies |
-|------|-------|---------|-----------|
-| Free | $0/mo | 25/day | 25 (curated sample) |
-| Pro | $49/mo | Unlimited | 200+ (full coverage) |
-| Business | $499/mo | Unlimited | 200+ + custom requests |
+| Tier | Price | Queries | Features |
+|------|-------|---------|----------|
+| Pay-as-You-Go | $0/mo | Pay per call ($0.05-$0.15) | 200+ companies, 60 rpm |
+| Pro | $199/mo | Unlimited | 200+ companies, 100 rpm |
+| Business | $499/mo | Unlimited | Historical pricing, bulk export, 5 team seats, 500 rpm |
 
 ## Environment Variables
 
