@@ -59,3 +59,24 @@ export function getAllSlugs(): string[] {
     .filter((name) => name.endsWith('.md'))
     .map((name) => name.replace(/\.md$/, ''));
 }
+
+export interface Heading {
+  id: string;
+  text: string;
+  level: number;
+}
+
+export function extractHeadings(markdown: string): Heading[] {
+  const headingRegex = /^(#{2,3})\s+(.+)$/gm;
+  const headings: Heading[] = [];
+  let match;
+  while ((match = headingRegex.exec(markdown)) !== null) {
+    const text = match[2].trim();
+    headings.push({
+      id: text.toLowerCase().replace(/[^\w]+/g, '-').replace(/(^-|-$)/g, ''),
+      text,
+      level: match[1].length,
+    });
+  }
+  return headings;
+}

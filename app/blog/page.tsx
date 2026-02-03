@@ -58,48 +58,67 @@ export default function BlogIndex() {
         </div>
       </header>
 
-      {/* Hero */}
-      <section className="px-6 py-16 md:py-24">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">Blog</h1>
-          <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-            Insights on credit data, AI in finance, and the future of debt markets.
-          </p>
-        </div>
-      </section>
+      {/* Content */}
+      <div className="max-w-6xl mx-auto px-6 py-16 md:py-24">
+        <div className="flex gap-16">
+          {/* Sidebar */}
+          <aside className="hidden md:block w-56 flex-shrink-0">
+            <div className="sticky top-8">
+              <nav className="space-y-2">
+                <p className="text-xs uppercase tracking-widest text-gray-500 mb-4 font-medium">Navigate</p>
+                <a href="/" className="block text-sm text-gray-400 hover:text-white transition">Home</a>
+                <a href="/blog" className="block text-sm text-white">Blog</a>
+                <a href="/pricing" className="block text-sm text-gray-400 hover:text-white transition">Pricing</a>
+                <a href="https://docs.debtstack.ai" className="block text-sm text-gray-400 hover:text-white transition">Docs</a>
+              </nav>
 
-      {/* Post Grid */}
-      <section className="px-6 pb-24">
-        <div className="max-w-5xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-6">
-            {posts.map((post) => (
-              <Link
-                key={post.slug}
-                href={`/blog/${post.slug}`}
-                className="group p-8 rounded-2xl bg-gray-900/50 border border-gray-800 hover:border-blue-500/50 hover:bg-gray-900/80 transition-all duration-300"
-              >
-                <p className="text-sm text-gray-500 mb-3">
-                  {new Date(post.date).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  })}
-                  {' '}&middot;{' '}{post.author}
-                </p>
-                <h2 className="text-xl font-semibold mb-3 group-hover:text-blue-400 transition-colors">
-                  {post.title}
-                </h2>
-                <p className="text-gray-400 text-sm leading-relaxed">
-                  {post.excerpt}
-                </p>
-                <span className="inline-block mt-4 text-sm text-blue-400 group-hover:text-blue-300 transition-colors">
-                  Read more &rarr;
-                </span>
-              </Link>
-            ))}
+              <div className="mt-10">
+                <p className="text-xs uppercase tracking-widest text-gray-500 mb-4 font-medium">Essays</p>
+                <nav className="space-y-2">
+                  {posts.map((post) => (
+                    <Link
+                      key={post.slug}
+                      href={`/blog/${post.slug}`}
+                      className="block text-sm text-gray-400 hover:text-white transition"
+                    >
+                      {post.title}
+                    </Link>
+                  ))}
+                </nav>
+              </div>
+            </div>
+          </aside>
+
+          {/* Main */}
+          <div className="flex-1 min-w-0">
+            <div className="space-y-0">
+              {posts.map((post, i) => (
+                <Link
+                  key={post.slug}
+                  href={`/blog/${post.slug}`}
+                  className={`group block py-8 ${
+                    i > 0 ? 'border-t border-gray-800/50' : ''
+                  }`}
+                >
+                  <p className="text-sm text-gray-500 mb-2">
+                    {new Date(post.date).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    })}
+                  </p>
+                  <h2 className="text-2xl font-semibold mb-3 group-hover:text-blue-400 transition-colors">
+                    {post.title}
+                  </h2>
+                  <p className="text-gray-400 leading-relaxed max-w-2xl">
+                    {post.excerpt}
+                  </p>
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
-      </section>
+      </div>
 
       {/* Footer */}
       <footer className="px-6 py-12 border-t border-gray-800/50">
