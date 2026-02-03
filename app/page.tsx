@@ -53,6 +53,9 @@ export default function Home() {
             <a href="/pricing" className="text-gray-400 hover:text-white transition text-sm font-medium">
               Pricing
             </a>
+            <a href="/blog" className="text-gray-400 hover:text-white transition text-sm font-medium">
+              Blog
+            </a>
             <a href="https://docs.debtstack.ai" className="text-gray-400 hover:text-white transition text-sm font-medium">
               Docs
             </a>
@@ -253,6 +256,12 @@ export default function Home() {
                 className="hover:text-white transition"
               >
                 Pricing
+              </a>
+              <a
+                href="/blog"
+                className="hover:text-white transition"
+              >
+                Blog
               </a>
               <a
                 href="https://docs.debtstack.ai"

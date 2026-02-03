@@ -132,6 +132,9 @@ export default function PricingPage() {
             <a href="/pricing" className="text-white transition text-sm font-medium">
               Pricing
             </a>
+            <a href="/blog" className="text-gray-400 hover:text-white transition text-sm font-medium">
+              Blog
+            </a>
             <a href="https://docs.debtstack.ai" className="text-gray-400 hover:text-white transition text-sm font-medium">
               Docs
             </a>
@@ -490,6 +493,7 @@ export default function PricingPage() {
             <div className="flex gap-8 text-gray-400">
               <a href="/#demo" className="hover:text-white transition">Demo</a>
               <a href="/pricing" className="hover:text-white transition">Pricing</a>
+              <a href="/blog" className="hover:text-white transition">Blog</a>
               <a href="https://docs.debtstack.ai" className="hover:text-white transition">Docs</a>
               <a href="mailto:hello@debtstack.ai" className="hover:text-white transition">Contact</a>
             </div>
