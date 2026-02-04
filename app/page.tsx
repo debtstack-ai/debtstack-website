@@ -72,7 +72,7 @@ export default function Home() {
       </header>
 
       {/* Hero Section */}
-      <section className="px-6 py-24 md:py-40">
+      <section className="px-6 pt-12 pb-24 md:pt-20 md:pb-40">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight text-gray-900">
             Credit Data
