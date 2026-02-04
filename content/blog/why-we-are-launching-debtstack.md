@@ -5,13 +5,15 @@ excerpt: "The credit market is $346 trillion — more than twice the size of equ
 author: "DebtStack Team"
 ---
 
-The global credit market stands at $346 trillion. That's more than twice the size of global equity markets. And yet the data infrastructure around it looks nothing like what exists for stocks. The biggest financial market in the world is also the most opaque.
+The global credit market stands at $346 trillion today. That's more than twice the size of global equity markets. And yet the data infrastructure around it looks nothing like what exists for stocks. The biggest financial market in the world is also the most opaque.
 
-If you want to know Apple's stock price, you google it. Revenue, earnings, p/e ratios and even analyst projections, all free, all instant. Equity data is ubiquitous and in your face. Yahoo Finance, Google, dozens of free APIs. Anyone with a laptop and an internet connection can screen stocks, compare fundamentals, and make informed decisions.
+If you want to know Apple's stock price, you google it. Revenue, earnings, p/e ratios and even analyst projections, all free, all instant. Equity data is ubiquitous and in your face. Yahoo Finance, Google, dozens of free APIs all providing the same data. Anyone with a laptop and an internet connection can screen stocks, compare fundamentals, and make informed decisions.
 
 Now try doing the same thing with credit - bonds, loans, and debt of all kinds.
 
-Try finding out which of Oracle's bonds offers the highest yields today. Try finding out whether those bonds sit above or below the bonds issued by Oracle's subsidiaries. What covenants restrict Oracle's ability to pay dividends and whether those covenants are too restrictive compared to Oracle's peers. Try finding out how each Oracle bond's yield per turn of leverage compares to Coreweave's or Microsoft's. You can't, not without a Bloomberg terminal that costs in excess of $25,000 a year, a team of analysts, or weeks spent reading through SEC filings.
+Try finding out which of Oracle's bonds offers the highest yields today. Try finding out whether those bonds sit above or below the bonds issued by Oracle's subsidiaries. Try finding out what covenants restrict Oracle's ability to pay dividends and whether those covenants are too restrictive compared to Oracle's peers. Try finding out how each Oracle bond's yield per turn of leverage compares to Coreweave's or Microsoft's. 
+
+You can't, not without a Bloomberg terminal that costs in excess of $25,000 a year, a team of analysts, or weeks spent reading through SEC filings.
 
 ## AI was supposed to fix this
 
@@ -31,7 +33,7 @@ What does that actually let you do?
 
 You can screen the entire credit universe in seconds. Which telecom companies have leverage above 5x and near-term maturities? Filter through thousands of companies by leverage, coverage ratios, maturity profile, or structural risk. Compare yield per turn of leverage across an entire sector. No more filing-by-filing analysis.
 
-You can understand structural subordination. Does this bond sit at the holdco or opco level? Who guarantees it? Guarantee chains, subsidiary hierarchies, issuer positions in the corporate structure—all mapped and queryable. Know whether you're structurally senior or junior before you buy. This data exists nowhere else in machine-readable form.
+You can understand structural subordination. Does this bond sit at the holdco or opco level? Who guarantees it? Guarantee chains, subsidiary hierarchies, issuer positions in the corporate structure, all mapped and queryable. Know whether you're structurally senior or junior before you buy. This data exists nowhere else in machine-readable form.
 
 You can compare covenant packages across issuers. How do Charter's leverage covenants compare to Altice's? Restricted payment baskets, leverage test thresholds, change of control triggers, extracted and normalized so you can compare apples to apples across different credit agreements.
 
@@ -65,4 +67,4 @@ Credit markets are overdue for this same transformation.
 
 That's why we are building DebtStack.
 
-Institutional-grade credit analytics, for everyone.
+Institutional-grade credit data, for everyone.
