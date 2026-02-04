@@ -118,7 +118,7 @@ export default function PricingPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#EDF5F1] text-gray-900">
+    <main className="min-h-screen bg-[#EAECF0] text-gray-900">
       {/* Header */}
       <header className="px-6 py-4 border-b border-gray-200">
         <div className="max-w-6xl mx-auto flex justify-between items-center">

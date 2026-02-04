@@ -158,7 +158,7 @@ function DashboardContent() {
 
   if (!userLoaded || loading) {
     return (
-      <main className="min-h-screen bg-black text-white flex items-center justify-center">
+      <main className="min-h-screen bg-[#EAECF0] text-gray-900 flex items-center justify-center">
         <div className="animate-pulse text-gray-400">Loading...</div>
       </main>
     );
@@ -166,26 +166,26 @@ function DashboardContent() {
 
   if (!user) {
     return (
-      <main className="min-h-screen bg-black text-white flex items-center justify-center">
+      <main className="min-h-screen bg-[#EAECF0] text-gray-900 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-400 mb-4">Please sign in to access your dashboard</p>
-          <a href="/" className="text-blue-400 hover:text-blue-300">Go to homepage</a>
+          <p className="text-gray-500 mb-4">Please sign in to access your dashboard</p>
+          <a href="/" className="text-[#2383e2] hover:underline">Go to homepage</a>
         </div>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-black text-white">
+    <main className="min-h-screen bg-[#EAECF0] text-gray-900">
       {/* Header */}
-      <header className="px-6 py-4 border-b border-gray-800">
+      <header className="px-6 py-4 border-b border-gray-200">
         <div className="max-w-4xl mx-auto flex justify-between items-center">
           <a href="/" className="flex items-center">
-            <img src="/logo-transparent.png" alt="DebtStack" className="h-32 md:h-48 w-auto" />
+            <img src="/logo-transparent.png" alt="DebtStack" className="h-32 md:h-48 w-auto invert" />
           </a>
           <div className="flex items-center gap-4">
-            <span className="text-gray-400 text-sm">{user.primaryEmailAddress?.emailAddress}</span>
-            <a href="/" className="text-gray-400 hover:text-white text-sm">Home</a>
+            <span className="text-gray-500 text-sm">{user.primaryEmailAddress?.emailAddress}</span>
+            <a href="/" className="text-gray-500 hover:text-gray-900 text-sm transition">Home</a>
           </div>
         </div>
       </header>
@@ -195,49 +195,49 @@ function DashboardContent() {
         <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
 
         {showUpgradeSuccess && (
-          <div className="mb-6 p-4 rounded-lg bg-green-900/20 border border-green-500/30 text-green-400">
+          <div className="mb-6 p-4 rounded-lg bg-green-50 border border-green-200 text-green-700">
             Welcome to {userData?.tier === 'business' ? 'Business' : 'Pro'}! Your account has been upgraded.
           </div>
         )}
 
         {error && (
-          <div className="mb-6 p-4 rounded-lg bg-red-900/20 border border-red-500/30 text-red-400">
+          <div className="mb-6 p-4 rounded-lg bg-red-50 border border-red-200 text-red-700">
             {error}
           </div>
         )}
 
         {/* API Key Section */}
-        <section className="mb-8 p-6 rounded-xl bg-gray-900/50 border border-gray-800">
+        <section className="mb-8 p-6 rounded-xl bg-white border border-gray-200">
           <h2 className="text-xl font-semibold mb-4">API Key</h2>
 
           {userData?.api_key ? (
             <div className="space-y-4">
               <div className="flex items-center gap-4">
-                <code className="flex-1 px-4 py-3 rounded-lg bg-black border border-gray-700 font-mono text-sm">
+                <code className="flex-1 px-4 py-3 rounded-lg bg-gray-50 border border-gray-200 font-mono text-sm text-gray-900">
                   {showApiKey ? userData.api_key : `${userData.api_key_prefix}${'•'.repeat(24)}`}
                 </code>
                 <button
                   onClick={() => setShowApiKey(!showApiKey)}
-                  className="px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-sm transition"
+                  className="px-4 py-2 rounded-lg border border-gray-200 hover:bg-gray-50 text-sm transition"
                 >
                   {showApiKey ? 'Hide' : 'Show'}
                 </button>
                 <button
                   onClick={copyApiKey}
-                  className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-sm transition"
+                  className="px-4 py-2 rounded-lg bg-gray-900 text-white hover:bg-gray-800 text-sm transition"
                 >
                   {copied ? 'Copied!' : 'Copy'}
                 </button>
               </div>
 
-              <p className="text-sm text-gray-400">
-                Use this key in the <code className="text-gray-300">X-API-Key</code> header for all API requests.
+              <p className="text-sm text-gray-500">
+                Use this key in the <code className="text-gray-700 bg-gray-100 px-1.5 py-0.5 rounded">X-API-Key</code> header for all API requests.
               </p>
 
               <button
                 onClick={regenerateApiKey}
                 disabled={regenerating}
-                className="text-sm text-red-400 hover:text-red-300 transition disabled:opacity-50"
+                className="text-sm text-red-600 hover:text-red-500 transition disabled:opacity-50"
               >
                 {regenerating ? 'Regenerating...' : 'Regenerate API Key'}
               </button>
@@ -245,43 +245,43 @@ function DashboardContent() {
           ) : userData?.api_key_prefix ? (
             <div className="space-y-4">
               <div className="flex items-center gap-4">
-                <code className="flex-1 px-4 py-3 rounded-lg bg-black border border-gray-700 font-mono text-sm text-gray-400">
+                <code className="flex-1 px-4 py-3 rounded-lg bg-gray-50 border border-gray-200 font-mono text-sm text-gray-500">
                   {userData.api_key_prefix}{'•'.repeat(24)}
                 </code>
               </div>
 
-              <p className="text-sm text-yellow-400">
+              <p className="text-sm text-amber-600">
                 Your API key is stored securely. If you lost your key, regenerate it below.
               </p>
 
               <button
                 onClick={regenerateApiKey}
                 disabled={regenerating}
-                className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-sm transition disabled:opacity-50"
+                className="px-4 py-2 rounded-lg bg-gray-900 text-white hover:bg-gray-800 text-sm transition disabled:opacity-50"
               >
                 {regenerating ? 'Regenerating...' : 'Regenerate API Key'}
               </button>
             </div>
           ) : (
-            <p className="text-gray-400">Loading API key...</p>
+            <p className="text-gray-500">Loading API key...</p>
           )}
         </section>
 
         {/* Usage Section */}
-        <section className="mb-8 p-6 rounded-xl bg-gray-900/50 border border-gray-800">
+        <section className="mb-8 p-6 rounded-xl bg-white border border-gray-200">
           <h2 className="text-xl font-semibold mb-4">Usage</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="p-4 rounded-lg bg-black border border-gray-700">
-              <p className="text-sm text-gray-400 mb-1">Queries Remaining</p>
+            <div className="p-4 rounded-lg bg-gray-50 border border-gray-200">
+              <p className="text-sm text-gray-500 mb-1">Queries Remaining</p>
               <p className="text-2xl font-bold">
                 {userData?.tier === 'pro' || userData?.tier === 'business'
                   ? 'Unlimited'
                   : (userData?.credits_remaining?.toLocaleString() ?? '—')}
               </p>
             </div>
-            <div className="p-4 rounded-lg bg-black border border-gray-700">
-              <p className="text-sm text-gray-400 mb-1">
+            <div className="p-4 rounded-lg bg-gray-50 border border-gray-200">
+              <p className="text-sm text-gray-500 mb-1">
                 {userData?.tier === 'free' ? 'Daily Limit' : 'Query Limit'}
               </p>
               <p className="text-2xl font-bold">
@@ -290,8 +290,8 @@ function DashboardContent() {
                   : (userData?.credits_daily_limit?.toLocaleString() ?? userData?.credits_monthly_limit?.toLocaleString() ?? '25')}
               </p>
             </div>
-            <div className="p-4 rounded-lg bg-black border border-gray-700">
-              <p className="text-sm text-gray-400 mb-1">Current Plan</p>
+            <div className="p-4 rounded-lg bg-gray-50 border border-gray-200">
+              <p className="text-sm text-gray-500 mb-1">Current Plan</p>
               <p className="text-2xl font-bold capitalize">
                 {userData?.tier ?? '—'}
               </p>
@@ -300,13 +300,13 @@ function DashboardContent() {
         </section>
 
         {/* Quick Start Section */}
-        <section className="p-6 rounded-xl bg-gray-900/50 border border-gray-800">
+        <section className="p-6 rounded-xl bg-white border border-gray-200">
           <h2 className="text-xl font-semibold mb-4">Quick Start</h2>
 
           <div className="space-y-4">
             <div>
-              <p className="text-sm text-gray-400 mb-2">Example request:</p>
-              <pre className="p-4 rounded-lg bg-black border border-gray-700 overflow-x-auto text-sm">
+              <p className="text-sm text-gray-500 mb-2">Example request:</p>
+              <pre className="p-4 rounded-lg bg-gray-900 border border-gray-200 overflow-x-auto text-sm">
                 <code className="text-green-400">{`curl -H "X-API-Key: ${userData?.api_key_prefix || 'ds_'}..." \\
   "https://credible-ai-production.up.railway.app/v1/companies?ticker=AAPL"`}</code>
               </pre>
@@ -315,13 +315,13 @@ function DashboardContent() {
             <div className="flex gap-4">
               <a
                 href="https://docs.debtstack.ai"
-                className="text-blue-400 hover:text-blue-300 text-sm"
+                className="text-[#2383e2] hover:underline text-sm"
               >
                 View Documentation →
               </a>
               <a
                 href="https://credible-ai-production.up.railway.app/docs"
-                className="text-blue-400 hover:text-blue-300 text-sm"
+                className="text-[#2383e2] hover:underline text-sm"
               >
                 API Reference →
               </a>
@@ -331,29 +331,29 @@ function DashboardContent() {
 
         {/* Upgrade CTA for Free Users */}
         {userData?.tier === 'free' && (
-          <section className="mt-8 p-6 rounded-xl bg-gradient-to-r from-blue-900/30 to-purple-900/30 border border-blue-500/30">
+          <section className="mt-8 p-6 rounded-xl bg-white border border-gray-200">
             <h2 className="text-xl font-semibold mb-2">Need more queries?</h2>
-            <p className="text-gray-400 mb-4">
+            <p className="text-gray-500 mb-4">
               Upgrade to Pro for unlimited queries and full company coverage (200+).
             </p>
             <div className="flex flex-wrap gap-4">
               <button
                 onClick={() => handleUpgrade('pro')}
                 disabled={upgrading}
-                className="px-6 py-3 rounded-lg bg-blue-600 hover:bg-blue-500 text-sm font-semibold transition disabled:opacity-50"
+                className="px-6 py-3 rounded-lg bg-gray-900 text-white hover:bg-gray-800 text-sm font-semibold transition disabled:opacity-50"
               >
                 {upgrading ? 'Loading...' : 'Upgrade to Pro — $49/mo'}
               </button>
               <button
                 onClick={() => handleUpgrade('business')}
                 disabled={upgrading}
-                className="px-6 py-3 rounded-lg bg-purple-600 hover:bg-purple-500 text-sm font-semibold transition disabled:opacity-50"
+                className="px-6 py-3 rounded-lg bg-gray-900 text-white hover:bg-gray-800 text-sm font-semibold transition disabled:opacity-50"
               >
                 {upgrading ? 'Loading...' : 'Upgrade to Business — $499/mo'}
               </button>
               <a
                 href="mailto:hello@debtstack.ai"
-                className="px-6 py-3 rounded-lg bg-gray-800 hover:bg-gray-700 text-sm font-semibold transition"
+                className="px-6 py-3 rounded-lg border border-gray-200 hover:bg-gray-50 text-sm font-semibold transition"
               >
                 Contact Sales
               </a>
@@ -363,15 +363,15 @@ function DashboardContent() {
 
         {/* Billing Management for Paid Users */}
         {(userData?.tier === 'pro' || userData?.tier === 'business') && (
-          <section className="mt-8 p-6 rounded-xl bg-gray-900/50 border border-gray-800">
+          <section className="mt-8 p-6 rounded-xl bg-white border border-gray-200">
             <h2 className="text-xl font-semibold mb-2">Billing</h2>
-            <p className="text-gray-400 mb-4">
+            <p className="text-gray-500 mb-4">
               Manage your subscription, update payment methods, or view invoices.
             </p>
             <div className="flex flex-wrap gap-4">
               <button
                 onClick={handleManageBilling}
-                className="px-6 py-3 rounded-lg bg-gray-800 hover:bg-gray-700 text-sm font-semibold transition"
+                className="px-6 py-3 rounded-lg border border-gray-200 hover:bg-gray-50 text-sm font-semibold transition"
               >
                 Manage Billing
               </button>
@@ -379,7 +379,7 @@ function DashboardContent() {
                 <button
                   onClick={() => handleUpgrade('business')}
                   disabled={upgrading}
-                  className="px-6 py-3 rounded-lg bg-purple-600 hover:bg-purple-500 text-sm font-semibold transition disabled:opacity-50"
+                  className="px-6 py-3 rounded-lg bg-gray-900 text-white hover:bg-gray-800 text-sm font-semibold transition disabled:opacity-50"
                 >
                   {upgrading ? 'Loading...' : 'Upgrade to Business — $499/mo'}
                 </button>
@@ -395,7 +395,7 @@ function DashboardContent() {
 export default function Dashboard() {
   return (
     <Suspense fallback={
-      <main className="min-h-screen bg-black text-white flex items-center justify-center">
+      <main className="min-h-screen bg-[#EAECF0] text-gray-900 flex items-center justify-center">
         <div className="animate-pulse text-gray-400">Loading...</div>
       </main>
     }>
