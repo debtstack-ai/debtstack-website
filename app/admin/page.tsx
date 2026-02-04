@@ -402,7 +402,7 @@ export default function AdminDashboard() {
                   }`}
                 >
                   <span className="capitalize font-medium">{tier}</span>
-                  {tier === 'free' && <span className="text-gray-500 text-sm ml-2">25 queries/day</span>}
+                  {tier === 'free' && <span className="text-gray-500 text-sm ml-2">Pay-as-You-Go</span>}
                   {tier === 'pro' && <span className="text-gray-500 text-sm ml-2">$49/mo - Unlimited</span>}
                   {tier === 'business' && <span className="text-gray-500 text-sm ml-2">$499/mo - Unlimited + Support</span>}
                 </button>

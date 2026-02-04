@@ -282,7 +282,7 @@ function DashboardContent() {
             </div>
             <div className="p-4 rounded-lg bg-gray-50 border border-gray-200">
               <p className="text-sm text-gray-500 mb-1">
-                {userData?.tier === 'free' ? 'Daily Limit' : 'Query Limit'}
+                Query Limit
               </p>
               <p className="text-2xl font-bold">
                 {userData?.tier === 'pro' || userData?.tier === 'business'

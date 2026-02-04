@@ -160,7 +160,7 @@ export default async function BlogPost({ params }: Props) {
             <div className="mt-16 pt-12 border-t border-gray-200 max-w-3xl">
               <h2 className="text-2xl font-bold mb-4">Try DebtStack</h2>
               <p className="text-gray-500 mb-6">
-                Start with 25 free queries per day. No credit card required.
+                Pay only for what you use. No monthly commitment required.
               </p>
               <div className="flex flex-wrap gap-4">
                 <SignedOut>

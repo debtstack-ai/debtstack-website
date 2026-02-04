@@ -83,26 +83,6 @@ export default function Home() {
             Real-time search, bond pricing, debt structures, and covenant analysis through a single, secure API.
           </p>
 
-          {/* Data Stats */}
-          <div className="flex flex-wrap justify-center gap-8 mb-12 text-sm">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900">200+</div>
-              <div className="text-gray-400">Companies</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900">2,500+</div>
-              <div className="text-gray-400">Debt Instruments</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900">6,500+</div>
-              <div className="text-gray-400">Document Sections</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900">5,000+</div>
-              <div className="text-gray-400">Guarantees</div>
-            </div>
-          </div>
-
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <SignedOut>
               <SignUpButton mode="modal">
@@ -126,7 +106,7 @@ export default function Home() {
               View Docs
             </a>
           </div>
-          <p className="mt-4 text-sm text-gray-400">25 free queries per day. No credit card required.</p>
+          <p className="mt-4 text-sm text-gray-400">Pay only for what you use. No monthly commitment required.</p>
         </div>
       </section>
 
@@ -199,7 +179,7 @@ export default function Home() {
             Ready to Build?
           </h2>
           <p className="text-lg text-gray-500 mb-10">
-            Start with 25 free queries per day. No credit card required.
+            Pay only for what you use. No monthly commitment required.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <SignedOut>
