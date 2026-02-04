@@ -33,7 +33,7 @@ export default function TableOfContents({ headings }: { headings: Heading[] }) {
 
   return (
     <nav className="space-y-1">
-      <p className="text-xs uppercase tracking-widest text-gray-500 mb-3 font-medium">Contents</p>
+      <p className="text-xs uppercase tracking-widest text-gray-400 mb-3 font-medium">Contents</p>
       {headings.map((h) => (
         <a
           key={h.id}
@@ -42,8 +42,8 @@ export default function TableOfContents({ headings }: { headings: Heading[] }) {
             h.level === 3 ? 'pl-4' : ''
           } ${
             activeId === h.id
-              ? 'text-white'
-              : 'text-gray-500 hover:text-gray-300'
+              ? 'text-gray-900 font-medium'
+              : 'text-gray-400 hover:text-gray-700'
           }`}
         >
           {h.text}
