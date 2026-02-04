@@ -75,12 +75,12 @@ export default function Home() {
       <section className="px-6 pt-12 pb-24 md:pt-20 md:pb-40">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight text-gray-900">
-            Credit Data
+            Connect Your AI Agent
             <br />
-            <span className="text-[#2383e2]">for AI Agents</span>
+            <span className="text-[#2383e2]">to the Credit Markets</span>
           </h1>
           <p className="text-xl md:text-2xl text-gray-500 mb-8 max-w-2xl mx-auto">
-            Structured corporate debt data and pricing, optimized for LLMs and AI workflows.
+            Real-time search, bond pricing, debt structures, and covenant analysis through a single, secure API.
           </p>
 
           {/* Data Stats */}
