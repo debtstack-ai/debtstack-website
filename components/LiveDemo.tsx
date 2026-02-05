@@ -3,7 +3,188 @@
 
 import { useEffect, useState, useCallback, useRef } from 'react';
 
-// Demo definitions
+// === Data Types ===
+
+interface EntityColors {
+  bg: string;
+  border: string;
+  badge: string;
+  text: string;
+}
+
+interface BondColors {
+  bg: string;
+  border: string;
+  text: string;
+  structureLabel: string;
+}
+
+interface StructureEntity {
+  name: string;
+  jurisdiction: string;
+  label: string;
+  totalDebt: string;
+  instruments: { label: string; amount: string }[];
+  colors: EntityColors;
+}
+
+interface MaturityItem {
+  year: string;
+  amount: number;
+  secured: number;
+  unsecured: number;
+}
+
+interface BondYield {
+  label: string;
+  issuerName: string;
+  ytm: string;
+  spread: string;
+  colors: BondColors;
+}
+
+interface MiniStructureItem {
+  label: string;
+  name: string;
+  yieldRange: string;
+  colors: EntityColors;
+}
+
+export interface DemoData {
+  structure: {
+    companyName: string;
+    ticker: string;
+    entityCount: number;
+    instrumentCount: number;
+    totalDebt: string;
+    entities: StructureEntity[];
+  };
+  maturityWall: {
+    companyName: string;
+    ticker: string;
+    instrumentCount: number;
+    totalDebt: string;
+    maturities: MaturityItem[];
+  };
+  yields: {
+    ticker: string;
+    bondCount: number;
+    bonds: BondYield[];
+    miniStructure: MiniStructureItem[];
+  };
+}
+
+// === Fallback Data (CHTR) ===
+
+const FALLBACK_DEMO_DATA: DemoData = {
+  structure: {
+    companyName: 'Charter Communications',
+    ticker: 'CHTR',
+    entityCount: 10,
+    instrumentCount: 16,
+    totalDebt: '$97B',
+    entities: [
+      {
+        name: 'Charter Communications, Inc.',
+        jurisdiction: 'Delaware · Public (NASDAQ)',
+        label: 'HoldCo',
+        totalDebt: '$56.3B',
+        instruments: [{ label: 'Sr Unsecured Notes', amount: '$56.3B' }],
+        colors: { bg: 'blue-50', border: 'blue-200', badge: 'blue-600', text: 'blue-600' },
+      },
+      {
+        name: 'CCO Holdings, LLC',
+        jurisdiction: 'Intermediate HoldCo',
+        label: 'Intermediate',
+        totalDebt: '$27.3B',
+        instruments: [{ label: 'Sr Unsecured Notes', amount: '$27.3B' }],
+        colors: { bg: 'amber-50', border: 'amber-200', badge: 'amber-600', text: 'amber-600' },
+      },
+      {
+        name: 'Charter Operating, LLC',
+        jurisdiction: 'Operating Company',
+        label: 'OpCo',
+        totalDebt: '$13.5B',
+        instruments: [
+          { label: 'Term Loans A/B', amount: '$9.7B' },
+          { label: 'Secured Notes', amount: '$3.8B' },
+        ],
+        colors: { bg: 'emerald-50', border: 'emerald-200', badge: 'emerald-600', text: 'emerald-600' },
+      },
+    ],
+  },
+  maturityWall: {
+    companyName: 'Charter Communications',
+    ticker: 'CHTR',
+    instrumentCount: 16,
+    totalDebt: '$97B',
+    maturities: [
+      { year: '2025', amount: 3.2, secured: 1.5, unsecured: 1.7 },
+      { year: '2026', amount: 8.5, secured: 2.1, unsecured: 6.4 },
+      { year: '2027', amount: 12.8, secured: 3.2, unsecured: 9.6 },
+      { year: '2028', amount: 15.2, secured: 4.8, unsecured: 10.4 },
+      { year: '2029', amount: 11.3, secured: 2.9, unsecured: 8.4 },
+      { year: '2030+', amount: 46.0, secured: 0, unsecured: 46.0 },
+    ],
+  },
+  yields: {
+    ticker: 'CHTR',
+    bondCount: 4,
+    bonds: [
+      {
+        label: "Sr Secured '29",
+        issuerName: 'Charter Operating',
+        ytm: '5.12%',
+        spread: '+142 bps',
+        colors: { bg: 'emerald-50', border: 'emerald-200', text: 'emerald-600', structureLabel: 'OpCo' },
+      },
+      {
+        label: "Sr Unsecured '29",
+        issuerName: 'CCO Holdings',
+        ytm: '5.87%',
+        spread: '+217 bps',
+        colors: { bg: 'amber-50', border: 'amber-200', text: 'amber-600', structureLabel: 'Intermediate' },
+      },
+      {
+        label: "Sr Unsecured '32",
+        issuerName: 'CCO Holdings',
+        ytm: '6.24%',
+        spread: '+254 bps',
+        colors: { bg: 'amber-50', border: 'amber-200', text: 'amber-600', structureLabel: 'Intermediate' },
+      },
+      {
+        label: "Sr Unsecured '31",
+        issuerName: 'Charter Comm Inc',
+        ytm: '6.89%',
+        spread: '+319 bps',
+        colors: { bg: 'red-50', border: 'red-200', text: 'red-500', structureLabel: 'HoldCo' },
+      },
+    ],
+    miniStructure: [
+      {
+        label: 'HoldCo',
+        name: 'Charter Comm',
+        yieldRange: '6.89%',
+        colors: { bg: 'blue-50', border: 'blue-200', badge: 'blue-600', text: 'blue-600' },
+      },
+      {
+        label: 'Intermediate',
+        name: 'CCO Holdings',
+        yieldRange: '5.87-6.24%',
+        colors: { bg: 'amber-50', border: 'amber-200', badge: 'amber-600', text: 'amber-600' },
+      },
+      {
+        label: 'OpCo',
+        name: 'Charter Operating',
+        yieldRange: '5.12%',
+        colors: { bg: 'emerald-50', border: 'emerald-200', badge: 'emerald-600', text: 'emerald-600' },
+      },
+    ],
+  },
+};
+
+// === Demo Definitions ===
+
 type DemoId = 'structure' | 'maturity' | 'yields';
 
 interface Demo {
@@ -12,44 +193,46 @@ interface Demo {
   codeLines: { tokens: { text: string; type: string }[] }[];
 }
 
-const demos: Demo[] = [
-  {
-    id: 'structure',
-    title: 'Corporate Structure',
-    codeLines: [
-      { tokens: [{ text: 'from', type: 'keyword' }, { text: ' debtstack ', type: 'default' }, { text: 'import', type: 'keyword' }, { text: ' DebtStackClient', type: 'class' }] },
-      { tokens: [{ text: '', type: 'default' }] },
-      { tokens: [{ text: 'client', type: 'variable' }, { text: ' = ', type: 'default' }, { text: 'DebtStackClient', type: 'class' }, { text: '(', type: 'default' }, { text: 'api_key', type: 'param' }, { text: '=', type: 'default' }, { text: '"sk_live_..."', type: 'string' }, { text: ')', type: 'default' }] },
-      { tokens: [{ text: '', type: 'default' }] },
-      { tokens: [{ text: '# Get corporate debt structure', type: 'comment' }] },
-      { tokens: [{ text: 'structure', type: 'variable' }, { text: ' = ', type: 'default' }, { text: 'client', type: 'variable' }, { text: '.', type: 'default' }, { text: 'get_structure', type: 'method' }, { text: '(', type: 'default' }, { text: '"CHTR"', type: 'string' }, { text: ')', type: 'default' }] },
-    ],
-  },
-  {
-    id: 'maturity',
-    title: 'Maturity Wall',
-    codeLines: [
-      { tokens: [{ text: 'from', type: 'keyword' }, { text: ' debtstack ', type: 'default' }, { text: 'import', type: 'keyword' }, { text: ' DebtStackClient', type: 'class' }] },
-      { tokens: [{ text: '', type: 'default' }] },
-      { tokens: [{ text: 'client', type: 'variable' }, { text: ' = ', type: 'default' }, { text: 'DebtStackClient', type: 'class' }, { text: '(', type: 'default' }, { text: 'api_key', type: 'param' }, { text: '=', type: 'default' }, { text: '"sk_live_..."', type: 'string' }, { text: ')', type: 'default' }] },
-      { tokens: [{ text: '', type: 'default' }] },
-      { tokens: [{ text: '# Get debt maturity schedule', type: 'comment' }] },
-      { tokens: [{ text: 'maturities', type: 'variable' }, { text: ' = ', type: 'default' }, { text: 'client', type: 'variable' }, { text: '.', type: 'default' }, { text: 'get_maturity_wall', type: 'method' }, { text: '(', type: 'default' }, { text: '"CHTR"', type: 'string' }, { text: ')', type: 'default' }] },
-    ],
-  },
-  {
-    id: 'yields',
-    title: 'Bond Yields',
-    codeLines: [
-      { tokens: [{ text: 'from', type: 'keyword' }, { text: ' debtstack ', type: 'default' }, { text: 'import', type: 'keyword' }, { text: ' DebtStackClient', type: 'class' }] },
-      { tokens: [{ text: '', type: 'default' }] },
-      { tokens: [{ text: 'client', type: 'variable' }, { text: ' = ', type: 'default' }, { text: 'DebtStackClient', type: 'class' }, { text: '(', type: 'default' }, { text: 'api_key', type: 'param' }, { text: '=', type: 'default' }, { text: '"sk_live_..."', type: 'string' }, { text: ')', type: 'default' }] },
-      { tokens: [{ text: '', type: 'default' }] },
-      { tokens: [{ text: '# Compare yields across capital structure', type: 'comment' }] },
-      { tokens: [{ text: 'yields', type: 'variable' }, { text: ' = ', type: 'default' }, { text: 'client', type: 'variable' }, { text: '.', type: 'default' }, { text: 'get_bond_yields', type: 'method' }, { text: '(', type: 'default' }, { text: '"CHTR"', type: 'string' }, { text: ')', type: 'default' }] },
-    ],
-  },
-];
+function buildDemos(ticker: string): Demo[] {
+  return [
+    {
+      id: 'structure',
+      title: 'Corporate Structure',
+      codeLines: [
+        { tokens: [{ text: 'from', type: 'keyword' }, { text: ' debtstack ', type: 'default' }, { text: 'import', type: 'keyword' }, { text: ' DebtStackClient', type: 'class' }] },
+        { tokens: [{ text: '', type: 'default' }] },
+        { tokens: [{ text: 'client', type: 'variable' }, { text: ' = ', type: 'default' }, { text: 'DebtStackClient', type: 'class' }, { text: '(', type: 'default' }, { text: 'api_key', type: 'param' }, { text: '=', type: 'default' }, { text: '"sk_live_..."', type: 'string' }, { text: ')', type: 'default' }] },
+        { tokens: [{ text: '', type: 'default' }] },
+        { tokens: [{ text: '# Get corporate debt structure', type: 'comment' }] },
+        { tokens: [{ text: 'structure', type: 'variable' }, { text: ' = ', type: 'default' }, { text: 'client', type: 'variable' }, { text: '.', type: 'default' }, { text: 'get_structure', type: 'method' }, { text: '(', type: 'default' }, { text: `"${ticker}"`, type: 'string' }, { text: ')', type: 'default' }] },
+      ],
+    },
+    {
+      id: 'maturity',
+      title: 'Maturity Wall',
+      codeLines: [
+        { tokens: [{ text: 'from', type: 'keyword' }, { text: ' debtstack ', type: 'default' }, { text: 'import', type: 'keyword' }, { text: ' DebtStackClient', type: 'class' }] },
+        { tokens: [{ text: '', type: 'default' }] },
+        { tokens: [{ text: 'client', type: 'variable' }, { text: ' = ', type: 'default' }, { text: 'DebtStackClient', type: 'class' }, { text: '(', type: 'default' }, { text: 'api_key', type: 'param' }, { text: '=', type: 'default' }, { text: '"sk_live_..."', type: 'string' }, { text: ')', type: 'default' }] },
+        { tokens: [{ text: '', type: 'default' }] },
+        { tokens: [{ text: '# Get debt maturity schedule', type: 'comment' }] },
+        { tokens: [{ text: 'maturities', type: 'variable' }, { text: ' = ', type: 'default' }, { text: 'client', type: 'variable' }, { text: '.', type: 'default' }, { text: 'get_maturity_wall', type: 'method' }, { text: '(', type: 'default' }, { text: `"${ticker}"`, type: 'string' }, { text: ')', type: 'default' }] },
+      ],
+    },
+    {
+      id: 'yields',
+      title: 'Bond Yields',
+      codeLines: [
+        { tokens: [{ text: 'from', type: 'keyword' }, { text: ' debtstack ', type: 'default' }, { text: 'import', type: 'keyword' }, { text: ' DebtStackClient', type: 'class' }] },
+        { tokens: [{ text: '', type: 'default' }] },
+        { tokens: [{ text: 'client', type: 'variable' }, { text: ' = ', type: 'default' }, { text: 'DebtStackClient', type: 'class' }, { text: '(', type: 'default' }, { text: 'api_key', type: 'param' }, { text: '=', type: 'default' }, { text: '"sk_live_..."', type: 'string' }, { text: ')', type: 'default' }] },
+        { tokens: [{ text: '', type: 'default' }] },
+        { tokens: [{ text: '# Compare yields across capital structure', type: 'comment' }] },
+        { tokens: [{ text: 'yields', type: 'variable' }, { text: ' = ', type: 'default' }, { text: 'client', type: 'variable' }, { text: '.', type: 'default' }, { text: 'get_bond_yields', type: 'method' }, { text: '(', type: 'default' }, { text: `"${ticker}"`, type: 'string' }, { text: ')', type: 'default' }] },
+      ],
+    },
+  ];
+}
 
 // Flatten code for typing animation
 const flattenCode = (codeLines: Demo['codeLines']) => {
@@ -79,8 +262,66 @@ const tokenColors: Record<string, string> = {
   default: 'text-gray-300',
 };
 
-// Structure Demo Component - CHTR (Charter Communications)
-function StructureDemo({ step }: { step: number }) {
+// === Tailwind color class maps ===
+// Tailwind can't detect dynamically constructed class names, so we map data values to full classes.
+const bgColorMap: Record<string, string> = {
+  'blue-50': 'bg-blue-50',
+  'amber-50': 'bg-amber-50',
+  'emerald-50': 'bg-emerald-50',
+  'red-50': 'bg-red-50',
+  'purple-50': 'bg-purple-50',
+  'gray-50': 'bg-gray-50',
+};
+
+const borderColorMap: Record<string, string> = {
+  'blue-200': 'border-blue-200',
+  'amber-200': 'border-amber-200',
+  'emerald-200': 'border-emerald-200',
+  'red-200': 'border-red-200',
+  'purple-200': 'border-purple-200',
+  'gray-200': 'border-gray-200',
+};
+
+const badgeBgMap: Record<string, string> = {
+  'blue-600': 'bg-blue-600',
+  'amber-600': 'bg-amber-600',
+  'emerald-600': 'bg-emerald-600',
+  'purple-600': 'bg-purple-600',
+  'red-600': 'bg-red-600',
+  'red-500': 'bg-red-500',
+};
+
+const textColorMap: Record<string, string> = {
+  'blue-600': 'text-blue-600',
+  'amber-600': 'text-amber-600',
+  'emerald-600': 'text-emerald-600',
+  'purple-600': 'text-purple-600',
+  'red-500': 'text-red-500',
+  'red-600': 'text-red-600',
+};
+
+const textOpacityMap: Record<string, string> = {
+  'blue-600': 'text-blue-600/70',
+  'amber-600': 'text-amber-600/70',
+  'emerald-600': 'text-emerald-600/70',
+  'purple-600': 'text-purple-600/70',
+  'red-500': 'text-red-500/70',
+  'red-600': 'text-red-600/70',
+};
+
+const borderOpacityMap: Record<string, string> = {
+  'blue-200': 'border-blue-200/50',
+  'amber-200': 'border-amber-200/50',
+  'emerald-200': 'border-emerald-200/50',
+  'purple-200': 'border-purple-200/50',
+  'red-200': 'border-red-200/50',
+};
+
+// === Structure Demo Component ===
+
+function StructureDemo({ step, data }: { step: number; data: DemoData['structure'] }) {
+  const entities = data.entities;
+
   return (
     <div className="p-5">
       {step >= 1 ? (
@@ -94,121 +335,76 @@ function StructureDemo({ step }: { step: number }) {
                 </svg>
               </div>
               <div>
-                <div className="text-gray-900 font-semibold">Charter Communications</div>
-                <div className="text-xs text-gray-400">10 entities · 16 instruments</div>
+                <div className="text-gray-900 font-semibold">{data.companyName}</div>
+                <div className="text-xs text-gray-400">{data.entityCount} entities · {data.instrumentCount} instruments</div>
               </div>
             </div>
             <div className="text-right">
-              <div className="text-lg font-bold text-gray-900">$97B</div>
+              <div className="text-lg font-bold text-gray-900">{data.totalDebt}</div>
               <div className="text-xs text-gray-400">Total Debt</div>
             </div>
           </div>
 
           {/* Org Chart */}
           <div className="relative">
-            {/* Parent Entity */}
-            {step >= 2 && (
-              <div className="animate-fadeIn mb-3">
-                <div className="relative p-4 rounded-xl bg-blue-50 border border-blue-200">
-                  <div className="absolute -top-2 left-4">
-                    <span className="px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider bg-blue-600 text-white rounded">HoldCo</span>
-                  </div>
-                  <div className="flex items-center justify-between mt-1">
-                    <div>
-                      <div className="font-semibold text-gray-900">Charter Communications, Inc.</div>
-                      <div className="text-xs text-blue-600/70 mt-0.5">Delaware · Public (NASDAQ)</div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-xs text-gray-400">Direct Debt</div>
-                      <div className="text-sm font-semibold text-blue-600">$56.3B</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
+            {entities.map((entity, index) => {
+              const entityStep = index + 2; // entities start appearing at step 2
+              const instrumentStep = index + 3; // instruments appear one step after entity
+              const showEntity = step >= entityStep;
+              const showInstruments = step >= instrumentStep && entity.instruments.length > 0;
+              const showConnector = index > 0 && step >= entityStep;
+              const isFirst = index === 0;
 
-            {/* Connector Line to Intermediate HoldCo */}
-            {step >= 3 && (
-              <div className="animate-fadeIn flex justify-center my-2">
-                <svg width="200" height="20" className="text-gray-300">
-                  <path d="M100 0 L100 20" fill="none" stroke="currentColor" strokeWidth="1.5" />
-                  <circle cx="100" cy="4" r="2" fill="currentColor" />
-                </svg>
-              </div>
-            )}
-
-            {/* Intermediate HoldCo - CCO Holdings */}
-            {step >= 3 && (
-              <div className="animate-fadeIn mb-3">
-                <div className="p-3 rounded-xl bg-amber-50 border border-amber-200">
-                  <div className="absolute -top-2 left-4">
-                    <span className="px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider bg-amber-600 text-white rounded">Intermediate</span>
-                  </div>
-                  <div className="flex items-start justify-between mb-2">
-                    <div>
-                      <div className="font-medium text-gray-900 text-sm">CCO Holdings, LLC</div>
-                      <div className="text-[10px] text-amber-600/70">Intermediate HoldCo</div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-sm font-semibold text-amber-600">$27.3B</div>
-                    </div>
-                  </div>
-
-                  {step >= 4 && (
-                    <div className="animate-fadeIn space-y-1.5 pt-2 border-t border-amber-200/50">
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="text-gray-500">Sr Unsecured Notes</span>
-                        <span className="text-gray-700 font-medium">$27.3B</span>
-                      </div>
-                      <div className="text-[10px] text-amber-600/70">Guarantor for OpCo debt</div>
+              return (
+                <div key={entity.name}>
+                  {/* Connector Line */}
+                  {showConnector && (
+                    <div className="animate-fadeIn flex justify-center my-2">
+                      <svg width="200" height="20" className="text-gray-300">
+                        <path d="M100 0 L100 20" fill="none" stroke="currentColor" strokeWidth="1.5" />
+                        {index === 1 && <circle cx="100" cy="4" r="2" fill="currentColor" />}
+                      </svg>
                     </div>
                   )}
-                </div>
-              </div>
-            )}
 
-            {/* Connector Line to OpCo */}
-            {step >= 4 && (
-              <div className="animate-fadeIn flex justify-center my-2">
-                <svg width="200" height="20" className="text-gray-300">
-                  <path d="M100 0 L100 20" fill="none" stroke="currentColor" strokeWidth="1.5" />
-                </svg>
-              </div>
-            )}
+                  {/* Entity Card */}
+                  {showEntity && (
+                    <div className="animate-fadeIn mb-3">
+                      <div className={`relative ${isFirst ? 'p-4' : 'p-3'} rounded-xl ${bgColorMap[entity.colors.bg] || 'bg-gray-50'} border ${borderColorMap[entity.colors.border] || 'border-gray-200'}`}>
+                        <div className="absolute -top-2 left-4">
+                          <span className={`px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${badgeBgMap[entity.colors.badge] || 'bg-gray-600'} text-white rounded`}>{entity.label}</span>
+                        </div>
+                        <div className={`flex justify-between ${isFirst ? 'items-center mt-1' : 'items-start mb-2'}`}>
+                          <div>
+                            <div className={`${isFirst ? 'font-semibold' : 'font-medium text-sm'} text-gray-900`}>{entity.name}</div>
+                            <div className={`${isFirst ? 'text-xs mt-0.5' : 'text-[10px]'} ${textOpacityMap[entity.colors.text] || 'text-gray-400'}`}>{entity.jurisdiction}</div>
+                          </div>
+                          <div className="text-right">
+                            {isFirst && <div className="text-xs text-gray-400">Direct Debt</div>}
+                            <div className={`${isFirst ? 'text-sm' : 'text-sm'} font-semibold ${textColorMap[entity.colors.text] || 'text-gray-600'}`}>{entity.totalDebt}</div>
+                          </div>
+                        </div>
 
-            {/* OpCo - Charter Operating */}
-            {step >= 4 && (
-              <div className="animate-fadeIn">
-                <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200">
-                  <div className="absolute -top-2 left-4">
-                    <span className="px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider bg-emerald-600 text-white rounded">OpCo</span>
-                  </div>
-                  <div className="flex items-start justify-between mb-2">
-                    <div>
-                      <div className="font-medium text-gray-900 text-sm">Charter Operating, LLC</div>
-                      <div className="text-[10px] text-emerald-600/70">Operating Company</div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-sm font-semibold text-emerald-600">$13.5B</div>
-                    </div>
-                  </div>
-
-                  {step >= 5 && (
-                    <div className="animate-fadeIn space-y-1.5 pt-2 border-t border-emerald-200/50">
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="text-gray-500">Term Loans A/B</span>
-                        <span className="text-gray-700 font-medium">$9.7B</span>
-                      </div>
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="text-gray-500">Secured Notes</span>
-                        <span className="text-gray-700 font-medium">$3.8B</span>
+                        {/* Instruments (shown for non-first entities, or when explicitly triggered) */}
+                        {!isFirst && showInstruments && (
+                          <div className={`animate-fadeIn space-y-1.5 pt-2 border-t ${borderOpacityMap[entity.colors.border] || 'border-gray-200/50'}`}>
+                            {entity.instruments.map((inst) => (
+                              <div key={inst.label} className="flex items-center justify-between text-xs">
+                                <span className="text-gray-500">{inst.label}</span>
+                                <span className="text-gray-700 font-medium">{inst.amount}</span>
+                              </div>
+                            ))}
+                            {entity.label === 'Intermediate' && (
+                              <div className={`text-[10px] ${textOpacityMap[entity.colors.text] || 'text-gray-400'}`}>Guarantor for OpCo debt</div>
+                            )}
+                          </div>
+                        )}
                       </div>
                     </div>
                   )}
                 </div>
-              </div>
-            )}
-
+              );
+            })}
           </div>
         </div>
       ) : (
@@ -223,17 +419,11 @@ function StructureDemo({ step }: { step: number }) {
   );
 }
 
-// Maturity Wall Demo Component - CHTR
-function MaturityWallDemo({ step }: { step: number }) {
-  const maturities = [
-    { year: 2025, amount: 3.2, secured: 1.5, unsecured: 1.7 },
-    { year: 2026, amount: 8.5, secured: 2.1, unsecured: 6.4 },
-    { year: 2027, amount: 12.8, secured: 3.2, unsecured: 9.6 },
-    { year: 2028, amount: 15.2, secured: 4.8, unsecured: 10.4 },
-    { year: 2029, amount: 11.3, secured: 2.9, unsecured: 8.4 },
-    { year: '2030+', amount: 46.0, secured: 0, unsecured: 46.0 },
-  ];
-  const maxAmount = 46;
+// === Maturity Wall Demo Component ===
+
+function MaturityWallDemo({ step, data }: { step: number; data: DemoData['maturityWall'] }) {
+  const maturities = data.maturities;
+  const maxAmount = Math.max(...maturities.map(m => m.amount));
 
   return (
     <div className="p-5">
@@ -248,12 +438,12 @@ function MaturityWallDemo({ step }: { step: number }) {
                 </svg>
               </div>
               <div>
-                <div className="text-gray-900 font-semibold">Charter Communications</div>
-                <div className="text-xs text-gray-400">CHTR · 16 instruments</div>
+                <div className="text-gray-900 font-semibold">{data.companyName}</div>
+                <div className="text-xs text-gray-400">{data.ticker} · {data.instrumentCount} instruments</div>
               </div>
             </div>
             <div className="text-right">
-              <div className="text-lg font-bold text-gray-900">$97B</div>
+              <div className="text-lg font-bold text-gray-900">{data.totalDebt}</div>
               <div className="text-xs text-gray-400">Total Debt</div>
             </div>
           </div>
@@ -323,8 +513,11 @@ function MaturityWallDemo({ step }: { step: number }) {
   );
 }
 
-// Bond Yields Demo Component - CHTR across capital structure
-function BondYieldsDemo({ step }: { step: number }) {
+// === Bond Yields Demo Component ===
+
+function BondYieldsDemo({ step, data }: { step: number; data: DemoData['yields'] }) {
+  const { bonds, miniStructure } = data;
+
   return (
     <div className="p-4">
       {step >= 1 ? (
@@ -333,56 +526,34 @@ function BondYieldsDemo({ step }: { step: number }) {
           <div className="w-[140px] flex-shrink-0">
             <div className="text-[10px] text-gray-400 uppercase tracking-wider mb-2 text-center">Structure</div>
 
-            {/* HoldCo */}
-            {step >= 1 && (
-              <div className="animate-fadeIn">
-                <div className="p-2 rounded-lg bg-blue-50 border border-blue-200 text-center">
-                  <div className="text-[9px] text-blue-600 font-semibold uppercase">HoldCo</div>
-                  <div className="text-[10px] text-gray-900 font-medium mt-0.5">Charter Comm</div>
-                  <div className="text-[10px] text-red-500 font-semibold">6.89%</div>
+            {miniStructure.map((entity, index) => {
+              const entityStep = index + 1;
+              const showEntity = step >= entityStep;
+              const showConnector = index > 0 && step >= entityStep;
+
+              return (
+                <div key={entity.label}>
+                  {/* Connector */}
+                  {showConnector && (
+                    <div className="animate-fadeIn flex justify-center">
+                      <svg width="2" height="12" className="text-gray-300">
+                        <path d="M1 0 L1 12" stroke="currentColor" strokeWidth="1.5" />
+                      </svg>
+                    </div>
+                  )}
+
+                  {showEntity && (
+                    <div className="animate-fadeIn">
+                      <div className={`p-2 rounded-lg ${bgColorMap[entity.colors.bg] || 'bg-gray-50'} border ${borderColorMap[entity.colors.border] || 'border-gray-200'} text-center`}>
+                        <div className={`text-[9px] ${textColorMap[entity.colors.text] || 'text-gray-600'} font-semibold uppercase`}>{entity.label}</div>
+                        <div className="text-[10px] text-gray-900 font-medium mt-0.5">{entity.name}</div>
+                        <div className={`text-[10px] ${textColorMap[entity.colors.text] || 'text-gray-600'} font-semibold`}>{entity.yieldRange}</div>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              </div>
-            )}
-
-            {/* Connector */}
-            {step >= 2 && (
-              <div className="animate-fadeIn flex justify-center">
-                <svg width="2" height="12" className="text-gray-300">
-                  <path d="M1 0 L1 12" stroke="currentColor" strokeWidth="1.5" />
-                </svg>
-              </div>
-            )}
-
-            {/* Intermediate */}
-            {step >= 2 && (
-              <div className="animate-fadeIn">
-                <div className="p-2 rounded-lg bg-amber-50 border border-amber-200 text-center">
-                  <div className="text-[9px] text-amber-600 font-semibold uppercase">Intermediate</div>
-                  <div className="text-[10px] text-gray-900 font-medium mt-0.5">CCO Holdings</div>
-                  <div className="text-[10px] text-amber-600 font-semibold">5.87-6.24%</div>
-                </div>
-              </div>
-            )}
-
-            {/* Connector */}
-            {step >= 3 && (
-              <div className="animate-fadeIn flex justify-center">
-                <svg width="2" height="12" className="text-gray-300">
-                  <path d="M1 0 L1 12" stroke="currentColor" strokeWidth="1.5" />
-                </svg>
-              </div>
-            )}
-
-            {/* OpCo */}
-            {step >= 3 && (
-              <div className="animate-fadeIn">
-                <div className="p-2 rounded-lg bg-emerald-50 border border-emerald-200 text-center">
-                  <div className="text-[9px] text-emerald-600 font-semibold uppercase">OpCo</div>
-                  <div className="text-[10px] text-gray-900 font-medium mt-0.5">Charter Operating</div>
-                  <div className="text-[10px] text-emerald-600 font-semibold">5.12%</div>
-                </div>
-              </div>
-            )}
+              );
+            })}
 
             {/* Arrow indicator */}
             {step >= 4 && (
@@ -399,68 +570,34 @@ function BondYieldsDemo({ step }: { step: number }) {
             <div className="text-[10px] text-gray-400 uppercase tracking-wider mb-2">Bond Yields</div>
 
             <div className="space-y-2">
-              {/* OpCo Bond */}
-              {step >= 3 && (
-                <div className="animate-fadeIn p-2.5 rounded-lg bg-emerald-50 border border-emerald-200">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-[10px] text-emerald-600 font-semibold">Sr Secured &apos;29</div>
-                      <div className="text-[9px] text-gray-400">Charter Operating</div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-sm font-bold text-emerald-600">5.12%</div>
-                      <div className="text-[9px] text-gray-400">+142 bps</div>
-                    </div>
-                  </div>
-                </div>
-              )}
+              {bonds.map((bond, index) => {
+                // Map bonds to steps: first bond at step 3, then step 4 for middle bonds, step 5 for last
+                let bondStep: number;
+                if (index === 0) bondStep = 3;
+                else if (index === bonds.length - 1) bondStep = 5;
+                else bondStep = 4;
 
-              {/* Intermediate Bonds */}
-              {step >= 4 && (
-                <div className="animate-fadeIn p-2.5 rounded-lg bg-amber-50 border border-amber-200">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-[10px] text-amber-600 font-semibold">Sr Unsecured &apos;29</div>
-                      <div className="text-[9px] text-gray-400">CCO Holdings</div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-sm font-bold text-amber-600">5.87%</div>
-                      <div className="text-[9px] text-gray-400">+217 bps</div>
-                    </div>
-                  </div>
-                </div>
-              )}
+                const showBond = step >= bondStep;
 
-              {step >= 4 && (
-                <div className="animate-fadeIn p-2.5 rounded-lg bg-amber-50 border border-amber-200" style={{ animationDelay: '100ms' }}>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-[10px] text-amber-600 font-semibold">Sr Unsecured &apos;32</div>
-                      <div className="text-[9px] text-gray-400">CCO Holdings</div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-sm font-bold text-amber-600">6.24%</div>
-                      <div className="text-[9px] text-gray-400">+254 bps</div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* HoldCo Bond */}
-              {step >= 5 && (
-                <div className="animate-fadeIn p-2.5 rounded-lg bg-red-50 border border-red-200">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-[10px] text-red-500 font-semibold">Sr Unsecured &apos;31</div>
-                      <div className="text-[9px] text-gray-400">Charter Comm Inc</div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-sm font-bold text-red-500">6.89%</div>
-                      <div className="text-[9px] text-gray-400">+319 bps</div>
+                return showBond ? (
+                  <div
+                    key={bond.label}
+                    className={`animate-fadeIn p-2.5 rounded-lg ${bgColorMap[bond.colors.bg] || 'bg-gray-50'} border ${borderColorMap[bond.colors.border] || 'border-gray-200'}`}
+                    style={{ animationDelay: index > 0 && bondStep === 4 ? `${(index - 1) * 100}ms` : undefined }}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className={`text-[10px] ${textColorMap[bond.colors.text] || 'text-gray-600'} font-semibold`}>{bond.label}</div>
+                        <div className="text-[9px] text-gray-400">{bond.issuerName}</div>
+                      </div>
+                      <div className="text-right">
+                        <div className={`text-sm font-bold ${textColorMap[bond.colors.text] || 'text-gray-600'}`}>{bond.ytm}</div>
+                        <div className="text-[9px] text-gray-400">{bond.spread}</div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
+                ) : null;
+              })}
             </div>
 
           </div>
@@ -477,7 +614,13 @@ function BondYieldsDemo({ step }: { step: number }) {
   );
 }
 
-export default function LiveDemo() {
+// === Main LiveDemo Component ===
+
+export default function LiveDemo({ data }: { data?: DemoData }) {
+  const demoData = data ?? FALLBACK_DEMO_DATA;
+  const ticker = demoData.structure.ticker;
+  const demos = buildDemos(ticker);
+
   const [activeDemo, setActiveDemo] = useState<DemoId>('structure');
   const [charIndex, setCharIndex] = useState(0);
   const [step, setStep] = useState(0);
@@ -540,7 +683,7 @@ export default function LiveDemo() {
     }, 5000);
 
     return () => clearTimeout(timeout);
-  }, [autoRotate, step, activeDemo, resetAnimation]);
+  }, [autoRotate, step, activeDemo, resetAnimation, demos]);
 
   // Render typed code with syntax highlighting
   const renderCode = () => {
@@ -578,13 +721,13 @@ export default function LiveDemo() {
   const renderDemo = () => {
     switch (activeDemo) {
       case 'structure':
-        return <StructureDemo step={step} />;
+        return <StructureDemo step={step} data={demoData.structure} />;
       case 'maturity':
-        return <MaturityWallDemo step={step} />;
+        return <MaturityWallDemo step={step} data={demoData.maturityWall} />;
       case 'yields':
-        return <BondYieldsDemo step={step} />;
+        return <BondYieldsDemo step={step} data={demoData.yields} />;
       default:
-        return <StructureDemo step={step} />;
+        return <StructureDemo step={step} data={demoData.structure} />;
     }
   };
 
@@ -652,9 +795,9 @@ export default function LiveDemo() {
               </span>
               {step >= 1 && (
                 <span className="animate-fadeIn text-xs font-mono text-gray-400">
-                  {activeDemo === 'structure' && 'CHTR'}
-                  {activeDemo === 'maturity' && 'CHTR'}
-                  {activeDemo === 'yields' && 'CHTR · 4 bonds'}
+                  {activeDemo === 'structure' && ticker}
+                  {activeDemo === 'maturity' && ticker}
+                  {activeDemo === 'yields' && `${ticker} · ${demoData.yields.bondCount} bonds`}
                 </span>
               )}
             </div>

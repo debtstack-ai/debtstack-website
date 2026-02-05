@@ -2,6 +2,7 @@
 'use client';
 
 import LiveDemo from '@/components/LiveDemo';
+import demoData from '@/data/demo-data.json';
 import { useEffect, useRef } from 'react';
 import { SignInButton, SignUpButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 
@@ -57,7 +58,7 @@ export default function Home() {
               </SignInButton>
               <SignUpButton mode="modal">
                 <button className="bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-800 transition">
-                  Start Free
+                  Get Started
                 </button>
               </SignUpButton>
             </SignedOut>
@@ -87,7 +88,7 @@ export default function Home() {
             <SignedOut>
               <SignUpButton mode="modal">
                 <button className="bg-gray-900 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-gray-800 transition">
-                  Start Free
+                  Get Started
                 </button>
               </SignUpButton>
             </SignedOut>
@@ -111,7 +112,7 @@ export default function Home() {
       </section>
 
       {/* Live Demo Section */}
-      <LiveDemo />
+      <LiveDemo data={demoData} />
 
       {/* Integrations Section */}
       <section
