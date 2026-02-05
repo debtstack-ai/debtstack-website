@@ -143,7 +143,7 @@
     "linkedin": "https://linkedin.com/company/debtstack"
   },
   "api": {
-    "baseUrl": "https://credible-ai-production.up.railway.app",
+    "baseUrl": "https://api.debtstack.ai",
     "auth": {
       "method": "key",
       "name": "X-API-Key"

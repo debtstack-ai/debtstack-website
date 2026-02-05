@@ -20,39 +20,66 @@ curl "https://api.debtstack.ai/v1/companies" \
 
 ## Endpoints
 
-DebtStack provides 7 core primitives:
+DebtStack provides 9 core primitives for corporate debt analysis:
 
 ### Companies
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/v1/companies` | Search and filter companies |
+| Method | Endpoint | Description | Cost |
+|--------|----------|-------------|------|
+| GET | `/v1/companies` | Search and filter companies | $0.05 |
+| GET | `/v1/companies/{ticker}/changes` | Get recent changes for a company | $0.10 |
 
 ### Bonds
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/v1/bonds` | Search and filter bonds |
-| GET | `/v1/bonds/resolve` | Resolve CUSIP/ISIN to bond details |
-| GET | `/v1/pricing` | Get bond pricing data |
+| Method | Endpoint | Description | Cost |
+|--------|----------|-------------|------|
+| GET | `/v1/bonds` | Search and filter bonds | $0.05 |
+| GET | `/v1/bonds/resolve` | Resolve CUSIP/ISIN to bond details | $0.05 |
+
+### Financials
+
+| Method | Endpoint | Description | Cost |
+|--------|----------|-------------|------|
+| GET | `/v1/financials` | Get financial metrics and ratios | $0.05 |
+
+### Collateral
+
+| Method | Endpoint | Description | Cost |
+|--------|----------|-------------|------|
+| GET | `/v1/collateral` | Get collateral and security details | $0.05 |
+
+### Covenants
+
+| Method | Endpoint | Description | Cost |
+|--------|----------|-------------|------|
+| GET | `/v1/covenants` | Search covenant terms | $0.05 |
+| GET | `/v1/covenants/compare` | Compare covenants across companies | Business only |
 
 ### Entities
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/v1/entities/traverse` | Traverse entity relationships |
+| Method | Endpoint | Description | Cost |
+|--------|----------|-------------|------|
+| POST | `/v1/entities/traverse` | Traverse entity relationships | $0.15 |
 
 ### Documents
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/v1/documents/search` | Full-text search SEC filings |
+| Method | Endpoint | Description | Cost |
+|--------|----------|-------------|------|
+| GET | `/v1/documents/search` | Full-text search SEC filings | $0.15 |
 
 ### Batch
 
+| Method | Endpoint | Description | Cost |
+|--------|----------|-------------|------|
+| POST | `/v1/batch` | Execute multiple operations | Sum of operations |
+
+### Business-Only Endpoints
+
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/v1/batch` | Execute multiple operations |
+| GET | `/v1/bonds/{cusip}/pricing/history` | Historical bond pricing (up to 2 years) |
+| GET | `/v1/export` | Bulk data export (up to 50,000 records) |
+| GET | `/v1/usage/analytics` | Detailed usage analytics |
 
 ## Response Format
 
@@ -100,24 +127,26 @@ These parameters are available on most list endpoints:
 
 | Tier | Limit | Queries |
 |------|-------|---------|
-| Free | 10 requests/minute | 25/day |
-| Pro | 120 requests/minute | Unlimited |
-| Business | Custom | Unlimited |
+| Pay-as-You-Go | 60 requests/minute | Pay per call |
+| Pro | 100 requests/minute | Unlimited |
+| Business | 500 requests/minute | Unlimited |
 
 Rate limit headers are included in all responses:
 
 ```
-X-RateLimit-Limit: 120
-X-RateLimit-Remaining: 115
+X-RateLimit-Limit: 100
+X-RateLimit-Remaining: 95
 X-RateLimit-Reset: 1706140800
 ```
 
-## Credit Usage
+## Credit Usage (Pay-as-You-Go)
 
-Each endpoint consumes credits:
+Each endpoint consumes credits based on complexity:
 
-| Endpoint | Credits |
-|----------|---------|
-| Companies, Bonds, Resolve, Pricing | 1 |
-| Traverse, Documents | 3 |
-| Batch | Sum of operations |
+| Endpoint Type | Cost | Endpoints |
+|--------------|------|-----------|
+| Simple | $0.05 | Companies, Bonds, Resolve, Financials, Collateral, Covenants |
+| Complex | $0.10 | Company Changes |
+| Advanced | $0.15 | Traverse, Documents, Batch (per operation) |
+
+Pro and Business tiers have unlimited queries included.
