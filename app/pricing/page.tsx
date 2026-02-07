@@ -31,8 +31,7 @@ const tiers = [
     features: [
       'Unlimited API queries',
       '100 requests/minute',
-      '200+ companies coverage',
-      '3,000+ debt instruments',
+      'Full company coverage',
       'Real-time bond pricing & YTM',
       'Leverage & coverage ratios',
       'Corporate hierarchy & guarantors',
@@ -146,7 +145,7 @@ export default function PricingPage() {
               </SignInButton>
               <SignUpButton mode="modal">
                 <button className="bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-800 transition">
-                  Start Free
+                  Get Started
                 </button>
               </SignUpButton>
             </SignedOut>
@@ -167,7 +166,7 @@ export default function PricingPage() {
             Simple, Transparent Pricing
           </h1>
           <p className="text-xl text-gray-500 max-w-2xl mx-auto">
-            Start free with Pay-as-You-Go. Upgrade to Pro or Business when you need more.
+            Start with Pay-as-You-Go. Upgrade to Pro or Business when you need more.
           </p>
         </div>
       </section>
@@ -383,9 +382,9 @@ export default function PricingPage() {
                 </tr>
                 <tr>
                   <td className="py-4 pr-4">Companies</td>
-                  <td className="text-center py-4 px-4">200+</td>
-                  <td className="text-center py-4 px-4">200+</td>
-                  <td className="text-center py-4 px-4">200+</td>
+                  <td className="text-center py-4 px-4"><CheckIcon /></td>
+                  <td className="text-center py-4 px-4"><CheckIcon /></td>
+                  <td className="text-center py-4 px-4"><CheckIcon /></td>
                 </tr>
                 <tr>
                   <td className="py-4 pr-4">Bond Pricing</td>
@@ -467,7 +466,7 @@ export default function PricingPage() {
             <div className="p-5 rounded-xl bg-gray-50 border border-gray-200">
               <h3 className="font-semibold mb-2">What data is included?</h3>
               <p className="text-gray-500 text-sm">
-                All tiers include full access to 200+ companies, 3,000+ debt instruments, 13,000+ SEC document sections, and real-time bond pricing from FINRA TRACE.
+                All tiers include full access to our growing universe of companies, debt instruments, SEC document sections, and real-time bond pricing from FINRA TRACE.
               </p>
             </div>
             <div className="p-5 rounded-xl bg-gray-50 border border-gray-200">

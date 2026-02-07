@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { stripe, STRIPE_PRICES, STRIPE_CREDIT_PRICES, PaidTierName, CreditAmount } from '@/lib/stripe';
 
-const BACKEND_URL = process.env.BACKEND_URL || 'https://credible-ai-production.up.railway.app';
+const BACKEND_URL = process.env.BACKEND_URL || 'https://api.debtstack.ai';
 
 export async function POST(request: NextRequest) {
   try {

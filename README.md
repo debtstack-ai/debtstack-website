@@ -71,7 +71,7 @@ Deployed on [Railway](https://railway.app). Push to `main` triggers automatic de
 
 ## Related
 
-- **Backend API**: [credible-ai-production.up.railway.app](https://credible-ai-production.up.railway.app/docs)
+- **Backend API**: [api.debtstack.ai](https://api.debtstack.ai/docs)
 - **Documentation**: [docs.debtstack.ai](https://docs.debtstack.ai)
 
 ## License

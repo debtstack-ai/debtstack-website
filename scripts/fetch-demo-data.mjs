@@ -9,7 +9,7 @@ import { fileURLToPath } from 'url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUTPUT_PATH = join(__dirname, '..', 'data', 'demo-data.json');
 
-const BACKEND_URL = process.env.BACKEND_URL || 'https://credible-ai-production.up.railway.app';
+const BACKEND_URL = process.env.BACKEND_URL || 'https://api.debtstack.ai';
 const DEMO_API_KEY = process.env.DEMO_API_KEY;
 const TICKER = 'RIG';
 

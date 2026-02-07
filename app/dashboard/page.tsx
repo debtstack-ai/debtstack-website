@@ -308,7 +308,7 @@ function DashboardContent() {
               <p className="text-sm text-gray-500 mb-2">Example request:</p>
               <pre className="p-4 rounded-lg bg-gray-900 border border-gray-200 overflow-x-auto text-sm">
                 <code className="text-green-400">{`curl -H "X-API-Key: ${userData?.api_key_prefix || 'ds_'}..." \\
-  "https://credible-ai-production.up.railway.app/v1/companies?ticker=AAPL"`}</code>
+  "https://api.debtstack.ai/v1/companies?ticker=AAPL"`}</code>
               </pre>
             </div>
 
@@ -320,7 +320,7 @@ function DashboardContent() {
                 View Documentation →
               </a>
               <a
-                href="https://credible-ai-production.up.railway.app/docs"
+                href="https://docs.debtstack.ai/api-reference/overview"
                 className="text-[#2383e2] hover:underline text-sm"
               >
                 API Reference →

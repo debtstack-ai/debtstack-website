@@ -4,7 +4,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getPool } from '@/lib/db';
 
-const BACKEND_URL = process.env.BACKEND_URL || 'https://credible-ai-production.up.railway.app';
+const BACKEND_URL = process.env.BACKEND_URL || 'https://api.debtstack.ai';
 
 export async function POST(request: NextRequest) {
   try {

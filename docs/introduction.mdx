@@ -73,7 +73,7 @@ Find the highest-leverage company among the MAG7:
 import requests
 
 response = requests.get(
-    "https://credible-ai-production.up.railway.app/v1/companies",
+    "https://api.debtstack.ai/v1/companies",
     params={
         "ticker": "AAPL,MSFT,GOOGL,AMZN,NVDA,META,TSLA",
         "fields": "ticker,name,net_leverage_ratio",

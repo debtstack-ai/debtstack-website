@@ -42,21 +42,21 @@ Search and filter collateral records to understand what assets secure specific d
 
 ```bash
 curl -H "X-API-Key: $DEBTSTACK_API_KEY" \
-  "https://credible-ai-production.up.railway.app/v1/collateral?ticker=RIG&priority=first_lien"
+  "https://api.debtstack.ai/v1/collateral?ticker=RIG&priority=first_lien"
 ```
 
 ### Get Collateral with Valuations
 
 ```bash
 curl -H "X-API-Key: $DEBTSTACK_API_KEY" \
-  "https://credible-ai-production.up.railway.app/v1/collateral?has_valuation=true&collateral_type=equipment"
+  "https://api.debtstack.ai/v1/collateral?has_valuation=true&collateral_type=equipment"
 ```
 
 ### Filter by Collateral Type
 
 ```bash
 curl -H "X-API-Key: $DEBTSTACK_API_KEY" \
-  "https://credible-ai-production.up.railway.app/v1/collateral?collateral_type=real_estate"
+  "https://api.debtstack.ai/v1/collateral?collateral_type=real_estate"
 ```
 
 ## Response

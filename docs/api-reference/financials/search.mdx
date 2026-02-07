@@ -42,21 +42,21 @@ Retrieve quarterly financial statements from 10-Q and 10-K filings. Supports TTM
 
 ```bash
 curl -H "X-API-Key: $DEBTSTACK_API_KEY" \
-  "https://credible-ai-production.up.railway.app/v1/financials?ticker=AAPL&period=TTM"
+  "https://api.debtstack.ai/v1/financials?ticker=AAPL&period=TTM"
 ```
 
 ### Get Specific Quarter
 
 ```bash
 curl -H "X-API-Key: $DEBTSTACK_API_KEY" \
-  "https://credible-ai-production.up.railway.app/v1/financials?ticker=CHTR&fiscal_year=2025&fiscal_quarter=3"
+  "https://api.debtstack.ai/v1/financials?ticker=CHTR&fiscal_year=2025&fiscal_quarter=3"
 ```
 
 ### Compare Companies (CSV)
 
 ```bash
 curl -H "X-API-Key: $DEBTSTACK_API_KEY" \
-  "https://credible-ai-production.up.railway.app/v1/financials?fiscal_year=2025&fiscal_quarter=3&format=csv"
+  "https://api.debtstack.ai/v1/financials?fiscal_year=2025&fiscal_quarter=3&format=csv"
 ```
 
 ## Response

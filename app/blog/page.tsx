@@ -44,7 +44,7 @@ export default function BlogIndex() {
               </SignInButton>
               <SignUpButton mode="modal">
                 <button className="bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-800 transition">
-                  Start Free
+                  Get Started
                 </button>
               </SignUpButton>
             </SignedOut>
