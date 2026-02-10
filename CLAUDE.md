@@ -11,6 +11,8 @@ DebtStack Website is the Next.js frontend for DebtStack.ai - an API platform pro
 - **Framework**: Next.js 16.1.1 (App Router)
 - **Auth**: Clerk (`@clerk/nextjs`)
 - **Payments**: Stripe
+- **Analytics**: Vercel Analytics + PostHog (events, funnels, session replay)
+- **Error Tracking**: Sentry (client + server)
 - **Styling**: Tailwind CSS v4
 - **Language**: TypeScript
 - **Deployment**: Railway
@@ -26,11 +28,15 @@ debtstack-website/
 │   │   └── waitlist/      # Waitlist signup
 │   ├── dashboard/         # User dashboard (API key, usage, billing)
 │   ├── pricing/           # Pricing page
+│   ├── providers.tsx      # PostHog initialization + pageview tracking
+│   ├── layout.tsx         # Root layout (Clerk, PostHog, Vercel Analytics)
 │   └── page.tsx           # Landing page
 ├── docs/                   # Mintlify documentation (docs.debtstack.ai)
 ├── lib/                    # Shared utilities
 │   └── stripe.ts          # Stripe client & tier config
 ├── public/                 # Static assets
+├── sentry.client.config.ts # Sentry browser config
+├── sentry.server.config.ts # Sentry server config
 └── middleware.ts          # Clerk auth middleware
 ```
 
@@ -63,6 +69,22 @@ debtstack-website/
 - Frontend syncs users to backend on first login
 - Backend manages API keys, rate limits, and credit tracking
 
+### Vercel Analytics
+- `<Analytics />` component in `app/layout.tsx` — auto-tracks page views
+- Enable in Vercel dashboard → Analytics tab (free tier)
+
+### PostHog
+- Initialized in `app/providers.tsx` with automatic pageview tracking
+- Identifies authenticated users via Clerk `useUser()` hook
+- Custom events tracked: `viewed_pricing`, `clicked_subscribe`, `viewed_dashboard`, `copied_api_key`
+- Guarded by `NEXT_PUBLIC_POSTHOG_KEY` — silently disabled when not set
+
+### Sentry
+- `sentry.client.config.ts` (browser) + `sentry.server.config.ts` (server)
+- `next.config.ts` wrapped with `withSentryConfig()` for source map uploads
+- 10% trace sampling, no session replay (PostHog handles that)
+- Silently disabled when `NEXT_PUBLIC_SENTRY_DSN` is not set
+
 ## Pricing Tiers
 
 | Tier | Price | Queries | Features |
@@ -88,6 +110,16 @@ BACKEND_URL=https://api.debtstack.ai
 
 # App
 NEXT_PUBLIC_APP_URL=https://debtstack.ai
+
+# PostHog (optional — analytics disabled if not set)
+NEXT_PUBLIC_POSTHOG_KEY=phc_...
+NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
+
+# Sentry (optional — error tracking disabled if not set)
+NEXT_PUBLIC_SENTRY_DSN=https://...@....ingest.us.sentry.io/...
+SENTRY_AUTH_TOKEN=sntrys_...
+SENTRY_ORG=debtstack
+SENTRY_PROJECT=debtstack-website
 ```
 
 ## Common Tasks

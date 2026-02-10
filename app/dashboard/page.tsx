@@ -4,6 +4,7 @@
 import { useUser, useAuth } from "@clerk/nextjs";
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import { usePostHog } from "posthog-js/react";
 
 interface UserData {
   api_key?: string;
@@ -19,6 +20,7 @@ function DashboardContent() {
   const { user, isLoaded: userLoaded } = useUser();
   const { getToken } = useAuth();
   const searchParams = useSearchParams();
+  const posthog = usePostHog();
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -39,6 +41,7 @@ function DashboardContent() {
 
   useEffect(() => {
     if (userLoaded && user) {
+      posthog?.capture('viewed_dashboard');
       fetchOrCreateUser();
     }
   }, [userLoaded, user]);
@@ -74,6 +77,7 @@ function DashboardContent() {
   const copyApiKey = async () => {
     if (userData?.api_key) {
       await navigator.clipboard.writeText(userData.api_key);
+      posthog?.capture('copied_api_key');
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }

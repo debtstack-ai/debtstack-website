@@ -11,9 +11,12 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^6.36.9",
+    "@sentry/nextjs": "^10.38.0",
+    "@vercel/analytics": "^1.6.1",
     "gray-matter": "^4.0.3",
     "next": "16.1.1",
     "pg": "^8.17.2",
+    "posthog-js": "^1.345.2",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-markdown": "^10.1.0",

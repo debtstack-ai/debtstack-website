@@ -2,7 +2,8 @@
 'use client';
 
 import { SignUpButton, SignedIn, SignedOut, UserButton, SignInButton } from "@clerk/nextjs";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { usePostHog } from "posthog-js/react";
 
 const tiers = [
   {
@@ -87,10 +88,16 @@ const businessOnlyFeatures = [
 ];
 
 export default function PricingPage() {
+  const posthog = usePostHog();
   const [loading, setLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
+    posthog?.capture('viewed_pricing');
+  }, [posthog]);
+
   const handleUpgrade = async (tier: 'pro' | 'business') => {
+    posthog?.capture('clicked_subscribe', { tier });
     try {
       setLoading(tier);
       setError(null);
