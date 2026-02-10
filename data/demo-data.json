@@ -1,22 +1,22 @@
 {
-  "_generated": "2026-02-05T03:08:14.393Z",
+  "_generated": "2026-02-09T00:00:00.000Z",
   "_ticker": "RIG",
   "structure": {
     "companyName": "Transocean Ltd.",
     "ticker": "RIG",
     "entityCount": 231,
-    "instrumentCount": 13,
-    "totalDebt": "$6.2B",
+    "instrumentCount": 9,
+    "totalDebt": "$6.0B",
     "entities": [
       {
         "name": "Transocean Ltd.",
         "jurisdiction": "Switzerland · Public (NYSE)",
         "label": "HoldCo",
-        "totalDebt": "$576M",
+        "totalDebt": "Parent",
         "instruments": [
           {
-            "label": "Secured Debt",
-            "amount": "$576M"
+            "label": "Parent Guarantor",
+            "amount": "—"
           }
         ],
         "colors": {
@@ -28,7 +28,7 @@
       },
       {
         "name": "Transocean Inc.",
-        "jurisdiction": "",
+        "jurisdiction": "Cayman Islands",
         "label": "FinCo",
         "totalDebt": "$5.6B",
         "instruments": [
@@ -89,8 +89,8 @@
   "maturityWall": {
     "companyName": "Transocean Ltd.",
     "ticker": "RIG",
-    "instrumentCount": 13,
-    "totalDebt": "$6.2B",
+    "instrumentCount": 9,
+    "totalDebt": "$6.0B",
     "maturities": [
       {
         "year": "2027",
@@ -129,22 +129,10 @@
     "bondCount": 3,
     "bonds": [
       {
-        "label": "Sr Secured '27",
-        "issuerName": "Transocean Offshore Deepwater Holdings Limited",
-        "ytm": "4.50%",
-        "spread": "4.50% coupon",
-        "colors": {
-          "bg": "emerald-50",
-          "border": "emerald-200",
-          "text": "emerald-600",
-          "structureLabel": "OpCo"
-        }
-      },
-      {
-        "label": "Sr Secured '27",
+        "label": "8.25% '29",
         "issuerName": "Transocean Inc.",
-        "ytm": "6.87%",
-        "spread": "6.87% coupon",
+        "ytm": "6.79%",
+        "spread": "+250 bps",
         "colors": {
           "bg": "amber-50",
           "border": "amber-200",
@@ -153,10 +141,22 @@
         }
       },
       {
-        "label": "Sr Secured '28",
+        "label": "8.75% '30",
         "issuerName": "Transocean Inc.",
-        "ytm": "8.37%",
-        "spread": "8.37% coupon",
+        "ytm": "7.58%",
+        "spread": "+320 bps",
+        "colors": {
+          "bg": "amber-50",
+          "border": "amber-200",
+          "text": "amber-600",
+          "structureLabel": "FinCo"
+        }
+      },
+      {
+        "label": "8.50% '31",
+        "issuerName": "Transocean Inc.",
+        "ytm": "7.18%",
+        "spread": "+280 bps",
         "colors": {
           "bg": "amber-50",
           "border": "amber-200",
@@ -180,7 +180,7 @@
       {
         "label": "FinCo",
         "name": "Transocean Inc.",
-        "yieldRange": "6.87-8.37%",
+        "yieldRange": "6.79-7.58%",
         "colors": {
           "bg": "amber-50",
           "border": "amber-200",
@@ -191,7 +191,7 @@
       {
         "label": "FinCo",
         "name": "Transocean Inte",
-        "yieldRange": "6.87-8.37%",
+        "yieldRange": "",
         "colors": {
           "bg": "purple-50",
           "border": "purple-200",
@@ -202,7 +202,7 @@
       {
         "label": "OpCo",
         "name": "Transocean Offs",
-        "yieldRange": "4.50%",
+        "yieldRange": "",
         "colors": {
           "bg": "emerald-50",
           "border": "emerald-200",
