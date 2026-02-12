@@ -89,8 +89,8 @@ debtstack-website/
 
 | Tier | Price | Queries | Features |
 |------|-------|---------|----------|
-| Pay-as-You-Go | $0/mo | Pay per call ($0.05-$0.15) | 200+ companies, 60 rpm |
-| Pro | $199/mo | Unlimited | 200+ companies, 100 rpm |
+| Pay-as-You-Go | $0/mo | Pay per call ($0.05-$0.15) | 211 companies, 60 rpm |
+| Pro | $199/mo | Unlimited | 211 companies, 100 rpm |
 | Business | $499/mo | Unlimited | Historical pricing, bulk export, 5 team seats, 500 rpm |
 
 ## Environment Variables

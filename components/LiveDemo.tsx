@@ -200,7 +200,7 @@ function buildDemos(ticker: string): Demo[] {
       codeLines: [
         { tokens: [{ text: 'from', type: 'keyword' }, { text: ' debtstack ', type: 'default' }, { text: 'import', type: 'keyword' }, { text: ' DebtStackClient', type: 'class' }] },
         { tokens: [{ text: '', type: 'default' }] },
-        { tokens: [{ text: 'client', type: 'variable' }, { text: ' = ', type: 'default' }, { text: 'DebtStackClient', type: 'class' }, { text: '(', type: 'default' }, { text: 'api_key', type: 'param' }, { text: '=', type: 'default' }, { text: '"sk_live_..."', type: 'string' }, { text: ')', type: 'default' }] },
+        { tokens: [{ text: 'client', type: 'variable' }, { text: ' = ', type: 'default' }, { text: 'DebtStackClient', type: 'class' }, { text: '(', type: 'default' }, { text: 'api_key', type: 'param' }, { text: '=', type: 'default' }, { text: '"ds_xxxxx..."', type: 'string' }, { text: ')', type: 'default' }] },
         { tokens: [{ text: '', type: 'default' }] },
         { tokens: [{ text: '# Get corporate debt structure', type: 'comment' }] },
         { tokens: [{ text: 'structure', type: 'variable' }, { text: ' = ', type: 'default' }, { text: 'client', type: 'variable' }, { text: '.', type: 'default' }, { text: 'get_structure', type: 'method' }, { text: '(', type: 'default' }, { text: `"${ticker}"`, type: 'string' }, { text: ')', type: 'default' }] },
@@ -212,7 +212,7 @@ function buildDemos(ticker: string): Demo[] {
       codeLines: [
         { tokens: [{ text: 'from', type: 'keyword' }, { text: ' debtstack ', type: 'default' }, { text: 'import', type: 'keyword' }, { text: ' DebtStackClient', type: 'class' }] },
         { tokens: [{ text: '', type: 'default' }] },
-        { tokens: [{ text: 'client', type: 'variable' }, { text: ' = ', type: 'default' }, { text: 'DebtStackClient', type: 'class' }, { text: '(', type: 'default' }, { text: 'api_key', type: 'param' }, { text: '=', type: 'default' }, { text: '"sk_live_..."', type: 'string' }, { text: ')', type: 'default' }] },
+        { tokens: [{ text: 'client', type: 'variable' }, { text: ' = ', type: 'default' }, { text: 'DebtStackClient', type: 'class' }, { text: '(', type: 'default' }, { text: 'api_key', type: 'param' }, { text: '=', type: 'default' }, { text: '"ds_xxxxx..."', type: 'string' }, { text: ')', type: 'default' }] },
         { tokens: [{ text: '', type: 'default' }] },
         { tokens: [{ text: '# Get debt maturity schedule', type: 'comment' }] },
         { tokens: [{ text: 'maturities', type: 'variable' }, { text: ' = ', type: 'default' }, { text: 'client', type: 'variable' }, { text: '.', type: 'default' }, { text: 'get_maturity_wall', type: 'method' }, { text: '(', type: 'default' }, { text: `"${ticker}"`, type: 'string' }, { text: ')', type: 'default' }] },
@@ -224,7 +224,7 @@ function buildDemos(ticker: string): Demo[] {
       codeLines: [
         { tokens: [{ text: 'from', type: 'keyword' }, { text: ' debtstack ', type: 'default' }, { text: 'import', type: 'keyword' }, { text: ' DebtStackClient', type: 'class' }] },
         { tokens: [{ text: '', type: 'default' }] },
-        { tokens: [{ text: 'client', type: 'variable' }, { text: ' = ', type: 'default' }, { text: 'DebtStackClient', type: 'class' }, { text: '(', type: 'default' }, { text: 'api_key', type: 'param' }, { text: '=', type: 'default' }, { text: '"sk_live_..."', type: 'string' }, { text: ')', type: 'default' }] },
+        { tokens: [{ text: 'client', type: 'variable' }, { text: ' = ', type: 'default' }, { text: 'DebtStackClient', type: 'class' }, { text: '(', type: 'default' }, { text: 'api_key', type: 'param' }, { text: '=', type: 'default' }, { text: '"ds_xxxxx..."', type: 'string' }, { text: ')', type: 'default' }] },
         { tokens: [{ text: '', type: 'default' }] },
         { tokens: [{ text: '# Compare yields across capital structure', type: 'comment' }] },
         { tokens: [{ text: 'yields', type: 'variable' }, { text: ' = ', type: 'default' }, { text: 'client', type: 'variable' }, { text: '.', type: 'default' }, { text: 'get_bond_yields', type: 'method' }, { text: '(', type: 'default' }, { text: `"${ticker}"`, type: 'string' }, { text: ')', type: 'default' }] },

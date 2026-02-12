@@ -56,7 +56,7 @@ export const TIER_CONFIG = {
     features: [
       'Pay per API call ($0.05-$0.15)',
       '60 requests/minute',
-      '200+ companies',
+      '211 companies',
       'All basic endpoints',
       'Bond pricing data',
     ],
@@ -82,7 +82,7 @@ export const TIER_CONFIG = {
     features: [
       'Unlimited API queries',
       '100 requests/minute',
-      '200+ companies',
+      '211 companies',
       'All basic endpoints',
       'Bond pricing data',
     ],

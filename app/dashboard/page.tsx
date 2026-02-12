@@ -297,7 +297,9 @@ function DashboardContent() {
             <div className="p-4 rounded-lg bg-gray-50 border border-gray-200">
               <p className="text-sm text-gray-500 mb-1">Current Plan</p>
               <p className="text-2xl font-bold capitalize">
-                {userData?.tier ?? '—'}
+                {userData?.tier === 'free' || userData?.tier === 'pay_as_you_go'
+                  ? 'Pay-as-You-Go'
+                  : userData?.tier ?? '—'}
               </p>
             </div>
           </div>
@@ -334,11 +336,11 @@ function DashboardContent() {
         </section>
 
         {/* Upgrade CTA for Free Users */}
-        {userData?.tier === 'free' && (
+        {(userData?.tier === 'free' || userData?.tier === 'pay_as_you_go') && (
           <section className="mt-8 p-6 rounded-xl bg-white border border-gray-200">
-            <h2 className="text-xl font-semibold mb-2">Need more queries?</h2>
+            <h2 className="text-xl font-semibold mb-2">Need unlimited queries?</h2>
             <p className="text-gray-500 mb-4">
-              Upgrade to Pro for unlimited queries and full company coverage (200+).
+              Upgrade to Pro for unlimited queries at 100 requests/minute, or Business for advanced features.
             </p>
             <div className="flex flex-wrap gap-4">
               <button
@@ -346,7 +348,7 @@ function DashboardContent() {
                 disabled={upgrading}
                 className="px-6 py-3 rounded-lg bg-gray-900 text-white hover:bg-gray-800 text-sm font-semibold transition disabled:opacity-50"
               >
-                {upgrading ? 'Loading...' : 'Upgrade to Pro — $49/mo'}
+                {upgrading ? 'Loading...' : 'Upgrade to Pro — $199/mo'}
               </button>
               <button
                 onClick={() => handleUpgrade('business')}

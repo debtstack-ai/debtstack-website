@@ -16,7 +16,7 @@ const TICKER = 'RIG';
 async function fetchJSON(url, options = {}) {
   const res = await fetch(url, {
     headers: {
-      'Authorization': `Bearer ${DEMO_API_KEY}`,
+      'X-API-Key': DEMO_API_KEY,
       'Content-Type': 'application/json',
       ...options.headers,
     },
