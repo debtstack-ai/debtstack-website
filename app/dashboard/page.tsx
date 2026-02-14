@@ -216,6 +216,9 @@ function DashboardContent() {
 
           {userData?.api_key ? (
             <div className="space-y-4">
+              <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm">
+                Your API key is ready! You have <strong>$5 in free credits</strong> to get started — no credit card required.
+              </div>
               <div className="flex items-center gap-4">
                 <code className="flex-1 px-4 py-3 rounded-lg bg-gray-50 border border-gray-200 font-mono text-sm text-gray-900">
                   {showApiKey ? userData.api_key : `${userData.api_key_prefix}${'•'.repeat(24)}`}

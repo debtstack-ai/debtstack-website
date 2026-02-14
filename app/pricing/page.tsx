@@ -12,8 +12,9 @@ const tiers = [
     price: '$0',
     period: '/month',
     priceNote: '+ pay per API call',
-    description: 'Perfect for testing and light usage.',
+    description: 'Start free with $5 in credits. No card required.',
     features: [
+      '$5 free credits on signup',
       'Access to all basic APIs',
       'Pay per call ($0.05-$0.15)',
       '60 requests/minute',
@@ -455,7 +456,7 @@ export default function PricingPage() {
             <div className="p-5 rounded-xl bg-gray-50 border border-gray-200">
               <h3 className="font-semibold mb-2">How does Pay-as-You-Go billing work?</h3>
               <p className="text-gray-500 text-sm">
-                You pre-purchase credit packages ($10, $25, $50, or $100) and pay per API call based on endpoint complexity. Simple endpoints cost $0.05, complex cost $0.10, and advanced cost $0.15.
+                You get $5 in free credits when you sign up — enough for 33-100 API calls depending on endpoint type. After that, you can purchase credit packages ($10, $25, $50, or $100). Simple endpoints cost $0.05, complex cost $0.10, and advanced cost $0.15.
               </p>
             </div>
             <div className="p-5 rounded-xl bg-gray-50 border border-gray-200">
