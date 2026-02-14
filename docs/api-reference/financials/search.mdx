@@ -94,7 +94,7 @@ curl -H "X-API-Key: $DEBTSTACK_API_KEY" \
 
 - **10-K filing**: Uses annual figures directly (already represents full year)
 - **10-Q filing**: Sums trailing 4 quarters
-- **<4 quarters available**: Annualized (flagged as `is_annualized: true`)
+- **Fewer than 4 quarters available**: Annualized (flagged as `is_annualized: true`)
 - **No D&A data**: Uses operating income as proxy (flagged as `ebitda_estimated: true`)
 
 ## Data Quality Metadata
