@@ -88,7 +88,7 @@ export default async function BlogPost({ params }: Props) {
                   Sign In
                 </button>
               </SignInButton>
-              <SignUpButton mode="modal">
+              <SignUpButton mode="modal" forceRedirectUrl="/dashboard">
                 <button className="bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-800 transition">
                   Get Started
                 </button>
@@ -164,7 +164,7 @@ export default async function BlogPost({ params }: Props) {
               </p>
               <div className="flex flex-wrap gap-4">
                 <SignedOut>
-                  <SignUpButton mode="modal">
+                  <SignUpButton mode="modal" forceRedirectUrl="/dashboard">
                     <button className="bg-gray-900 text-white px-6 py-3 rounded-xl font-semibold hover:bg-gray-800 transition">
                       Create Free Account
                     </button>

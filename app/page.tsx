@@ -56,7 +56,7 @@ export default function Home() {
                   Sign In
                 </button>
               </SignInButton>
-              <SignUpButton mode="modal">
+              <SignUpButton mode="modal" forceRedirectUrl="/dashboard">
                 <button className="bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-800 transition">
                   Get Started
                 </button>
@@ -86,7 +86,7 @@ export default function Home() {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <SignedOut>
-              <SignUpButton mode="modal">
+              <SignUpButton mode="modal" forceRedirectUrl="/dashboard">
                 <button className="bg-gray-900 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-gray-800 transition">
                   Get Started — $5 Free Credits
                 </button>
@@ -184,7 +184,7 @@ export default function Home() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <SignedOut>
-              <SignUpButton mode="modal">
+              <SignUpButton mode="modal" forceRedirectUrl="/dashboard">
                 <button className="bg-gray-900 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-gray-800 transition">
                   Create Free Account
                 </button>

@@ -151,7 +151,7 @@ export default function PricingPage() {
                   Sign In
                 </button>
               </SignInButton>
-              <SignUpButton mode="modal">
+              <SignUpButton mode="modal" forceRedirectUrl="/dashboard">
                 <button className="bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-800 transition">
                   Get Started
                 </button>
@@ -255,7 +255,7 @@ export default function PricingPage() {
                 ) : tier.tier === 'pro' ? (
                   <>
                     <SignedOut>
-                      <SignUpButton mode="modal">
+                      <SignUpButton mode="modal" forceRedirectUrl="/dashboard">
                         <button
                           className="w-full py-3 rounded-lg font-semibold transition bg-gray-900 hover:bg-gray-800 text-white"
                         >
@@ -274,7 +274,7 @@ export default function PricingPage() {
                     </SignedIn>
                   </>
                 ) : (
-                  <SignUpButton mode="modal">
+                  <SignUpButton mode="modal" forceRedirectUrl="/dashboard">
                     <button
                       className="w-full py-3 rounded-lg font-semibold transition bg-gray-100 hover:bg-gray-200 text-gray-900"
                     >

@@ -2,9 +2,10 @@
 'use client';
 
 import { useUser, useAuth } from "@clerk/nextjs";
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useState, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { usePostHog } from "posthog-js/react";
+import OnboardingFlow from "./components/OnboardingFlow";
 
 interface UserData {
   api_key?: string;
@@ -29,6 +30,8 @@ function DashboardContent() {
   const [regenerating, setRegenerating] = useState(false);
   const [upgrading, setUpgrading] = useState(false);
   const [showUpgradeSuccess, setShowUpgradeSuccess] = useState(false);
+  const [isNewUser, setIsNewUser] = useState(false);
+  const [onboardingDismissed, setOnboardingDismissed] = useState(false);
 
   // Check for upgrade success
   useEffect(() => {
@@ -38,6 +41,13 @@ function DashboardContent() {
       window.history.replaceState({}, '', '/dashboard');
     }
   }, [searchParams]);
+
+  // Check localStorage for onboarding dismissal
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setOnboardingDismissed(localStorage.getItem('onboarding_dismissed') === 'true');
+    }
+  }, []);
 
   useEffect(() => {
     if (userLoaded && user) {
@@ -67,6 +77,9 @@ function DashboardContent() {
 
       const data = await response.json();
       setUserData(data);
+      if (data.is_new) {
+        setIsNewUser(true);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong');
     } finally {
@@ -138,6 +151,11 @@ function DashboardContent() {
     }
   };
 
+  const handleDismissOnboarding = useCallback(() => {
+    setOnboardingDismissed(true);
+    localStorage.setItem('onboarding_dismissed', 'true');
+  }, []);
+
   const handleManageBilling = async () => {
     try {
       setError(null);
@@ -197,6 +215,15 @@ function DashboardContent() {
       {/* Dashboard Content */}
       <div className="max-w-4xl mx-auto px-6 py-12">
         <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
+
+        {isNewUser && !onboardingDismissed && userData?.api_key && (
+          <OnboardingFlow
+            apiKey={userData.api_key}
+            creditsRemaining={userData.credits_remaining}
+            onUpgrade={handleUpgrade}
+            onDismiss={handleDismissOnboarding}
+          />
+        )}
 
         {showUpgradeSuccess && (
           <div className="mb-6 p-4 rounded-lg bg-green-50 border border-green-200 text-green-700">
