@@ -1,22 +1,23 @@
 {
-  "_generated": "2026-02-09T00:00:00.000Z",
+  "_generated": "2026-02-13T00:00:00.000Z",
+  "_source": "Live API data from api.debtstack.ai",
   "_ticker": "RIG",
   "structure": {
     "companyName": "Transocean Ltd.",
     "ticker": "RIG",
     "entityCount": 231,
-    "instrumentCount": 9,
-    "totalDebt": "$6.0B",
+    "instrumentCount": 14,
+    "totalDebt": "$6.2B",
     "entities": [
       {
         "name": "Transocean Ltd.",
         "jurisdiction": "Switzerland · Public (NYSE)",
         "label": "HoldCo",
-        "totalDebt": "Parent",
+        "totalDebt": "$4.6B",
         "instruments": [
           {
-            "label": "Parent Guarantor",
-            "amount": "—"
+            "label": "Unsecured Notes",
+            "amount": "$4.6B"
           }
         ],
         "colors": {
@@ -30,15 +31,11 @@
         "name": "Transocean Inc.",
         "jurisdiction": "Cayman Islands",
         "label": "FinCo",
-        "totalDebt": "$5.6B",
+        "totalDebt": "$2.3B",
         "instruments": [
           {
-            "label": "Secured Debt",
-            "amount": "$1.7B"
-          },
-          {
-            "label": "Unsecured Debt",
-            "amount": "$3.9B"
+            "label": "Secured Notes",
+            "amount": "$2.3B"
           }
         ],
         "colors": {
@@ -51,7 +48,7 @@
       {
         "name": "Transocean International Limited",
         "jurisdiction": "",
-        "label": "FinCo",
+        "label": "Guarantor",
         "totalDebt": "Guarantor",
         "instruments": [
           {
@@ -67,14 +64,14 @@
         }
       },
       {
-        "name": "Transocean Offshore Deepwater Holdings Limited",
+        "name": "Transocean Offshore Deepwater Holdings",
         "jurisdiction": "Cayman Islands",
         "label": "OpCo",
-        "totalDebt": "$439M",
+        "totalDebt": "$90M",
         "instruments": [
           {
-            "label": "Secured Debt",
-            "amount": "$439M"
+            "label": "Shipyard Loan",
+            "amount": "$90M"
           }
         ],
         "colors": {
@@ -89,26 +86,26 @@
   "maturityWall": {
     "companyName": "Transocean Ltd.",
     "ticker": "RIG",
-    "instrumentCount": 9,
-    "totalDebt": "$6.0B",
+    "instrumentCount": 14,
+    "totalDebt": "$6.2B",
     "maturities": [
       {
         "year": "2027",
-        "amount": 0.4,
+        "amount": 1.7,
         "secured": 0.4,
-        "unsecured": 0
+        "unsecured": 1.3
       },
       {
         "year": "2028",
-        "amount": 0.5,
-        "secured": 0.5,
+        "amount": 0.8,
+        "secured": 0.8,
         "unsecured": 0
       },
       {
         "year": "2029",
-        "amount": 2.1,
+        "amount": 1.2,
         "secured": 0,
-        "unsecured": 2.1
+        "unsecured": 1.2
       },
       {
         "year": "2030",
@@ -118,50 +115,56 @@
       },
       {
         "year": "2031",
-        "amount": 1.8,
+        "amount": 1.3,
         "secured": 0,
-        "unsecured": 1.8
+        "unsecured": 1.3
+      },
+      {
+        "year": "2035+",
+        "amount": 0.8,
+        "secured": 0,
+        "unsecured": 0.8
       }
     ]
   },
   "yields": {
     "ticker": "RIG",
-    "bondCount": 3,
+    "bondCount": 5,
     "bonds": [
       {
         "label": "8.25% '29",
-        "issuerName": "Transocean Inc.",
-        "ytm": "6.79%",
-        "spread": "+250 bps",
+        "issuerName": "Transocean Ltd.",
+        "ytm": "6.82%",
+        "spread": "+253 bps",
         "colors": {
-          "bg": "amber-50",
-          "border": "amber-200",
-          "text": "amber-600",
-          "structureLabel": "FinCo"
-        }
-      },
-      {
-        "label": "8.75% '30",
-        "issuerName": "Transocean Inc.",
-        "ytm": "7.58%",
-        "spread": "+320 bps",
-        "colors": {
-          "bg": "amber-50",
-          "border": "amber-200",
-          "text": "amber-600",
-          "structureLabel": "FinCo"
+          "bg": "blue-50",
+          "border": "blue-200",
+          "text": "blue-600",
+          "structureLabel": "HoldCo"
         }
       },
       {
         "label": "8.50% '31",
-        "issuerName": "Transocean Inc.",
-        "ytm": "7.18%",
-        "spread": "+280 bps",
+        "issuerName": "Transocean Ltd.",
+        "ytm": "7.13%",
+        "spread": "+275 bps",
         "colors": {
-          "bg": "amber-50",
-          "border": "amber-200",
-          "text": "amber-600",
-          "structureLabel": "FinCo"
+          "bg": "blue-50",
+          "border": "blue-200",
+          "text": "blue-600",
+          "structureLabel": "HoldCo"
+        }
+      },
+      {
+        "label": "6.80% '38",
+        "issuerName": "Transocean Ltd.",
+        "ytm": "7.20%",
+        "spread": "+263 bps",
+        "colors": {
+          "bg": "blue-50",
+          "border": "blue-200",
+          "text": "blue-600",
+          "structureLabel": "HoldCo"
         }
       }
     ],
@@ -169,7 +172,7 @@
       {
         "label": "HoldCo",
         "name": "Transocean Ltd.",
-        "yieldRange": "",
+        "yieldRange": "6.72-9.66%",
         "colors": {
           "bg": "blue-50",
           "border": "blue-200",
@@ -180,23 +183,12 @@
       {
         "label": "FinCo",
         "name": "Transocean Inc.",
-        "yieldRange": "6.79-7.58%",
+        "yieldRange": "Secured",
         "colors": {
           "bg": "amber-50",
           "border": "amber-200",
           "badge": "amber-600",
           "text": "amber-600"
-        }
-      },
-      {
-        "label": "FinCo",
-        "name": "Transocean Inte",
-        "yieldRange": "",
-        "colors": {
-          "bg": "purple-50",
-          "border": "purple-200",
-          "badge": "purple-600",
-          "text": "purple-600"
         }
       },
       {
