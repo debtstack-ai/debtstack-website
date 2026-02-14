@@ -291,7 +291,7 @@ function DashboardContent() {
               <p className="text-2xl font-bold">
                 {userData?.tier === 'pro' || userData?.tier === 'business'
                   ? 'Unlimited'
-                  : (userData?.credits_daily_limit?.toLocaleString() ?? userData?.credits_monthly_limit?.toLocaleString() ?? '25')}
+                  : (userData?.credits_daily_limit?.toLocaleString() ?? userData?.credits_monthly_limit?.toLocaleString() ?? '5')}
               </p>
             </div>
             <div className="p-4 rounded-lg bg-gray-50 border border-gray-200">

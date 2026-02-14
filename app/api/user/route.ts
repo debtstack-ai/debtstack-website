@@ -31,8 +31,8 @@ export async function POST(request: NextRequest) {
           api_key: null,
           api_key_prefix: user.api_key_prefix,
           tier: user.tier || 'free',
-          credits_remaining: user.tier === 'free' ? 25 : -1,
-          credits_daily_limit: user.tier === 'free' ? 25 : undefined,
+          credits_remaining: user.tier === 'free' ? 5 : -1,
+          credits_daily_limit: user.tier === 'free' ? 5 : undefined,
           is_new: false,
           message: 'API key is stored securely. Use the prefix shown, or regenerate if you lost your key.',
         });
@@ -69,8 +69,8 @@ export async function POST(request: NextRequest) {
         api_key: null,
         api_key_prefix: null,
         tier: 'free',
-        credits_remaining: 25,
-        credits_daily_limit: 25,
+        credits_remaining: 5,
+        credits_daily_limit: 5,
         is_new: false,
         message: 'Account exists. If you lost your API key, regenerate it below.',
       });
