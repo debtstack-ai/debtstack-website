@@ -5,25 +5,21 @@ description: 'Connect DebtStack to Claude via Model Context Protocol'
 
 ## Overview
 
-The Model Context Protocol (MCP) allows you to connect DebtStack directly to Claude Desktop, giving Claude access to corporate debt data in natural conversations.
+The Model Context Protocol (MCP) allows you to connect DebtStack directly to Claude Desktop, Claude Code, Cursor, and other MCP-compatible clients, giving them access to corporate debt data in natural conversations.
 
 ## Installation
 
-### 1. Install the MCP Server
-
 ```bash
-npm install -g @debtstack/mcp-server
+pip install debtstack-ai[mcp]
 ```
 
-Or with pip:
+This installs the `debtstack-mcp` command-line server and all required dependencies.
 
-```bash
-pip install debtstack-mcp
-```
+## Client Configuration
 
-### 2. Configure Claude Desktop
+### Claude Desktop
 
-Add DebtStack to your Claude Desktop configuration:
+Add to your Claude Desktop config:
 
 **macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
 
@@ -32,7 +28,7 @@ Add DebtStack to your Claude Desktop configuration:
 ```json
 {
   "mcpServers": {
-    "debtstack": {
+    "debtstack-ai": {
       "command": "debtstack-mcp",
       "env": {
         "DEBTSTACK_API_KEY": "ds_xxxxx"
@@ -42,23 +38,74 @@ Add DebtStack to your Claude Desktop configuration:
 }
 ```
 
-### 3. Restart Claude Desktop
+### Claude Code
 
-After saving the configuration, restart Claude Desktop to load the DebtStack server.
+Add to `~/.claude/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "debtstack-ai": {
+      "command": "debtstack-mcp",
+      "env": {
+        "DEBTSTACK_API_KEY": "ds_xxxxx"
+      }
+    }
+  }
+}
+```
+
+### Cursor
+
+Add to `.cursor/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "debtstack-ai": {
+      "command": "debtstack-mcp",
+      "env": {
+        "DEBTSTACK_API_KEY": "ds_xxxxx"
+      }
+    }
+  }
+}
+```
+
+### Alternative: Python Module
+
+If you prefer not to use the console script, run with `python -m` instead:
+
+```json
+{
+  "mcpServers": {
+    "debtstack-ai": {
+      "command": "python",
+      "args": ["-m", "debtstack.mcp_server"],
+      "env": {
+        "DEBTSTACK_API_KEY": "ds_xxxxx"
+      }
+    }
+  }
+}
+```
+
+After saving the configuration, restart your MCP client to load the DebtStack server.
 
 ## Available Tools
 
-Once configured, Claude has access to these DebtStack tools:
+Once configured, Claude has access to 8 DebtStack tools:
 
 | Tool | Description |
 |------|-------------|
-| `search_companies` | Search companies by leverage, sector, debt metrics |
-| `search_bonds` | Search bonds by yield, seniority, maturity |
-| `resolve_bond` | Convert bond description to CUSIP |
-| `get_pricing` | Get bond pricing (YTM, spread) |
-| `get_guarantors` | Find entities guaranteeing a bond |
-| `search_documents` | Search SEC filings |
-| `get_company_changes` | Track debt structure changes |
+| `search_companies` | Search companies by ticker, sector, leverage ratio, and risk flags |
+| `search_bonds` | Search bonds by ticker, seniority, yield, spread, and maturity |
+| `resolve_bond` | Look up a bond by CUSIP, ISIN, or description (e.g., "RIG 8% 2027") |
+| `get_guarantors` | Find all entities that guarantee a bond |
+| `get_corporate_structure` | Get full parent-subsidiary hierarchy for a company |
+| `search_pricing` | Get FINRA TRACE bond prices, YTM, and spreads |
+| `search_documents` | Search SEC filing sections (debt footnotes, credit agreements, indentures) |
+| `get_changes` | See what changed in a company's debt structure since a date |
 
 ## Example Conversations
 
@@ -70,33 +117,45 @@ Once configured, Claude has access to these DebtStack tools:
 
 *[Uses search_companies tool]*
 
-Based on my search, Tesla (TSLA) has the highest net leverage ratio among the MAG7 at 1.8x, followed by...
+Based on my search, here are the MAG7 companies ranked by net leverage ratio...
 
 ---
 
 ### Bond Screening
 
-**You:** Find me bonds yielding more than 9%
+**You:** Find me senior secured bonds yielding more than 8%
 
-**Claude:** I'll search for high-yield bonds with YTM above 9%.
+**Claude:** I'll search for high-yield secured bonds.
 
 *[Uses search_bonds tool]*
 
-I found 15 bonds yielding over 9%. Here are the top results:
-- RIG 8.00% Senior Notes due 2027: 9.42% YTM (CUSIP: 893830AK8)
+I found several bonds matching your criteria. Here are the top results:
+- RIG 8.00% Senior Secured Notes due 2027: 9.42% YTM
 - ...
 
 ---
 
 ### Structural Analysis
 
-**You:** Does RIG's 8% 2027 bond have a parent company guarantee?
+**You:** Who guarantees Transocean's 8% 2027 notes?
 
-**Claude:** Let me check the guarantor structure for that bond.
+**Claude:** Let me look up that bond and check its guarantee structure.
 
 *[Uses resolve_bond tool, then get_guarantors tool]*
 
-Yes, RIG's 8.00% Senior Notes due 2027 (CUSIP: 893830AK8) has a full guarantee from Transocean Ltd., the parent holding company...
+The 8.00% Senior Secured Notes due 2027 (CUSIP: 893830AK8) are guaranteed by 47 entities including Transocean Inc., Transocean Offshore Deepwater Drilling Inc., and Triton Holding Company...
+
+---
+
+### Corporate Structure
+
+**You:** Show me RIG's corporate structure — where does the debt sit?
+
+**Claude:** Let me pull up the full corporate hierarchy.
+
+*[Uses get_corporate_structure tool]*
+
+Transocean Ltd. has 230 entities in its corporate structure. The debt is primarily issued at...
 
 ---
 
@@ -110,149 +169,54 @@ Yes, RIG's 8.00% Senior Notes due 2027 (CUSIP: 893830AK8) has a full guarantee f
 
 Based on Charter's credit agreement filings, the key leverage covenants are...
 
-## Building a Custom MCP Server
+---
 
-If you want to customize the MCP server, here's a reference implementation:
+### Change Tracking
 
-```typescript
-import { Server } from "@modelcontextprotocol/sdk/server/index.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+**You:** What changed in CVS's debt structure since June 2025?
 
-const API_KEY = process.env.DEBTSTACK_API_KEY;
-const BASE_URL = "https://api.debtstack.ai/v1";
+**Claude:** Let me check for recent changes.
 
-const server = new Server(
-  { name: "debtstack", version: "1.0.0" },
-  { capabilities: { tools: {} } }
-);
+*[Uses get_changes tool]*
 
-// Define tools
-server.setRequestHandler("tools/list", async () => ({
-  tools: [
-    {
-      name: "search_companies",
-      description: "Search companies by leverage, sector, debt metrics",
-      inputSchema: {
-        type: "object",
-        properties: {
-          ticker: { type: "string", description: "Comma-separated tickers" },
-          sector: { type: "string", description: "Business sector" },
-          min_leverage: { type: "number", description: "Minimum leverage ratio" },
-          fields: { type: "string", description: "Fields to return" }
-        }
-      }
-    },
-    {
-      name: "search_bonds",
-      description: "Search bonds by yield, seniority, maturity",
-      inputSchema: {
-        type: "object",
-        properties: {
-          ticker: { type: "string", description: "Company ticker" },
-          min_ytm: { type: "number", description: "Minimum YTM (%)" },
-          seniority: { type: "string", description: "senior_secured, senior_unsecured" },
-          fields: { type: "string", description: "Fields to return" }
-        }
-      }
-    },
-    {
-      name: "get_guarantors",
-      description: "Find entities guaranteeing a bond",
-      inputSchema: {
-        type: "object",
-        properties: {
-          cusip: { type: "string", description: "Bond CUSIP" }
-        },
-        required: ["cusip"]
-      }
-    }
-  ]
-}));
+Since June 2025, CVS has had the following changes to its debt structure...
 
-// Handle tool calls
-server.setRequestHandler("tools/call", async (request) => {
-  const { name, arguments: args } = request.params;
+## More Example Queries
 
-  switch (name) {
-    case "search_companies": {
-      const params = new URLSearchParams();
-      if (args.ticker) params.set("ticker", args.ticker);
-      if (args.sector) params.set("sector", args.sector);
-      if (args.min_leverage) params.set("min_leverage", args.min_leverage.toString());
-      params.set("fields", args.fields || "ticker,name,net_leverage_ratio,total_debt");
+Here are additional questions you can ask Claude with the DebtStack MCP server:
 
-      const response = await fetch(`${BASE_URL}/companies?${params}`, {
-        headers: { "X-API-Key": API_KEY }
-      });
-      return { content: [{ type: "text", text: JSON.stringify(await response.json()) }] };
-    }
-
-    case "search_bonds": {
-      const params = new URLSearchParams();
-      if (args.ticker) params.set("ticker", args.ticker);
-      if (args.min_ytm) {
-        params.set("min_ytm", args.min_ytm.toString());
-        params.set("has_pricing", "true");
-      }
-      if (args.seniority) params.set("seniority", args.seniority);
-      params.set("fields", args.fields || "name,cusip,company_ticker,coupon_rate,maturity_date,pricing");
-
-      const response = await fetch(`${BASE_URL}/bonds?${params}`, {
-        headers: { "X-API-Key": API_KEY }
-      });
-      return { content: [{ type: "text", text: JSON.stringify(await response.json()) }] };
-    }
-
-    case "get_guarantors": {
-      const response = await fetch(`${BASE_URL}/entities/traverse`, {
-        method: "POST",
-        headers: {
-          "X-API-Key": API_KEY,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          start: { type: "bond", id: args.cusip },
-          relationships: ["guarantees"],
-          direction: "inbound",
-          fields: ["name", "entity_type", "jurisdiction", "is_guarantor"]
-        })
-      });
-      return { content: [{ type: "text", text: JSON.stringify(await response.json()) }] };
-    }
-
-    default:
-      throw new Error(`Unknown tool: ${name}`);
-  }
-});
-
-// Start server
-const transport = new StdioServerTransport();
-await server.connect(transport);
-```
+- "Which energy companies have near-term maturities and high leverage?"
+- "Compare Charter's debt structure to Altice"
+- "Find all bonds maturing before 2026 with yield above 7%"
+- "What are the change-of-control provisions in Altice's indentures?"
+- "Search for restricted payment language in RIG's credit agreements"
+- "Which companies in the telecom sector have structural subordination?"
+- "How has ORCL's leverage changed since their Cerner acquisition?"
 
 ## Troubleshooting
 
 ### Server Not Loading
 
-1. Check that your API key is set correctly in the config
-2. Verify the server is installed: `which debtstack-mcp`
-3. Check Claude Desktop logs for errors
+1. Verify the package is installed: `pip show debtstack-ai`
+2. Check the console script exists: `debtstack-mcp --help` (should fail with missing API key, not "command not found")
+3. Ensure your API key is set correctly in the config
+4. Check your MCP client logs for errors
 
 ### API Errors
 
 If you see API errors, verify:
-1. Your API key is valid
-2. You have credits remaining
-3. You're not exceeding rate limits
+1. Your API key is valid (starts with `ds_`)
+2. You have credits remaining (check at [debtstack.ai/dashboard](https://debtstack.ai/dashboard))
+3. You're not exceeding rate limits (60/min for Pay-as-You-Go, 100/min for Pro)
 
 ### Debugging
 
-Enable verbose logging:
+Enable verbose logging by setting the `DEBUG` environment variable:
 
 ```json
 {
   "mcpServers": {
-    "debtstack": {
+    "debtstack-ai": {
       "command": "debtstack-mcp",
       "env": {
         "DEBTSTACK_API_KEY": "ds_xxxxx",
@@ -269,7 +233,7 @@ Enable verbose logging:
   <Card title="API Reference" icon="book" href="/api-reference/overview">
     Full API documentation
   </Card>
-  <Card title="AI Agents Guide" icon="robot" href="/guides/ai-agents">
-    Build custom AI agents
+  <Card title="LangChain Integration" icon="link" href="/guides/langchain">
+    Build agents with LangChain
   </Card>
 </CardGroup>

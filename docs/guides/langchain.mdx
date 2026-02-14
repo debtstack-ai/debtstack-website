@@ -1,129 +1,103 @@
 ---
 title: LangChain Integration
-description: 'Use DebtStack as a LangChain tool'
+description: 'Build credit analysis agents with DebtStack and LangChain'
 ---
 
 ## Overview
 
-DebtStack integrates seamlessly with LangChain, enabling you to build credit analysis agents that can search companies, analyze bonds, and traverse corporate structures.
+DebtStack provides a native LangChain toolkit with 7 tools covering all credit data primitives. Build agents that can autonomously search companies, analyze bonds, traverse corporate structures, and research SEC filings.
 
 ## Installation
 
 ```bash
-pip install langchain langchain-openai requests
+pip install debtstack-ai[langchain] langchain-openai
 ```
 
 ## Quick Start
 
+The SDK includes a ready-to-use `DebtStackToolkit` — no manual tool definitions needed:
+
 ```python
-from langchain.agents import AgentType, initialize_agent
-from langchain.tools import StructuredTool
+from debtstack.langchain import DebtStackToolkit
+from langchain.agents import AgentExecutor, create_openai_functions_agent
 from langchain_openai import ChatOpenAI
-from pydantic import BaseModel, Field
-import requests
+from langchain import hub
 
-API_KEY = "ds_xxxxx"
-HEADERS = {"X-API-Key": API_KEY}
-BASE_URL = "https://api.debtstack.ai/v1"
+# Initialize toolkit with your API key
+toolkit = DebtStackToolkit(api_key="ds_xxxxx")
+tools = toolkit.get_tools()
 
+# Create an agent with GPT-4 (or any LangChain-compatible LLM)
+llm = ChatOpenAI(temperature=0, model="gpt-4")
+prompt = hub.pull("hwchase17/openai-functions-agent")
+agent = create_openai_functions_agent(llm, tools, prompt)
+agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
 
-# Define tool schemas
-class SearchCompaniesInput(BaseModel):
-    ticker: str = Field(default=None, description="Comma-separated company tickers")
-    sector: str = Field(default=None, description="Business sector")
-    min_leverage: float = Field(default=None, description="Minimum leverage ratio")
-    fields: str = Field(default="ticker,name,net_leverage_ratio", description="Fields to return")
-
-
-class SearchBondsInput(BaseModel):
-    ticker: str = Field(default=None, description="Company ticker")
-    min_ytm: float = Field(default=None, description="Minimum yield to maturity (%)")
-    seniority: str = Field(default=None, description="senior_secured, senior_unsecured, subordinated")
-    fields: str = Field(default="name,cusip,coupon_rate,maturity_date,pricing", description="Fields to return")
-
-
-class ResolveBindInput(BaseModel):
-    query: str = Field(description="Bond description or CUSIP (e.g., 'RIG 8% 2027')")
-
-
-# Define tool functions
-def search_companies(ticker=None, sector=None, min_leverage=None, fields="ticker,name,net_leverage_ratio"):
-    """Search for companies in the DebtStack database."""
-    params = {"fields": fields}
-    if ticker:
-        params["ticker"] = ticker
-    if sector:
-        params["sector"] = sector
-    if min_leverage:
-        params["min_leverage"] = min_leverage
-
-    response = requests.get(f"{BASE_URL}/companies", params=params, headers=HEADERS)
-    return response.json()["data"]
-
-
-def search_bonds(ticker=None, min_ytm=None, seniority=None, fields="name,cusip,coupon_rate,maturity_date,pricing"):
-    """Search for bonds by yield, seniority, or company."""
-    params = {"fields": fields}
-    if ticker:
-        params["ticker"] = ticker
-    if min_ytm:
-        params["min_ytm"] = min_ytm
-        params["has_pricing"] = True
-    if seniority:
-        params["seniority"] = seniority
-
-    response = requests.get(f"{BASE_URL}/bonds", params=params, headers=HEADERS)
-    return response.json()["data"]
-
-
-def resolve_bond(query: str):
-    """Resolve a bond description to structured data including CUSIP."""
-    response = requests.get(f"{BASE_URL}/bonds/resolve", params={"q": query}, headers=HEADERS)
-    data = response.json()["data"]
-    if data["matches"]:
-        return data["matches"][0]["bond"]
-    return {"error": "No matching bond found", "suggestions": data.get("suggestions", [])}
-
-
-# Create tools
-tools = [
-    StructuredTool.from_function(
-        func=search_companies,
-        name="search_companies",
-        description="Search for companies by leverage, sector, or ticker. Returns company metrics including debt and leverage ratios.",
-        args_schema=SearchCompaniesInput
-    ),
-    StructuredTool.from_function(
-        func=search_bonds,
-        name="search_bonds",
-        description="Search for bonds by yield, seniority, or company. Returns bond details including pricing when available.",
-        args_schema=SearchBondsInput
-    ),
-    StructuredTool.from_function(
-        func=resolve_bond,
-        name="resolve_bond",
-        description="Convert a bond description (like 'RIG 8% 2027') to structured data including CUSIP identifier.",
-        args_schema=ResolveBindInput
-    )
-]
-
-# Create agent
-llm = ChatOpenAI(model="gpt-4", temperature=0)
-agent = initialize_agent(
-    tools,
-    llm,
-    agent=AgentType.STRUCTURED_CHAT_ZERO_SHOT_REACT_DESCRIPTION,
-    verbose=True
-)
-
-# Run queries
-result = agent.run("Which MAG7 company has the highest leverage?")
-print(result)
+# Ask natural language questions about corporate credit
+result = agent_executor.invoke({
+    "input": "Which MAG7 company has the highest leverage?"
+})
+print(result["output"])
 ```
 
-## Complete Tool Set
+## Available Tools
 
-Here's a comprehensive set of DebtStack tools for LangChain:
+The toolkit provides 7 tools covering all DebtStack API primitives:
+
+| Tool | Description |
+|------|-------------|
+| `debtstack_search_companies` | Screen companies by leverage, sector, coverage ratios, and risk flags |
+| `debtstack_search_bonds` | Filter bonds by yield, spread, seniority, maturity, and pricing |
+| `debtstack_resolve_bond` | Look up bonds by CUSIP, ISIN, or description (e.g., "RIG 8% 2027") |
+| `debtstack_traverse_entities` | Follow guarantor chains, map corporate structure, trace ownership |
+| `debtstack_search_pricing` | Get FINRA TRACE bond prices, YTM, and spreads |
+| `debtstack_search_documents` | Full-text search across credit agreements, indentures, and SEC filings |
+| `debtstack_get_changes` | Track debt structure changes over time (new issuances, maturities, leverage) |
+
+## Example Queries
+
+The agent can handle complex, multi-step credit analysis:
+
+```python
+# Leverage comparison
+result = agent_executor.invoke({
+    "input": "Compare the leverage of RIG, VAL, and DO"
+})
+
+# High-yield screening
+result = agent_executor.invoke({
+    "input": "Find bonds yielding more than 9% with senior secured status"
+})
+
+# Structural analysis
+result = agent_executor.invoke({
+    "input": "Who guarantees Transocean's 8.75% 2030 notes? How many entities are in the chain?"
+})
+
+# Covenant research
+result = agent_executor.invoke({
+    "input": "Search for maintenance covenant language in Charter's credit agreements"
+})
+
+# Change tracking
+result = agent_executor.invoke({
+    "input": "What changed in RIG's debt structure since January 2025?"
+})
+
+# Corporate structure comparison
+result = agent_executor.invoke({
+    "input": "Compare Charter and Altice's corporate structures - which has more structural subordination risk?"
+})
+
+# Distressed bond hunting
+result = agent_executor.invoke({
+    "input": "Find distressed bonds trading below 80 cents on the dollar"
+})
+```
+
+## Custom Tool Definitions
+
+If you prefer to define tools manually instead of using the SDK toolkit, here's how to build them with `StructuredTool`:
 
 ```python
 from langchain.tools import StructuredTool
@@ -135,7 +109,7 @@ HEADERS = {"X-API-Key": API_KEY}
 BASE_URL = "https://api.debtstack.ai/v1"
 
 
-# === Tool Schemas ===
+# === Schemas ===
 
 class SearchCompaniesInput(BaseModel):
     ticker: str = Field(default=None, description="Comma-separated tickers (e.g., 'AAPL,MSFT')")
@@ -149,7 +123,6 @@ class SearchCompaniesInput(BaseModel):
 class SearchBondsInput(BaseModel):
     ticker: str = Field(default=None, description="Company ticker")
     min_ytm: float = Field(default=None, description="Minimum YTM (%)")
-    max_ytm: float = Field(default=None, description="Maximum YTM (%)")
     seniority: str = Field(default=None, description="senior_secured, senior_unsecured, subordinated")
     maturity_before: str = Field(default=None, description="Maturity before date (YYYY-MM-DD)")
     fields: str = Field(default="name,cusip,company_ticker,coupon_rate,maturity_date,seniority,pricing")
@@ -159,152 +132,91 @@ class ResolveBondInput(BaseModel):
     query: str = Field(description="Bond description (e.g., 'RIG 8% 2027') or CUSIP")
 
 
-class GetGuarantorsInput(BaseModel):
-    cusip: str = Field(description="Bond CUSIP to find guarantors for")
+class TraverseEntitiesInput(BaseModel):
+    start_type: str = Field(description="Start node type: 'bond', 'company', or 'entity'")
+    start_id: str = Field(description="Start node ID: CUSIP, ticker, or entity UUID")
+    relationships: str = Field(default="guarantees", description="Relationship type: guarantees, subsidiaries, parent")
+    direction: str = Field(default="inbound", description="Traversal direction: inbound, outbound, both")
+
+
+class SearchPricingInput(BaseModel):
+    ticker: str = Field(default=None, description="Company ticker")
+    cusip: str = Field(default=None, description="Bond CUSIP")
+    min_ytm: float = Field(default=None, description="Minimum YTM (%)")
 
 
 class SearchDocumentsInput(BaseModel):
     query: str = Field(description="Search terms (e.g., 'leverage covenant')")
     ticker: str = Field(default=None, description="Company ticker to filter by")
-    section_type: str = Field(default=None, description="debt_footnote, credit_agreement, indenture, covenants")
+    section_type: str = Field(default=None, description="debt_footnote, credit_agreement, indenture, covenants, mda_liquidity")
 
 
-class GetCompanyChangesInput(BaseModel):
+class GetChangesInput(BaseModel):
     ticker: str = Field(description="Company ticker")
     since: str = Field(description="Date to compare from (YYYY-MM-DD)")
 
 
-# === Tool Functions ===
+# === Functions ===
 
 def search_companies(**kwargs):
-    """Search companies by metrics."""
     params = {k: v for k, v in kwargs.items() if v is not None}
-    response = requests.get(f"{BASE_URL}/companies", params=params, headers=HEADERS)
-    return response.json()["data"]
-
+    return requests.get(f"{BASE_URL}/companies", params=params, headers=HEADERS).json()["data"]
 
 def search_bonds(**kwargs):
-    """Search bonds by criteria."""
     params = {k: v for k, v in kwargs.items() if v is not None}
-    if params.get("min_ytm") or params.get("max_ytm"):
+    if params.get("min_ytm"):
         params["has_pricing"] = True
-    response = requests.get(f"{BASE_URL}/bonds", params=params, headers=HEADERS)
-    return response.json()["data"]
-
+    return requests.get(f"{BASE_URL}/bonds", params=params, headers=HEADERS).json()["data"]
 
 def resolve_bond(query: str):
-    """Resolve bond description to CUSIP."""
-    response = requests.get(f"{BASE_URL}/bonds/resolve", params={"q": query}, headers=HEADERS)
-    matches = response.json()["data"]["matches"]
+    matches = requests.get(f"{BASE_URL}/bonds/resolve", params={"q": query}, headers=HEADERS).json()["data"]["matches"]
     return matches[0]["bond"] if matches else {"error": "No match found"}
 
+def traverse_entities(start_type: str, start_id: str, relationships: str = "guarantees", direction: str = "inbound"):
+    return requests.post(f"{BASE_URL}/entities/traverse", headers={**HEADERS, "Content-Type": "application/json"},
+        json={"start": {"type": start_type, "id": start_id}, "relationships": [relationships], "direction": direction}
+    ).json()["data"]
 
-def get_guarantors(cusip: str):
-    """Get entities that guarantee a bond."""
-    response = requests.post(
-        f"{BASE_URL}/entities/traverse",
-        headers={**HEADERS, "Content-Type": "application/json"},
-        json={
-            "start": {"type": "bond", "id": cusip},
-            "relationships": ["guarantees"],
-            "direction": "inbound",
-            "fields": ["name", "entity_type", "jurisdiction", "is_guarantor"]
-        }
-    )
-    return response.json()["data"]["traversal"]["entities"]
-
+def search_pricing(**kwargs):
+    params = {k: v for k, v in kwargs.items() if v is not None}
+    params["has_pricing"] = True
+    return requests.get(f"{BASE_URL}/bonds", params=params, headers=HEADERS).json()["data"]
 
 def search_documents(query: str, ticker: str = None, section_type: str = None):
-    """Search SEC filings."""
-    params = {"q": query, "fields": "ticker,section_type,snippet,relevance_score"}
-    if ticker:
-        params["ticker"] = ticker
-    if section_type:
-        params["section_type"] = section_type
-    response = requests.get(f"{BASE_URL}/documents/search", params=params, headers=HEADERS)
-    return response.json()["data"]
+    params = {"q": query}
+    if ticker: params["ticker"] = ticker
+    if section_type: params["section_type"] = section_type
+    return requests.get(f"{BASE_URL}/documents/search", params=params, headers=HEADERS).json()["data"]
 
-
-def get_company_changes(ticker: str, since: str):
-    """Get debt structure changes since a date."""
-    response = requests.get(
-        f"{BASE_URL}/companies/{ticker}/changes",
-        params={"since": since},
-        headers=HEADERS
-    )
-    return response.json()["data"]
+def get_changes(ticker: str, since: str):
+    return requests.get(f"{BASE_URL}/companies/{ticker}/changes", params={"since": since}, headers=HEADERS).json()["data"]
 
 
 # === Create Tools ===
 
 debtstack_tools = [
-    StructuredTool.from_function(
-        func=search_companies,
-        name="search_companies",
+    StructuredTool.from_function(func=search_companies, name="debtstack_search_companies",
         description="Search companies by leverage, sector, debt metrics. Use for company screening and comparisons.",
-        args_schema=SearchCompaniesInput
-    ),
-    StructuredTool.from_function(
-        func=search_bonds,
-        name="search_bonds",
+        args_schema=SearchCompaniesInput),
+    StructuredTool.from_function(func=search_bonds, name="debtstack_search_bonds",
         description="Search bonds by yield, seniority, maturity. Use for bond screening and yield hunting.",
-        args_schema=SearchBondsInput
-    ),
-    StructuredTool.from_function(
-        func=resolve_bond,
-        name="resolve_bond",
+        args_schema=SearchBondsInput),
+    StructuredTool.from_function(func=resolve_bond, name="debtstack_resolve_bond",
         description="Convert bond description to CUSIP and details. Use when user mentions a bond by name.",
-        args_schema=ResolveBondInput
-    ),
-    StructuredTool.from_function(
-        func=get_guarantors,
-        name="get_guarantors",
-        description="Find entities guaranteeing a bond. Use for credit analysis and structural subordination.",
-        args_schema=GetGuarantorsInput
-    ),
-    StructuredTool.from_function(
-        func=search_documents,
-        name="search_documents",
-        description="Search SEC filings for covenant language, debt terms, etc.",
-        args_schema=SearchDocumentsInput
-    ),
-    StructuredTool.from_function(
-        func=get_company_changes,
-        name="get_company_changes",
+        args_schema=ResolveBondInput),
+    StructuredTool.from_function(func=traverse_entities, name="debtstack_traverse_entities",
+        description="Follow guarantor chains and map corporate structure. Use for structural subordination analysis.",
+        args_schema=TraverseEntitiesInput),
+    StructuredTool.from_function(func=search_pricing, name="debtstack_search_pricing",
+        description="Get FINRA TRACE bond prices, YTM, and spreads. Use for relative value and distressed analysis.",
+        args_schema=SearchPricingInput),
+    StructuredTool.from_function(func=search_documents, name="debtstack_search_documents",
+        description="Search SEC filings for covenant language, credit agreement terms, debt descriptions.",
+        args_schema=SearchDocumentsInput),
+    StructuredTool.from_function(func=get_changes, name="debtstack_get_changes",
         description="Track changes in debt structure since a date. Use for monitoring issuances and maturities.",
-        args_schema=GetCompanyChangesInput
-    )
+        args_schema=GetChangesInput),
 ]
-```
-
-## Example Queries
-
-```python
-from langchain_openai import ChatOpenAI
-from langchain.agents import AgentType, initialize_agent
-
-llm = ChatOpenAI(model="gpt-4", temperature=0)
-agent = initialize_agent(
-    debtstack_tools,
-    llm,
-    agent=AgentType.STRUCTURED_CHAT_ZERO_SHOT_REACT_DESCRIPTION,
-    verbose=True
-)
-
-# Leverage comparison
-agent.run("Compare the leverage of RIG, VAL, and DO")
-
-# High-yield screening
-agent.run("Find bonds yielding more than 9%")
-
-# Structural analysis
-agent.run("Does RIG's 8% 2027 bond have a parent company guarantee?")
-
-# Covenant search
-agent.run("What are Charter's leverage covenants?")
-
-# Change tracking
-agent.run("What new debt has RIG issued since October 2025?")
 ```
 
 ## LangChain Expression Language (LCEL)
@@ -313,6 +225,10 @@ agent.run("What new debt has RIG issued since October 2025?")
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_openai import ChatOpenAI
+from debtstack.langchain import DebtStackToolkit
+
+toolkit = DebtStackToolkit(api_key="ds_xxxxx")
+tools = toolkit.get_tools()
 
 prompt = ChatPromptTemplate.from_messages([
     ("system", """You are a credit analyst assistant with access to DebtStack tools.
@@ -324,7 +240,7 @@ prompt = ChatPromptTemplate.from_messages([
     ("human", "{question}")
 ])
 
-llm = ChatOpenAI(model="gpt-4").bind_tools(debtstack_tools)
+llm = ChatOpenAI(model="gpt-4").bind_tools(tools)
 
 chain = prompt | llm | StrOutputParser()
 ```
