@@ -170,7 +170,7 @@ export default function Home() {
             <SignedOut>
               <SignUpButton mode="modal" forceRedirectUrl="/dashboard">
                 <button className="bg-gray-900 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-gray-800 transition">
-                  Get Started — $5 Free Credits
+                  Get Started — Free Credits
                 </button>
               </SignUpButton>
             </SignedOut>
