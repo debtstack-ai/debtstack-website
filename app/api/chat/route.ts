@@ -82,14 +82,21 @@ export async function POST(request: NextRequest) {
   const stream = new ReadableStream({
     async start(controller) {
       const genAI = new GoogleGenerativeAI(geminiKey);
+
+      // Primary model with DebtStack function tools
       const model = genAI.getGenerativeModel({
         model: "gemini-2.5-flash",
         systemInstruction: SYSTEM_PROMPT,
-        tools: [
-          { functionDeclarations: DEBTSTACK_TOOLS },
-          { googleSearch: {} } as never,
-        ],
+        tools: [{ functionDeclarations: DEBTSTACK_TOOLS }],
       });
+
+      // Fallback model with Google Search grounding (can't combine with function calling)
+      const searchModel = genAI.getGenerativeModel({
+        model: "gemini-2.5-flash",
+        systemInstruction: SYSTEM_PROMPT,
+        tools: [{ googleSearch: {} } as never],
+      });
+
       let totalCost = 0;
 
       try {
@@ -99,6 +106,12 @@ export async function POST(request: NextRequest) {
           role: m.role === "assistant" ? "model" : "user",
           parts: [{ text: m.content }],
         }));
+
+        // Track whether all tool results returned empty data
+        let allToolResultsEmpty = true;
+        let hadToolCalls = false;
+        // Buffer the final text so we can discard it if falling back to web search
+        let bufferedText = "";
 
         // Tool-use loop
         for (let round = 0; round < MAX_TOOL_ROUNDS; round++) {
@@ -114,12 +127,9 @@ export async function POST(request: NextRequest) {
           const functionResponseParts: Part[] = [];
 
           for (const part of parts) {
-            if (part.text) {
-              controller.enqueue(
-                encoder.encode(sseEvent("text", { text: part.text }))
-              );
-            } else if (part.functionCall) {
+            if (part.functionCall) {
               hasFunctionCall = true;
+              hadToolCalls = true;
               const toolName = part.functionCall.name;
               const toolArgs = (part.functionCall.args ?? {}) as Record<string, unknown>;
               // Gemini doesn't provide tool call IDs; generate one
@@ -139,6 +149,17 @@ export async function POST(request: NextRequest) {
               // Execute the tool
               const toolResult = await executeTool(toolName, toolArgs, apiKey);
               totalCost += toolResult.cost;
+
+              // Check if this tool returned actual data
+              if (!toolResult.error) {
+                const data = toolResult.data as Record<string, unknown> | null;
+                if (data) {
+                  const items = Array.isArray(data.data) ? data.data : null;
+                  if (items === null || items.length > 0) {
+                    allToolResultsEmpty = false;
+                  }
+                }
+              }
 
               // Notify client of tool result
               controller.enqueue(
@@ -160,44 +181,14 @@ export async function POST(request: NextRequest) {
                     : (toolResult.data as object),
                 },
               });
+            } else if (part.text) {
+              // Buffer text — we'll emit it after deciding whether to fall back
+              bufferedText += part.text;
             }
           }
 
-          // Check for Google Search grounding and emit cost event
-          const groundingMetadata =
-            response.candidates?.[0]?.groundingMetadata;
-          if (
-            groundingMetadata?.webSearchQueries &&
-            groundingMetadata.webSearchQueries.length > 0
-          ) {
-            const searchCost = 0.03;
-            const searchId = `call_${round}_web_search_${Date.now()}`;
-            totalCost += searchCost;
-
-            controller.enqueue(
-              encoder.encode(
-                sseEvent("tool_call", {
-                  id: searchId,
-                  name: "web_search",
-                  args: {
-                    queries: groundingMetadata.webSearchQueries,
-                  },
-                })
-              )
-            );
-            controller.enqueue(
-              encoder.encode(
-                sseEvent("tool_result", {
-                  id: searchId,
-                  name: "web_search",
-                  cost: searchCost,
-                })
-              )
-            );
-          }
-
           if (!hasFunctionCall) {
-            // No tool calls — we're done
+            // No tool calls — we're done with the primary loop
             break;
           }
 
@@ -212,6 +203,77 @@ export async function POST(request: NextRequest) {
             role: "function",
             parts: functionResponseParts,
           });
+
+          // Emit any intermediate text (between tool-use rounds)
+          if (bufferedText) {
+            controller.enqueue(
+              encoder.encode(sseEvent("text", { text: bufferedText }))
+            );
+            bufferedText = "";
+          }
+        }
+
+        // Fallback: if DebtStack tools returned no data, use Google Search instead
+        if (hadToolCalls && allToolResultsEmpty) {
+          // Discard the primary model's "no data" text — replace with search results
+          bufferedText = "";
+
+          const searchContents: Content[] = messages.map((m) => ({
+            role: m.role === "assistant" ? "model" : "user",
+            parts: [{ text: m.content }],
+          }));
+
+          const searchId = `call_search_web_search_${Date.now()}`;
+          controller.enqueue(
+            encoder.encode(
+              sseEvent("tool_call", {
+                id: searchId,
+                name: "web_search",
+                args: {},
+              })
+            )
+          );
+
+          const searchResult = await searchModel.generateContent({
+            contents: searchContents,
+          });
+
+          const searchResponse = searchResult.response;
+          const searchParts =
+            searchResponse.candidates?.[0]?.content?.parts ?? [];
+
+          // Emit cost for web search
+          const groundingMetadata =
+            searchResponse.candidates?.[0]?.groundingMetadata;
+          const searchCost =
+            groundingMetadata?.webSearchQueries &&
+            groundingMetadata.webSearchQueries.length > 0
+              ? 0.03
+              : 0;
+          totalCost += searchCost;
+
+          controller.enqueue(
+            encoder.encode(
+              sseEvent("tool_result", {
+                id: searchId,
+                name: "web_search",
+                cost: searchCost,
+              })
+            )
+          );
+
+          for (const part of searchParts) {
+            if (part.text) {
+              controller.enqueue(
+                encoder.encode(sseEvent("text", { text: part.text }))
+              );
+            }
+          }
+        } else if (bufferedText) {
+          // No fallback needed — emit the buffered text from primary model
+          controller.enqueue(
+            encoder.encode(sseEvent("text", { text: bufferedText }))
+          );
         }
 
         // Done
