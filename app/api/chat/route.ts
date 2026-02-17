@@ -1,9 +1,9 @@
 // app/api/chat/route.ts
-// SSE streaming chat API route with Claude tool-use loop
+// SSE streaming chat API route with Gemini tool-use loop
 
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
+import { GoogleGenerativeAI, type Content, type Part } from "@google/generative-ai";
 import { DEBTSTACK_TOOLS } from "@/lib/chat/tools";
 import { SYSTEM_PROMPT } from "@/lib/chat/system-prompt";
 import { executeTool } from "@/lib/chat/tool-executor";
@@ -66,8 +66,8 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const anthropicKey = process.env.ANTHROPIC_API_KEY;
-  if (!anthropicKey) {
+  const geminiKey = process.env.GEMINI_API_KEY;
+  if (!geminiKey) {
     return new Response(
       JSON.stringify({ error: "Chat service not configured" }),
       { status: 500, headers: { "Content-Type": "application/json" } }
@@ -77,44 +77,46 @@ export async function POST(request: NextRequest) {
   const encoder = new TextEncoder();
   const stream = new ReadableStream({
     async start(controller) {
-      const client = new Anthropic({ apiKey: anthropicKey });
+      const genAI = new GoogleGenerativeAI(geminiKey);
+      const model = genAI.getGenerativeModel({
+        model: "gemini-2.5-flash",
+        systemInstruction: SYSTEM_PROMPT,
+        tools: [{ functionDeclarations: DEBTSTACK_TOOLS }],
+      });
       let totalCost = 0;
 
       try {
-        // Build the Anthropic message history
-        const anthropicMessages: Anthropic.MessageParam[] = messages.map(
-          (m) => ({
-            role: m.role,
-            content: m.content,
-          })
-        );
+        // Build Gemini content history
+        // Map "assistant" → "model" for Gemini's role convention
+        const geminiContents: Content[] = messages.map((m) => ({
+          role: m.role === "assistant" ? "model" : "user",
+          parts: [{ text: m.content }],
+        }));
 
         // Tool-use loop
         for (let round = 0; round < MAX_TOOL_ROUNDS; round++) {
-          const response = await client.messages.create({
-            model: "claude-sonnet-4-5-20250929",
-            max_tokens: 4096,
-            system: SYSTEM_PROMPT,
-            tools: DEBTSTACK_TOOLS,
-            messages: anthropicMessages,
+          const result = await model.generateContent({
+            contents: geminiContents,
           });
 
-          // Process content blocks
-          let hasToolUse = false;
-          const toolResults: Anthropic.ToolResultBlockParam[] = [];
-          let textContent = "";
+          const response = result.response;
+          const parts = response.candidates?.[0]?.content?.parts ?? [];
 
-          for (const block of response.content) {
-            if (block.type === "text") {
-              textContent += block.text;
+          // Process parts
+          let hasFunctionCall = false;
+          const functionResponseParts: Part[] = [];
+
+          for (const part of parts) {
+            if (part.text) {
               controller.enqueue(
-                encoder.encode(sseEvent("text", { text: block.text }))
+                encoder.encode(sseEvent("text", { text: part.text }))
               );
-            } else if (block.type === "tool_use") {
-              hasToolUse = true;
-              const toolName = block.name;
-              const toolArgs = block.input as Record<string, unknown>;
-              const toolId = block.id;
+            } else if (part.functionCall) {
+              hasFunctionCall = true;
+              const toolName = part.functionCall.name;
+              const toolArgs = (part.functionCall.args ?? {}) as Record<string, unknown>;
+              // Gemini doesn't provide tool call IDs; generate one
+              const toolId = `call_${round}_${toolName}_${Date.now()}`;
 
               // Notify client of tool call
               controller.enqueue(
@@ -128,8 +130,8 @@ export async function POST(request: NextRequest) {
               );
 
               // Execute the tool
-              const result = await executeTool(toolName, toolArgs, apiKey);
-              totalCost += result.cost;
+              const toolResult = await executeTool(toolName, toolArgs, apiKey);
+              totalCost += toolResult.cost;
 
               // Notify client of tool result
               controller.enqueue(
@@ -137,35 +139,38 @@ export async function POST(request: NextRequest) {
                   sseEvent("tool_result", {
                     id: toolId,
                     name: toolName,
-                    cost: result.cost,
-                    error: result.error,
+                    cost: toolResult.cost,
+                    error: toolResult.error,
                   })
                 )
               );
 
-              toolResults.push({
-                type: "tool_result",
-                tool_use_id: toolId,
-                content: result.error
-                  ? `Error: ${result.error}`
-                  : JSON.stringify(result.data),
+              functionResponseParts.push({
+                functionResponse: {
+                  name: toolName,
+                  response: toolResult.error
+                    ? { error: toolResult.error }
+                    : (toolResult.data as object),
+                },
               });
             }
           }
 
-          if (!hasToolUse) {
+          if (!hasFunctionCall) {
             // No tool calls — we're done
             break;
           }
 
           // Feed tool results back into the conversation
-          anthropicMessages.push({
-            role: "assistant",
-            content: response.content,
+          // First, add the model's response (with function calls)
+          geminiContents.push({
+            role: "model",
+            parts,
           });
-          anthropicMessages.push({
-            role: "user",
-            content: toolResults,
+          // Then add function responses with role "function"
+          geminiContents.push({
+            role: "function",
+            parts: functionResponseParts,
           });
         }
 

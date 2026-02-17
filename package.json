@@ -10,7 +10,7 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.74.0",
+    "@google/generative-ai": "^0.24.0",
     "@clerk/nextjs": "^6.36.9",
     "@sentry/nextjs": "^10.38.0",
     "@vercel/analytics": "^1.6.1",

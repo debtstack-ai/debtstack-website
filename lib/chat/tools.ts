@@ -1,9 +1,12 @@
 // lib/chat/tools.ts
-// Claude tool definitions for DebtStack API, ported from credible/sdk/debtstack/mcp_server.py
+// Gemini tool definitions for DebtStack API, ported from credible/sdk/debtstack/mcp_server.py
 
-import type Anthropic from "@anthropic-ai/sdk";
+import {
+  SchemaType,
+  type FunctionDeclaration,
+} from "@google/generative-ai";
 
-export const DEBTSTACK_TOOLS: Anthropic.Tool[] = [
+export const DEBTSTACK_TOOLS: FunctionDeclaration[] = [
   {
     name: "search_companies",
     description:
@@ -11,41 +14,41 @@ export const DEBTSTACK_TOOLS: Anthropic.Tool[] = [
       "Use to find companies with specific characteristics, compare leverage across peers, " +
       "or screen for structural subordination risk. " +
       "Example: 'Find tech companies with leverage above 4x'",
-    input_schema: {
-      type: "object" as const,
+    parameters: {
+      type: SchemaType.OBJECT,
       properties: {
         ticker: {
-          type: "string",
+          type: SchemaType.STRING,
           description: "Comma-separated tickers (e.g., 'AAPL,MSFT,GOOGL')",
         },
         sector: {
-          type: "string",
+          type: SchemaType.STRING,
           description: "Filter by sector (e.g., 'Technology', 'Energy')",
         },
         min_leverage: {
-          type: "number",
+          type: SchemaType.NUMBER,
           description: "Minimum leverage ratio",
         },
         max_leverage: {
-          type: "number",
+          type: SchemaType.NUMBER,
           description: "Maximum leverage ratio",
         },
         has_structural_sub: {
-          type: "boolean",
+          type: SchemaType.BOOLEAN,
           description: "Filter for structural subordination",
         },
         fields: {
-          type: "string",
+          type: SchemaType.STRING,
           description:
             "Comma-separated fields to return (e.g., 'ticker,name,net_leverage_ratio,total_debt')",
         },
         sort: {
-          type: "string",
+          type: SchemaType.STRING,
           description:
             "Sort field, prefix with - for descending (e.g., '-net_leverage_ratio')",
         },
         limit: {
-          type: "integer",
+          type: SchemaType.INTEGER,
           description: "Maximum results (default 10)",
         },
       },
@@ -58,37 +61,38 @@ export const DEBTSTACK_TOOLS: Anthropic.Tool[] = [
       "Search bonds by ticker, seniority, yield, spread, and maturity. " +
       "Use for yield hunting, finding high-yield opportunities, or analyzing maturity walls. " +
       "Example: 'Find senior unsecured bonds yielding above 8%'",
-    input_schema: {
-      type: "object" as const,
+    parameters: {
+      type: SchemaType.OBJECT,
       properties: {
         ticker: {
-          type: "string",
+          type: SchemaType.STRING,
           description: "Company ticker(s)",
         },
         seniority: {
-          type: "string",
+          type: SchemaType.STRING,
+          format: "enum",
           enum: ["senior_secured", "senior_unsecured", "subordinated"],
           description: "Bond seniority level",
         },
         min_ytm: {
-          type: "number",
+          type: SchemaType.NUMBER,
           description: "Minimum yield to maturity (%)",
         },
         has_pricing: {
-          type: "boolean",
+          type: SchemaType.BOOLEAN,
           description: "Only bonds with pricing data",
         },
         maturity_before: {
-          type: "string",
+          type: SchemaType.STRING,
           description: "Maturity before date (YYYY-MM-DD)",
         },
         fields: {
-          type: "string",
+          type: SchemaType.STRING,
           description:
             "Comma-separated fields to return (e.g., 'name,cusip,ticker,pricing')",
         },
         limit: {
-          type: "integer",
+          type: SchemaType.INTEGER,
           description: "Maximum results (default 10)",
         },
       },
@@ -101,11 +105,11 @@ export const DEBTSTACK_TOOLS: Anthropic.Tool[] = [
       "Look up a bond by CUSIP, ISIN, or description. " +
       "Use when you have a partial bond identifier and need full details. " +
       "Example: 'RIG 8% 2027' or 'CUSIP 893830AK8'",
-    input_schema: {
-      type: "object" as const,
+    parameters: {
+      type: SchemaType.OBJECT,
       properties: {
         query: {
-          type: "string",
+          type: SchemaType.STRING,
           description:
             "Bond identifier - CUSIP, ISIN, or description (e.g., 'RIG 8% 2027')",
         },
@@ -119,11 +123,11 @@ export const DEBTSTACK_TOOLS: Anthropic.Tool[] = [
       "Find all entities that guarantee a bond. " +
       "Use to understand guarantee coverage and structural subordination risk. " +
       "Pass a CUSIP or bond description.",
-    input_schema: {
-      type: "object" as const,
+    parameters: {
+      type: SchemaType.OBJECT,
       properties: {
         bond_id: {
-          type: "string",
+          type: SchemaType.STRING,
           description: "Bond CUSIP or identifier",
         },
       },
@@ -136,11 +140,11 @@ export const DEBTSTACK_TOOLS: Anthropic.Tool[] = [
       "Get the full corporate structure for a company. " +
       "Shows parent-subsidiary hierarchy, entity types, and debt at each level. " +
       "Use to understand structural subordination and where debt sits in the org.",
-    input_schema: {
-      type: "object" as const,
+    parameters: {
+      type: SchemaType.OBJECT,
       properties: {
         ticker: {
-          type: "string",
+          type: SchemaType.STRING,
           description: "Company ticker (e.g., 'RIG', 'CHTR')",
         },
       },
@@ -153,27 +157,27 @@ export const DEBTSTACK_TOOLS: Anthropic.Tool[] = [
       "Get bond pricing from FINRA TRACE. " +
       "Returns current price, yield to maturity, and spread to treasury. " +
       "Use to find distressed bonds or compare relative value.",
-    input_schema: {
-      type: "object" as const,
+    parameters: {
+      type: SchemaType.OBJECT,
       properties: {
         ticker: {
-          type: "string",
+          type: SchemaType.STRING,
           description: "Company ticker(s)",
         },
         cusip: {
-          type: "string",
+          type: SchemaType.STRING,
           description: "Bond CUSIP(s)",
         },
         min_ytm: {
-          type: "number",
+          type: SchemaType.NUMBER,
           description: "Minimum yield to maturity (%)",
         },
         fields: {
-          type: "string",
+          type: SchemaType.STRING,
           description: "Comma-separated fields to return",
         },
         limit: {
-          type: "integer",
+          type: SchemaType.INTEGER,
           description: "Maximum results (default 10)",
         },
       },
@@ -186,19 +190,20 @@ export const DEBTSTACK_TOOLS: Anthropic.Tool[] = [
       "Search SEC filing sections for specific terms. " +
       "Section types: debt_footnote, credit_agreement, indenture, covenants, mda_liquidity. " +
       "Use to find covenant language, credit agreement terms, or debt descriptions.",
-    input_schema: {
-      type: "object" as const,
+    parameters: {
+      type: SchemaType.OBJECT,
       properties: {
         query: {
-          type: "string",
+          type: SchemaType.STRING,
           description: "Search terms",
         },
         ticker: {
-          type: "string",
+          type: SchemaType.STRING,
           description: "Company ticker(s)",
         },
         section_type: {
-          type: "string",
+          type: SchemaType.STRING,
+          format: "enum",
           enum: [
             "debt_footnote",
             "credit_agreement",
@@ -211,7 +216,7 @@ export const DEBTSTACK_TOOLS: Anthropic.Tool[] = [
           description: "Section type to search",
         },
         limit: {
-          type: "integer",
+          type: SchemaType.INTEGER,
           description: "Maximum results (default 10)",
         },
       },
@@ -224,15 +229,15 @@ export const DEBTSTACK_TOOLS: Anthropic.Tool[] = [
       "See what changed in a company's debt structure since a date. " +
       "Returns new issuances, matured debt, leverage changes, and pricing movements. " +
       "Use to monitor companies for material changes.",
-    input_schema: {
-      type: "object" as const,
+    parameters: {
+      type: SchemaType.OBJECT,
       properties: {
         ticker: {
-          type: "string",
+          type: SchemaType.STRING,
           description: "Company ticker",
         },
         since: {
-          type: "string",
+          type: SchemaType.STRING,
           description: "Compare since date (YYYY-MM-DD)",
         },
       },
