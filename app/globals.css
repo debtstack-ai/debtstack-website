@@ -166,6 +166,12 @@ body {
   margin: 2rem 0;
 }
 
+/* Ticker marquee scroll */
+@keyframes ticker-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
 /* Chat table styling */
 .chat-table {
   width: 100%;
