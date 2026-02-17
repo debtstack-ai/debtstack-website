@@ -40,7 +40,7 @@ export default function TreasuryTicker() {
 
   useEffect(() => {
     fetchYields(true);
-    const interval = setInterval(() => fetchYields(false), 60_000);
+    const interval = setInterval(() => fetchYields(false), 300_000); // 5 min — stays within 800 credits/day free tier
     return () => clearInterval(interval);
   }, [fetchYields]);
 
