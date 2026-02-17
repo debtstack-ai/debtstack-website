@@ -5,7 +5,6 @@ import { auth } from "@clerk/nextjs/server";
 import { NextRequest } from "next/server";
 import {
   GoogleGenerativeAI,
-  DynamicRetrievalMode,
   type Content,
   type Part,
 } from "@google/generative-ai";
@@ -88,14 +87,7 @@ export async function POST(request: NextRequest) {
         systemInstruction: SYSTEM_PROMPT,
         tools: [
           { functionDeclarations: DEBTSTACK_TOOLS },
-          {
-            googleSearchRetrieval: {
-              dynamicRetrievalConfig: {
-                mode: DynamicRetrievalMode.MODE_DYNAMIC,
-                dynamicThreshold: 0.3,
-              },
-            },
-          },
+          { googleSearch: {} } as never,
         ],
       });
       let totalCost = 0;
