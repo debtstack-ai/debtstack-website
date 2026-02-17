@@ -12,9 +12,9 @@ interface Company {
 interface Bond {
   name: string;
   cusip: string;
-  ticker: string;
+  company_ticker: string;
   seniority?: string;
-  interest_rate?: number;
+  coupon_rate?: number;
   maturity_date?: string;
 }
 

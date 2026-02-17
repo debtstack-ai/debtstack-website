@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
       if (!ticker) {
         return NextResponse.json({ error: 'Ticker required for bond search' }, { status: 400 });
       }
-      path = `/v1/bonds?ticker=${encodeURIComponent(ticker)}&fields=name,cusip,ticker,seniority,interest_rate,maturity_date&limit=50`;
+      path = `/v1/bonds?ticker=${encodeURIComponent(ticker)}&fields=name,cusip,company_ticker,seniority,coupon_rate,maturity_date&limit=50`;
     } else {
       return NextResponse.json({ error: 'Invalid search type' }, { status: 400 });
     }
