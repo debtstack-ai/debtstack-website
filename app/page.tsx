@@ -116,6 +116,16 @@ export default function Home() {
             <img src="/logo-transparent.png" alt="DebtStack" className="h-20 md:h-28 w-auto invert" />
           </a>
           <nav className="flex items-center gap-6">
+            <SignedOut>
+              <a href="/chat" className="text-[#2383e2] hover:text-[#1a6bc4] transition text-sm font-semibold">
+                Chat
+              </a>
+            </SignedOut>
+            <SignedIn>
+              <a href="/dashboard/chat" className="text-[#2383e2] hover:text-[#1a6bc4] transition text-sm font-semibold">
+                Chat
+              </a>
+            </SignedIn>
             <a href="/pricing" className="text-gray-500 hover:text-gray-900 transition text-sm font-medium">
               Pricing
             </a>
@@ -126,9 +136,6 @@ export default function Home() {
               Docs
             </a>
             <SignedOut>
-              <a href="/chat" className="text-gray-500 hover:text-gray-900 transition text-sm font-medium">
-                Chat
-              </a>
               <SignInButton mode="modal">
                 <button className="text-gray-500 hover:text-gray-900 transition text-sm font-medium">
                   Sign In
@@ -141,9 +148,6 @@ export default function Home() {
               </SignUpButton>
             </SignedOut>
             <SignedIn>
-              <a href="/dashboard/chat" className="text-gray-500 hover:text-gray-900 transition text-sm font-medium">
-                Chat
-              </a>
               <a href="/dashboard" className="text-gray-500 hover:text-gray-900 transition text-sm font-medium">
                 Dashboard
               </a>
@@ -154,7 +158,7 @@ export default function Home() {
       </header>
 
       {/* Hero */}
-      <section className="px-6 pt-16 pb-16 md:pt-24 md:pb-24">
+      <section className="px-6 pt-8 pb-16 md:pt-12 md:pb-20">
         <div className="max-w-3xl mx-auto text-center">
           <h1 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight text-gray-900">
             Credit Data
@@ -167,8 +171,14 @@ export default function Home() {
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <SignedOut>
+              <a
+                href="/chat"
+                className="bg-[#2383e2] text-white px-6 py-3 rounded-lg text-sm font-semibold hover:bg-[#1a6bc4] transition"
+              >
+                Try the Chat Assistant
+              </a>
               <SignUpButton mode="modal" forceRedirectUrl="/dashboard">
-                <button className="bg-gray-900 text-white px-6 py-3 rounded-lg text-sm font-semibold hover:bg-gray-800 transition">
+                <button className="text-gray-600 px-6 py-3 rounded-lg text-sm font-semibold hover:text-gray-900 transition border border-gray-300">
                   Get Started with Free Credits
                 </button>
               </SignUpButton>
@@ -187,14 +197,6 @@ export default function Home() {
                 Go to Dashboard
               </a>
             </SignedIn>
-            <SignedOut>
-              <a
-                href="/chat"
-                className="text-gray-600 px-6 py-3 rounded-lg text-sm font-semibold hover:text-gray-900 transition border border-gray-300"
-              >
-                Try Chat Assistant
-              </a>
-            </SignedOut>
           </div>
           <p className="mt-4 text-sm text-gray-400">No monthly commitment. Pay only for what you use.</p>
         </div>
