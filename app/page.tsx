@@ -8,7 +8,7 @@ const DEBT_STRUCTURE_EXAMPLE = {
   id: 'debt-structure',
   label: 'Debt Structure',
   query: "What's RIG's debt structure and leverage?",
-  header: { name: 'Transocean Ltd. (RIG)', sector: 'Energy — Offshore Drilling', leverage: '5.6x Leverage' },
+  header: { name: 'Transocean Ltd. (RIG)', sector: 'Energy, Offshore Drilling', leverage: '5.6x Leverage' },
   bonds: [
     { name: 'RIG 8.75% Sr Secured', seniority: '1st Lien', seniorityColor: 'text-emerald-600', coupon: '8.750%', maturity: 'Feb 2030' },
     { name: 'RIG 8.50% Sr Secured', seniority: '1st Lien', seniorityColor: 'text-emerald-600', coupon: '8.500%', maturity: 'May 2031' },
@@ -86,7 +86,6 @@ export default function Home() {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             entry.target.classList.add('animate-on-scroll');
-            // Trigger typing animation for example section
             if (entry.target.id === 'example-output' && !hasAnimatedRef.current) {
               hasAnimatedRef.current = true;
               animateQuery(0);
@@ -114,7 +113,7 @@ export default function Home() {
       <header className="px-6 py-4 border-b border-gray-200">
         <div className="max-w-6xl mx-auto flex justify-between items-center">
           <a href="/" className="flex items-center">
-            <img src="/logo-transparent.png" alt="DebtStack" className="h-32 md:h-48 w-auto invert" />
+            <img src="/logo-transparent.png" alt="DebtStack" className="h-20 md:h-28 w-auto invert" />
           </a>
           <nav className="flex items-center gap-6">
             <a href="/pricing" className="text-gray-500 hover:text-gray-900 transition text-sm font-medium">
@@ -154,36 +153,36 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="px-6 pt-12 pb-16 md:pt-20 md:pb-24">
-        <div className="max-w-4xl mx-auto text-center">
+      {/* Hero */}
+      <section className="px-6 pt-16 pb-16 md:pt-24 md:pb-24">
+        <div className="max-w-3xl mx-auto text-center">
           <h1 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight text-gray-900">
             Credit Data
             <br />
             <span className="text-[#2383e2]">Built for Every Workflow</span>
           </h1>
-          <p className="text-xl md:text-2xl text-gray-500 mb-8 max-w-2xl mx-auto">
-            Debt structures, bond pricing, covenant analysis, and corporate hierarchies — via chat, API, or agent tooling.
+          <p className="text-lg md:text-xl text-gray-500 mb-10 max-w-2xl mx-auto leading-relaxed">
+            Debt structures, bond pricing, covenant analysis, and corporate hierarchies. Access via chat, REST API, or agent tooling.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <SignedOut>
               <SignUpButton mode="modal" forceRedirectUrl="/dashboard">
-                <button className="bg-gray-900 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-gray-800 transition">
-                  Get Started — Free Credits
+                <button className="bg-gray-900 text-white px-6 py-3 rounded-lg text-sm font-semibold hover:bg-gray-800 transition">
+                  Get Started with Free Credits
                 </button>
               </SignUpButton>
             </SignedOut>
             <SignedIn>
               <a
                 href="/dashboard/chat"
-                className="bg-[#2383e2] text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-[#1a6bc4] transition"
+                className="bg-[#2383e2] text-white px-6 py-3 rounded-lg text-sm font-semibold hover:bg-[#1a6bc4] transition"
               >
                 Open Chat Assistant
               </a>
               <a
                 href="/dashboard"
-                className="text-gray-600 px-8 py-4 rounded-xl text-lg font-semibold hover:text-gray-900 transition border border-gray-200 hover:border-gray-300"
+                className="text-gray-600 px-6 py-3 rounded-lg text-sm font-semibold hover:text-gray-900 transition border border-gray-300"
               >
                 Go to Dashboard
               </a>
@@ -191,41 +190,42 @@ export default function Home() {
             <SignedOut>
               <a
                 href="/chat"
-                className="text-gray-600 px-8 py-4 rounded-xl text-lg font-semibold hover:text-gray-900 transition border border-gray-200 hover:border-gray-300"
+                className="text-gray-600 px-6 py-3 rounded-lg text-sm font-semibold hover:text-gray-900 transition border border-gray-300"
               >
                 Try Chat Assistant
               </a>
             </SignedOut>
           </div>
-          <p className="mt-4 text-sm text-gray-400">Pay only for what you use. No monthly commitment required.</p>
+          <p className="mt-4 text-sm text-gray-400">No monthly commitment. Pay only for what you use.</p>
         </div>
       </section>
 
-      {/* Example Output Section */}
+      {/* Example Queries */}
       <section
         id="example-output"
         ref={(el) => { sectionsRef.current[0] = el; }}
-        className="px-6 py-16 border-t border-gray-100 opacity-0"
+        className="px-6 py-16 border-t border-gray-200/60 opacity-0"
       >
         <div className="max-w-4xl mx-auto">
-          <p className="text-center text-gray-400 mb-4 text-sm uppercase tracking-widest">Example Queries</p>
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 text-gray-900">
-            Query Debt Structures, Bond Pricing, and Corporate Hierarchies
+          <h2 className="text-2xl md:text-3xl font-bold text-center mb-3 text-gray-900">
+            Query Debt Structures, Bond Pricing, and Covenants
           </h2>
-          <p className="text-center text-gray-500 mb-12 max-w-2xl mx-auto">
-            Search across 250+ corporate issuers and 5,000+ bonds. Pull leverage ratios, seniority, TRACE pricing, and full subsidiary trees through a single API.
+          <p className="text-center text-gray-500 mb-10 max-w-xl mx-auto text-sm leading-relaxed">
+            Search across 250+ corporate issuers and 5,000+ bonds. Pull leverage ratios, seniority, TRACE pricing, and covenant terms through a single API.
           </p>
 
           {/* Tabs */}
-          <div className="flex gap-2 mb-6 justify-center">
+          <div className="flex gap-1 mb-6 justify-center">
             {EXAMPLES.map((ex, i) => (
               <button
                 key={ex.id}
                 onClick={() => switchExample(i)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                className={`px-4 py-2 text-sm font-medium transition-all duration-200 ${
+                  i === 0 ? 'rounded-l-lg' : i === EXAMPLES.length - 1 ? 'rounded-r-lg' : ''
+                } ${
                   activeExample === i
                     ? 'bg-gray-900 text-white'
-                    : 'bg-white/60 text-gray-500 hover:text-gray-900 hover:bg-white'
+                    : 'bg-white text-gray-500 hover:text-gray-900'
                 }`}
               >
                 {ex.label}
@@ -234,13 +234,10 @@ export default function Home() {
           </div>
 
           {/* Query + Output Card */}
-          <div className="bg-[#D5D8DF] rounded-2xl p-6 md:p-8 border border-gray-300/50 shadow-sm">
+          <div className="bg-[#D5D8DF] rounded-lg p-5 md:p-6 border border-gray-300/50">
             {/* Query input */}
-            <div className="flex items-center gap-3 mb-6 bg-white rounded-xl px-4 py-3 border border-gray-200">
-              <svg className="w-4 h-4 text-gray-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="11" cy="11" r="8"/>
-                <path d="M21 21l-4.35-4.35" strokeLinecap="round"/>
-              </svg>
+            <div className="flex items-center gap-3 mb-5 bg-white rounded-lg px-4 py-2.5 border border-gray-200">
+              <span className="text-gray-400 text-sm shrink-0">&gt;</span>
               <span className="text-sm text-gray-900 font-mono">
                 {typedText}
                 {isTyping && <span className="inline-block w-0.5 h-4 bg-[#2383e2] ml-0.5 animate-pulse align-middle" />}
@@ -249,11 +246,8 @@ export default function Home() {
 
             {/* Output */}
             <div className={`transition-all duration-500 ${showOutput ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}>
-              {/* Loading indicator */}
-              {!showOutput && isTyping && null}
-
               {activeExample === 0 && (
-                <div className="bg-white rounded-xl p-5 border border-gray-200">
+                <div className="bg-white rounded-lg p-5 border border-gray-200">
                   <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mb-4 text-sm">
                     <span className="font-semibold text-gray-900">{DEBT_STRUCTURE_EXAMPLE.header.name}</span>
                     <span className="text-gray-300">|</span>
@@ -287,7 +281,7 @@ export default function Home() {
               )}
 
               {activeExample === 1 && (
-                <div className="bg-white rounded-xl p-5 border border-gray-200">
+                <div className="bg-white rounded-lg p-5 border border-gray-200">
                   <div className="flex items-center gap-2 mb-4 text-sm">
                     <span className="text-gray-500">{BOND_SEARCH_EXAMPLE.results.length} bonds found</span>
                     <span className="text-gray-300">|</span>
@@ -323,7 +317,7 @@ export default function Home() {
               )}
 
               {activeExample === 2 && (
-                <div className="bg-white rounded-xl p-5 border border-gray-200">
+                <div className="bg-white rounded-lg p-5 border border-gray-200">
                   <div className="overflow-x-auto">
                     <table className="w-full text-left text-sm">
                       <thead>
@@ -351,52 +345,27 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Use Cases Section */}
+      {/* Use Cases */}
       <section
         ref={(el) => { sectionsRef.current[1] = el; }}
-        className="px-6 py-16 border-t border-gray-100 opacity-0"
+        className="px-6 py-16 border-t border-gray-200/60 opacity-0"
       >
         <div className="max-w-4xl mx-auto">
-          <p className="text-center text-gray-400 mb-4 text-sm uppercase tracking-widest">Built For Credit Professionals</p>
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-gray-900">
-            Your Workflow, Supercharged
-          </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="p-8 rounded-2xl border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all duration-300">
-              <div className="mb-4 flex justify-start">
-                <div className="w-12 h-12 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center">
-                  <svg className="w-6 h-6 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                    <path d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </div>
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Credit Analysts</h3>
+            <div className="p-6 rounded-lg border border-gray-200/60">
+              <h3 className="text-sm font-semibold text-gray-900 mb-2">Credit Analysts</h3>
               <p className="text-gray-500 text-sm leading-relaxed">
-                Screen 250+ issuers by leverage, seniority, and maturity. Instantly pull debt structures and covenants for any name in the universe.
+                Screen 250+ issuers by leverage, seniority, and maturity. Pull debt structures and covenants for any name in the universe.
               </p>
             </div>
-            <div className="p-8 rounded-2xl border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all duration-300">
-              <div className="mb-4 flex justify-start">
-                <div className="w-12 h-12 rounded-xl bg-purple-50 border border-purple-100 flex items-center justify-center">
-                  <svg className="w-6 h-6 text-purple-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                    <path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </div>
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">AI Agent Builders</h3>
+            <div className="p-6 rounded-lg border border-gray-200/60">
+              <h3 className="text-sm font-semibold text-gray-900 mb-2">AI Agent Builders</h3>
               <p className="text-gray-500 text-sm leading-relaxed">
-                Plug structured credit data into your LLM workflows. Tool-use ready with LangChain, MCP, and LlamaIndex integrations.
+                Structured credit data for LLM workflows. Tool-use ready with LangChain, MCP, and LlamaIndex integrations.
               </p>
             </div>
-            <div className="p-8 rounded-2xl border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all duration-300">
-              <div className="mb-4 flex justify-start">
-                <div className="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center">
-                  <svg className="w-6 h-6 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                    <path d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4v16a1 1 0 001 1h14a1 1 0 001-1V4" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </div>
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Quant Researchers</h3>
+            <div className="p-6 rounded-lg border border-gray-200/60">
+              <h3 className="text-sm font-semibold text-gray-900 mb-2">Quant Researchers</h3>
               <p className="text-gray-500 text-sm leading-relaxed">
                 Programmatic access to 5,000+ bonds with pricing, spreads, and corporate structure data via REST API.
               </p>
@@ -405,23 +374,23 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CTA Section */}
+      {/* CTA */}
       <section
         id="get-started"
         ref={(el) => { sectionsRef.current[2] = el; }}
-        className="px-6 py-20 border-t border-gray-100 opacity-0"
+        className="px-6 py-16 border-t border-gray-200/60 opacity-0"
       >
         <div className="max-w-xl mx-auto text-center">
-          <h2 className="text-3xl md:text-5xl font-bold mb-6 text-gray-900">
-            Ready to Build?
+          <h2 className="text-2xl md:text-3xl font-bold mb-4 text-gray-900">
+            Start querying credit data today
           </h2>
-          <p className="text-lg text-gray-500 mb-10">
-            Pay only for what you use. No monthly commitment required.
+          <p className="text-sm text-gray-500 mb-8">
+            No monthly commitment. Pay only for what you use.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <SignedOut>
               <SignUpButton mode="modal" forceRedirectUrl="/dashboard">
-                <button className="bg-gray-900 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-gray-800 transition">
+                <button className="bg-gray-900 text-white px-6 py-3 rounded-lg text-sm font-semibold hover:bg-gray-800 transition">
                   Create Free Account
                 </button>
               </SignUpButton>
@@ -429,14 +398,14 @@ export default function Home() {
             <SignedIn>
               <a
                 href="/dashboard"
-                className="bg-gray-900 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-gray-800 transition"
+                className="bg-gray-900 text-white px-6 py-3 rounded-lg text-sm font-semibold hover:bg-gray-800 transition"
               >
                 Go to Dashboard
               </a>
             </SignedIn>
             <a
               href="/pricing"
-              className="text-gray-600 px-8 py-4 rounded-xl text-lg font-semibold hover:text-gray-900 transition border border-gray-200 hover:border-gray-300"
+              className="text-gray-600 px-6 py-3 rounded-lg text-sm font-semibold hover:text-gray-900 transition border border-gray-300"
             >
               View Pricing
             </a>
@@ -445,20 +414,20 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="px-6 py-12 border-t border-gray-200">
+      <footer className="px-6 py-10 border-t border-gray-200">
         <div className="max-w-4xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <a href="/">
-              <img src="/logo-transparent.png" alt="DebtStack" className="h-32 w-auto invert" />
+              <img src="/logo-transparent.png" alt="DebtStack" className="h-16 w-auto invert" />
             </a>
-            <div className="flex gap-8 text-gray-400">
+            <div className="flex gap-8 text-sm text-gray-400">
               <a href="/pricing" className="hover:text-gray-900 transition">Pricing</a>
               <a href="/blog" className="hover:text-gray-900 transition">Blog</a>
               <a href="https://docs.debtstack.ai" className="hover:text-gray-900 transition">Docs</a>
               <a href="mailto:hello@debtstack.ai" className="hover:text-gray-900 transition">Contact</a>
             </div>
           </div>
-          <div className="mt-8 pt-8 border-t border-gray-100 text-center text-sm text-gray-400">
+          <div className="mt-6 pt-6 border-t border-gray-100 text-center text-xs text-gray-400">
             &copy; 2026 DebtStack
           </div>
         </div>
