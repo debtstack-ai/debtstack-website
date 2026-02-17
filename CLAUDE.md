@@ -4,7 +4,7 @@ This file provides context for Claude Code when working on this repository.
 
 ## Project Overview
 
-DebtStack Website is the Next.js frontend for DebtStack.ai - an API platform providing corporate debt structure data for AI agents. This repo handles the marketing site, user dashboard, authentication, and Stripe billing integration.
+DebtStack Website is the Next.js frontend for DebtStack.ai - an API platform providing corporate debt structure data for AI agents. This repo handles the marketing site, user dashboard, authentication, Stripe billing integration, and an AI chat assistant.
 
 ## Tech Stack
 
@@ -14,6 +14,7 @@ DebtStack Website is the Next.js frontend for DebtStack.ai - an API platform pro
 - **Analytics**: Vercel Analytics + PostHog (events, funnels, session replay)
 - **Error Tracking**: Sentry (client + server)
 - **Styling**: Tailwind CSS v4
+- **AI**: Anthropic SDK (`@anthropic-ai/sdk`) — Claude-powered chat assistant
 - **Language**: TypeScript
 - **Deployment**: Railway
 
@@ -23,17 +24,29 @@ DebtStack Website is the Next.js frontend for DebtStack.ai - an API platform pro
 debtstack-website/
 ├── app/                    # Next.js App Router pages
 │   ├── api/               # API routes
+│   │   ├── chat/          # Chat SSE streaming endpoint (Claude + tool-use)
 │   │   ├── stripe/        # Stripe checkout & portal
 │   │   ├── user/          # User sync with backend
 │   │   └── waitlist/      # Waitlist signup
 │   ├── dashboard/         # User dashboard (API key, usage, billing)
+│   │   └── chat/          # Full-page chat assistant
+│   │       ├── page.tsx   # Chat page (gates on API key)
+│   │       └── components/
+│   │           ├── ChatLayout.tsx    # Sidebar + main area layout
+│   │           ├── ChatMessages.tsx  # Message display with markdown + tool pills
+│   │           └── ChatInput.tsx     # Auto-resize input with keyboard shortcuts
 │   ├── pricing/           # Pricing page
 │   ├── providers.tsx      # PostHog initialization + pageview tracking
 │   ├── layout.tsx         # Root layout (Clerk, PostHog, Vercel Analytics)
 │   └── page.tsx           # Landing page
 ├── docs/                   # Mintlify documentation (docs.debtstack.ai)
 ├── lib/                    # Shared utilities
-│   └── stripe.ts          # Stripe client & tier config
+│   ├── stripe.ts          # Stripe client & tier config
+│   └── chat/              # Chat assistant utilities
+│       ├── tools.ts       # 8 Claude tool definitions (Anthropic SDK format)
+│       ├── system-prompt.ts # System prompt for Claude
+│       ├── tool-executor.ts # Execute tools against DebtStack API
+│       └── prompts.ts     # Starter prompt library (14 prompts, 4 categories)
 ├── public/                 # Static assets
 ├── sentry.client.config.ts # Sentry browser config
 ├── sentry.server.config.ts # Sentry server config
@@ -79,6 +92,18 @@ debtstack-website/
 - Custom events tracked: `viewed_pricing`, `clicked_subscribe`, `viewed_dashboard`, `copied_api_key`
 - Guarded by `NEXT_PUBLIC_POSTHOG_KEY` — silently disabled when not set
 
+### Chat Assistant (Claude + DebtStack API)
+- Full-page chat at `/dashboard/chat` — authenticated users ask credit questions in natural language
+- Claude (`claude-sonnet-4-5-20250929`) acts as agent, calling 8 DebtStack API tools via tool-use loop
+- **Architecture**: Browser → `POST /api/chat` (SSE) → Claude (up to 5 tool-use rounds) → `api.debtstack.ai` (user's API key)
+- **API route** (`app/api/chat/route.ts`): Authenticated via Clerk, streams SSE events (`text`, `tool_call`, `tool_result`, `done`, `error`)
+- **Tool definitions** (`lib/chat/tools.ts`): 8 tools ported from MCP server — `search_companies`, `search_bonds`, `resolve_bond`, `get_guarantors`, `get_corporate_structure`, `search_pricing`, `search_documents`, `get_changes`
+- **Safety**: Max 5 tool-use rounds, max 50 messages/conversation, 15s timeout per API call, results truncated to 20 items
+- **State**: Chat history + watchlists in `localStorage` (no server-side state, no new DB tables)
+- **Gating**: Requires `userData.api_key` to be available (full key, not just prefix) — users without it see a "regenerate key" prompt
+- **Cost**: DebtStack API costs ($0.05-$0.15/tool call) tracked per session. Claude inference cost (~$0.01-0.05/turn) absorbed by DebtStack
+- **Features**: Chat history with search, starter prompt library (14 prompts in 4 categories), suggested follow-ups (parsed from Claude response), ticker watchlists
+
 ### Sentry
 - `sentry.client.config.ts` (browser) + `sentry.server.config.ts` (server)
 - `next.config.ts` wrapped with `withSentryConfig()` for source map uploads
@@ -114,6 +139,9 @@ NEXT_PUBLIC_APP_URL=https://debtstack.ai
 # PostHog (optional — analytics disabled if not set)
 NEXT_PUBLIC_POSTHOG_KEY=phc_...
 NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
+
+# Anthropic (required for chat assistant)
+ANTHROPIC_API_KEY=sk-ant-...
 
 # Sentry (optional — error tracking disabled if not set)
 NEXT_PUBLIC_SENTRY_DSN=https://...@....ingest.us.sentry.io/...

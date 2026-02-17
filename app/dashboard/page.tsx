@@ -365,6 +365,26 @@ function DashboardContent() {
           </div>
         </section>
 
+        {/* Chat Assistant CTA */}
+        {userData?.api_key ? (
+          <section className="mt-8 p-6 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-[#2383e2]/30">
+            <h2 className="text-xl font-semibold mb-2">Chat Assistant</h2>
+            <p className="text-gray-500 mb-4">
+              Ask questions about corporate debt in natural language. Powered by Claude + DebtStack API.
+            </p>
+            <a
+              href="/dashboard/chat"
+              className="inline-block px-6 py-3 rounded-lg bg-[#2383e2] text-white text-sm font-semibold hover:bg-[#1a6bc4] transition"
+            >
+              Open Chat &rarr;
+            </a>
+          </section>
+        ) : userData?.api_key_prefix ? (
+          <div className="mt-8 p-4 rounded-lg bg-amber-50 border border-amber-200 text-amber-700 text-sm">
+            Regenerate your API key above to enable the chat assistant.
+          </div>
+        ) : null}
+
         {/* Upgrade CTA for Free Users */}
         {(userData?.tier === 'free' || userData?.tier === 'pay_as_you_go') && (
           <section className="mt-8 p-6 rounded-xl bg-white border border-gray-200">

@@ -4,6 +4,51 @@ Tracking ongoing work, recent changes, and planned improvements.
 
 ---
 
+## Recent Changes (2026-02-16)
+
+### Chat Assistant — Full-Page AI Interface
+
+Added a full-page chat interface at `/dashboard/chat` where authenticated users can ask credit questions in natural language. Claude (via Anthropic SDK) acts as agent, calling DebtStack API tools.
+
+**Architecture:**
+```
+Browser (/dashboard/chat)
+  ├── Sidebar: chat history, prompt library, watchlists
+  └── Main: chat messages + input
+        → POST /api/chat { messages, apiKey }
+        → Next.js API route (server-side)
+          → Claude (tool_use loop, max 5 rounds)
+            → api.debtstack.ai (user's API key)
+          → SSE stream back to browser
+```
+
+**New files (9):**
+- `lib/chat/tools.ts` — 8 Claude tool definitions (ported from MCP server)
+- `lib/chat/system-prompt.ts` — System prompt (data conventions, follow-up format)
+- `lib/chat/tool-executor.ts` — Execute tools against DebtStack API (error handling, cost tracking, truncation)
+- `lib/chat/prompts.ts` — 14 starter prompts in 4 categories (Screening, Deep Dive, Covenants, Comparisons)
+- `app/api/chat/route.ts` — SSE streaming endpoint (Clerk auth, Claude tool-use loop, `maxDuration=60`)
+- `app/dashboard/chat/page.tsx` — Chat page (gates on API key availability)
+- `app/dashboard/chat/components/ChatLayout.tsx` — Sidebar + main area (history, prompts, watchlists in localStorage)
+- `app/dashboard/chat/components/ChatMessages.tsx` — Messages with markdown, tool call pills, suggested follow-ups
+- `app/dashboard/chat/components/ChatInput.tsx` — Auto-resize textarea, Enter to send
+
+**Modified files (1):**
+- `app/dashboard/page.tsx` — Added "Chat Assistant" CTA card after Quick Start section
+
+**Key decisions:**
+- Model: `claude-sonnet-4-5-20250929` (~$0.01-0.05/turn)
+- State: Chat history + watchlists in `localStorage` (no new DB tables for MVP)
+- Gating: Full API key required (only available after signup or key regeneration)
+- Safety: Max 5 tool-use rounds, max 50 messages, 15s timeout, 20-item truncation
+- Streaming: SSE over ReadableStream with `text`, `tool_call`, `tool_result`, `done`, `error` events
+
+**New env var required:** `ANTHROPIC_API_KEY=sk-ant-...` in `.env.local` and Railway.
+
+**Build:** `npm run build` passes. Routes: `/dashboard/chat` (static), `/api/chat` (dynamic).
+
+---
+
 ## Recent Changes (2026-01-28)
 
 ### Pricing Update
@@ -53,16 +98,25 @@ Moved checkout flow to frontend for faster UX:
 ## TODO
 
 ### High Priority
+- [ ] Add `ANTHROPIC_API_KEY` to Railway environment variables (required for chat)
 - [ ] Add `STRIPE_SECRET_KEY` to Railway environment variables
 - [ ] Test Stripe checkout flow end-to-end
 - [ ] Verify webhook events are received by backend
 
 ### Medium Priority
+- [ ] Test chat assistant end-to-end on production (after ANTHROPIC_API_KEY is set)
 - [ ] Add loading states to upgrade buttons on pricing page
 - [ ] Show current plan indicator on pricing page for signed-in users
 - [ ] Add email notifications for successful upgrades
 
-### Low Priority
+### Low Priority — Chat Improvements
+- [ ] Add PostHog events for chat usage (chat_started, tool_called, etc.)
+- [ ] Migrate chat history from localStorage to DB for cross-device sync
+- [ ] Add rate limiting on `/api/chat` endpoint (per-user, per-minute)
+- [ ] Add token usage tracking for Claude inference cost
+- [ ] Add ability to export chat as markdown/PDF
+
+### Low Priority — General
 - [ ] Add annual pricing option (2 months free)
 - [ ] Implement usage analytics dashboard
 - [ ] Add testimonials section to landing page
@@ -117,9 +171,10 @@ Frontend (Next.js)          Backend (FastAPI)           Stripe
 ## Deployment Checklist
 
 Before deploying:
-- [ ] All environment variables set in Railway
+- [ ] All environment variables set in Railway (including `ANTHROPIC_API_KEY` for chat)
 - [ ] Stripe webhook configured to hit backend
 - [ ] Test checkout flow in Stripe test mode
+- [ ] Test chat assistant with a real API key
 - [ ] Verify build passes locally with `npm run build`
 
 ---
@@ -128,10 +183,13 @@ Before deploying:
 
 *Add notes here for the next session:*
 
+- Chat assistant implemented at `/dashboard/chat` — needs `ANTHROPIC_API_KEY` in Railway to work in production
+- Chat uses user's DebtStack API key (passed from client), so API costs are charged to the user's account
+- Claude inference cost (~$0.01-0.05/turn) is absorbed by DebtStack — consider adding rate limiting before launch
+- Chat history in localStorage only — may want to migrate to DB later for cross-device sync
 - Railway build is failing - need to add STRIPE_SECRET_KEY env var
 - All pricing updates complete in both frontend and backend
 - Stripe webhook remains in backend (not frontend)
-- Documentation files created: CLAUDE.md, README.md, WORKPLAN.md
 
 ---
 
