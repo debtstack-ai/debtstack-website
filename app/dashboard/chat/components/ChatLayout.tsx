@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import ChatInput from './ChatInput';
 import ChatMessages, { Message, ToolCallStatus } from './ChatMessages';
 import DataSearch from './DataSearch';
+import TreasuryTicker from './TreasuryTicker';
 
 interface ChatSession {
   id: string;
@@ -486,6 +487,9 @@ export default function ChatLayout({ apiKey }: ChatLayoutProps) {
             </span>
           )}
         </header>
+
+        {/* Treasury yield ticker */}
+        <TreasuryTicker />
 
         {/* Messages */}
         <ChatMessages messages={messages} onSuggestionClick={handleSuggestionClick} />
