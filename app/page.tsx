@@ -183,10 +183,169 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Example Output Section */}
+      <section
+        ref={(el) => { sectionsRef.current[2] = el; }}
+        className="px-6 py-24 border-t border-gray-100 opacity-0"
+      >
+        <div className="max-w-4xl mx-auto">
+          <p className="text-center text-gray-400 mb-4 text-sm uppercase tracking-widest">See What You Get</p>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-gray-900">
+            Real Answers, Not Generic Summaries
+          </h2>
+          <div className="bg-[#0d1117] rounded-2xl p-6 md:p-8 text-sm font-mono shadow-xl">
+            {/* User question */}
+            <div className="flex gap-3 mb-6">
+              <div className="w-7 h-7 rounded-full bg-gray-700 flex items-center justify-center text-xs text-gray-300 shrink-0 mt-0.5">U</div>
+              <div className="bg-[#161b22] text-gray-300 rounded-xl rounded-tl-none px-4 py-3">
+                What&apos;s RIG&apos;s debt structure and leverage?
+              </div>
+            </div>
+            {/* DebtStack response */}
+            <div className="flex gap-3">
+              <div className="w-7 h-7 rounded-full bg-[#2383e2] flex items-center justify-center text-xs text-white shrink-0 mt-0.5">D</div>
+              <div className="flex-1 space-y-4">
+                <div className="text-gray-300">
+                  <span className="text-white font-semibold">Transocean Ltd. (RIG)</span>
+                  <span className="mx-2 text-gray-600">|</span>
+                  <span className="text-gray-400">Energy — Offshore Drilling</span>
+                  <span className="mx-2 text-gray-600">|</span>
+                  <span className="text-[#2383e2] font-semibold">5.6x Leverage</span>
+                </div>
+                {/* Bond table */}
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs">
+                    <thead>
+                      <tr className="text-gray-500 border-b border-gray-800">
+                        <th className="pb-2 pr-4 font-medium">Bond</th>
+                        <th className="pb-2 pr-4 font-medium">Seniority</th>
+                        <th className="pb-2 pr-4 font-medium">Coupon</th>
+                        <th className="pb-2 font-medium">Maturity</th>
+                      </tr>
+                    </thead>
+                    <tbody className="text-gray-300">
+                      <tr className="border-b border-gray-800/50">
+                        <td className="py-2 pr-4">RIG 8.75% Sr Secured</td>
+                        <td className="py-2 pr-4 text-emerald-400">1st Lien</td>
+                        <td className="py-2 pr-4">8.750%</td>
+                        <td className="py-2">Feb 2030</td>
+                      </tr>
+                      <tr className="border-b border-gray-800/50">
+                        <td className="py-2 pr-4">RIG 8.50% Sr Secured</td>
+                        <td className="py-2 pr-4 text-emerald-400">1st Lien</td>
+                        <td className="py-2 pr-4">8.500%</td>
+                        <td className="py-2">May 2031</td>
+                      </tr>
+                      <tr>
+                        <td className="py-2 pr-4">RIG 6.875% Sr Unsecured</td>
+                        <td className="py-2 pr-4 text-yellow-400">Sr Unsecured</td>
+                        <td className="py-2 pr-4">6.875%</td>
+                        <td className="py-2">Feb 2027</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                {/* Follow-ups */}
+                <div className="flex flex-wrap gap-2 pt-2">
+                  <span className="text-xs text-[#2383e2] border border-[#2383e2]/30 rounded-full px-3 py-1">Show covenant details</span>
+                  <span className="text-xs text-[#2383e2] border border-[#2383e2]/30 rounded-full px-3 py-1">Compare to SDRL</span>
+                  <span className="text-xs text-[#2383e2] border border-[#2383e2]/30 rounded-full px-3 py-1">Pull bond pricing</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Use Cases Section */}
+      <section
+        ref={(el) => { sectionsRef.current[3] = el; }}
+        className="px-6 py-24 border-t border-gray-100 opacity-0"
+      >
+        <div className="max-w-4xl mx-auto">
+          <p className="text-center text-gray-400 mb-4 text-sm uppercase tracking-widest">Built For Credit Professionals</p>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-gray-900">
+            Your Workflow, Supercharged
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="p-8 rounded-2xl border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all duration-300">
+              <div className="mb-4 flex justify-start">
+                <div className="w-12 h-12 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center">
+                  <svg className="w-6 h-6 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <path d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Credit Analysts</h3>
+              <p className="text-gray-500 text-sm leading-relaxed">
+                Screen 250+ issuers by leverage, seniority, and maturity. Instantly pull debt structures and covenants for any name in the universe.
+              </p>
+            </div>
+            <div className="p-8 rounded-2xl border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all duration-300">
+              <div className="mb-4 flex justify-start">
+                <div className="w-12 h-12 rounded-xl bg-purple-50 border border-purple-100 flex items-center justify-center">
+                  <svg className="w-6 h-6 text-purple-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">AI Agent Builders</h3>
+              <p className="text-gray-500 text-sm leading-relaxed">
+                Plug structured credit data into your LLM workflows. Tool-use ready with LangChain, MCP, and LlamaIndex integrations.
+              </p>
+            </div>
+            <div className="p-8 rounded-2xl border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all duration-300">
+              <div className="mb-4 flex justify-start">
+                <div className="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center">
+                  <svg className="w-6 h-6 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <path d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4v16a1 1 0 001 1h14a1 1 0 001-1V4" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Quant Researchers</h3>
+              <p className="text-gray-500 text-sm leading-relaxed">
+                Programmatic access to 5,000+ bonds with pricing, spreads, and corporate structure data via REST API.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Social Proof / Data Coverage Section */}
+      <section
+        ref={(el) => { sectionsRef.current[4] = el; }}
+        className="px-6 py-24 border-t border-gray-100 opacity-0"
+      >
+        <div className="max-w-4xl mx-auto">
+          <p className="text-center text-gray-400 mb-4 text-sm uppercase tracking-widest">The Credit Data Platform</p>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-gray-900">
+            Comprehensive Coverage, Instant Access
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div className="text-center p-8 rounded-2xl border border-gray-100">
+              <p className="text-4xl md:text-5xl font-bold font-mono text-[#2383e2] mb-2">250+</p>
+              <p className="text-gray-500 text-sm">Companies Covered</p>
+            </div>
+            <div className="text-center p-8 rounded-2xl border border-gray-100">
+              <p className="text-4xl md:text-5xl font-bold font-mono text-[#2383e2] mb-2">5,000+</p>
+              <p className="text-gray-500 text-sm">Bonds Tracked</p>
+            </div>
+            <div className="text-center p-8 rounded-2xl border border-gray-100">
+              <p className="text-4xl md:text-5xl font-bold font-mono text-[#2383e2] mb-2">8</p>
+              <p className="text-gray-500 text-sm">API Endpoints</p>
+            </div>
+            <div className="text-center p-8 rounded-2xl border border-gray-100">
+              <p className="text-4xl md:text-5xl font-bold font-mono text-[#2383e2] mb-2">&lt; 200ms</p>
+              <p className="text-gray-500 text-sm">Avg Response Time</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section
         id="get-started"
-        ref={(el) => { sectionsRef.current[1] = el; }}
+        ref={(el) => { sectionsRef.current[5] = el; }}
         className="px-6 py-32 border-t border-gray-100 opacity-0"
       >
         <div className="max-w-xl mx-auto text-center">
