@@ -105,14 +105,6 @@ function ToolCallPill({ tool }: { tool: ToolCallStatus }) {
     );
   }
 
-  if (tool.status === 'error') {
-    return (
-      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 text-red-700 text-xs font-medium">
-        {label} — error
-      </span>
-    );
-  }
-
   return (
     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-50 text-green-700 text-xs font-medium">
       <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
