@@ -10,8 +10,9 @@ interface Company {
 }
 
 interface Bond {
+  id: string;
   name: string;
-  cusip: string;
+  cusip: string | null;
   company_ticker: string;
   seniority?: string;
   coupon_rate?: number;
@@ -317,10 +318,12 @@ export default function DataSearch({ apiKey, onSelect }: DataSearchProps) {
                   ) : (
                     bonds.map((bond) => (
                       <button
-                        key={bond.cusip}
+                        key={bond.id}
                         onClick={() =>
                           onSelect(
-                            `Show me details for ${bond.name} (CUSIP: ${bond.cusip})`
+                            bond.cusip
+                              ? `Show me details for ${bond.name} (CUSIP: ${bond.cusip})`
+                              : `Show me details for ${selectedTicker} bond: ${bond.name}`
                           )
                         }
                         className="w-full px-3 py-1.5 rounded-lg text-left hover:bg-blue-50 hover:text-[#2383e2] transition"
@@ -329,9 +332,11 @@ export default function DataSearch({ apiKey, onSelect }: DataSearchProps) {
                           {bond.name}
                         </div>
                         <div className="flex items-center gap-2 mt-0.5">
-                          <span className="font-mono text-[10px] text-gray-400">
-                            {bond.cusip}
-                          </span>
+                          {bond.cusip && (
+                            <span className="font-mono text-[10px] text-gray-400">
+                              {bond.cusip}
+                            </span>
+                          )}
                           {bond.seniority && (
                             <span className="text-[10px] text-gray-400">
                               {bond.seniority}
