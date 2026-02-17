@@ -207,6 +207,9 @@ function DashboardContent() {
           </a>
           <div className="flex items-center gap-4">
             <span className="text-gray-500 text-sm">{user.primaryEmailAddress?.emailAddress}</span>
+            <a href="/dashboard/chat" className="px-3 py-1 rounded-full bg-[#2383e2] text-white text-sm font-medium hover:bg-[#1a6bc4] transition">
+              Chat
+            </a>
             <a href="/" className="text-gray-500 hover:text-gray-900 text-sm transition">Home</a>
           </div>
         </div>
@@ -335,6 +338,26 @@ function DashboardContent() {
           </div>
         </section>
 
+        {/* Chat Assistant CTA */}
+        {userData?.api_key ? (
+          <section className="mb-8 p-6 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-[#2383e2]/30">
+            <h2 className="text-xl font-semibold mb-2">Chat Assistant</h2>
+            <p className="text-gray-500 mb-4">
+              Ask questions about corporate debt in natural language. Powered by Claude + DebtStack API.
+            </p>
+            <a
+              href="/dashboard/chat"
+              className="inline-block px-6 py-3 rounded-lg bg-[#2383e2] text-white text-sm font-semibold hover:bg-[#1a6bc4] transition"
+            >
+              Open Chat &rarr;
+            </a>
+          </section>
+        ) : userData?.api_key_prefix ? (
+          <div className="mb-8 p-4 rounded-lg bg-amber-50 border border-amber-200 text-amber-700 text-sm">
+            Regenerate your API key above to enable the chat assistant.
+          </div>
+        ) : null}
+
         {/* Quick Start Section */}
         <section className="p-6 rounded-xl bg-white border border-gray-200">
           <h2 className="text-xl font-semibold mb-4">Quick Start</h2>
@@ -364,26 +387,6 @@ function DashboardContent() {
             </div>
           </div>
         </section>
-
-        {/* Chat Assistant CTA */}
-        {userData?.api_key ? (
-          <section className="mt-8 p-6 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-[#2383e2]/30">
-            <h2 className="text-xl font-semibold mb-2">Chat Assistant</h2>
-            <p className="text-gray-500 mb-4">
-              Ask questions about corporate debt in natural language. Powered by Claude + DebtStack API.
-            </p>
-            <a
-              href="/dashboard/chat"
-              className="inline-block px-6 py-3 rounded-lg bg-[#2383e2] text-white text-sm font-semibold hover:bg-[#1a6bc4] transition"
-            >
-              Open Chat &rarr;
-            </a>
-          </section>
-        ) : userData?.api_key_prefix ? (
-          <div className="mt-8 p-4 rounded-lg bg-amber-50 border border-amber-200 text-amber-700 text-sm">
-            Regenerate your API key above to enable the chat assistant.
-          </div>
-        ) : null}
 
         {/* Upgrade CTA for Free Users */}
         {(userData?.tier === 'free' || userData?.tier === 'pay_as_you_go') && (

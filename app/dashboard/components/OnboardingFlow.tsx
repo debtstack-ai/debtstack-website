@@ -190,6 +190,12 @@ export default function OnboardingFlow({ apiKey, creditsRemaining, onUpgrade, on
           </div>
 
           <div className="flex items-center gap-4">
+            <a
+              href="/dashboard/chat"
+              className="px-6 py-3 rounded-lg bg-[#2383e2] text-white hover:bg-[#1a6bc4] text-sm font-semibold transition"
+            >
+              Try Chat Assistant
+            </a>
             <button
               onClick={handleUpgradeClick}
               className="px-6 py-3 rounded-lg bg-gray-900 text-white hover:bg-gray-800 text-sm font-semibold transition"

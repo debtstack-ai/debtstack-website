@@ -63,6 +63,9 @@ export default function Home() {
               </SignUpButton>
             </SignedOut>
             <SignedIn>
+              <a href="/dashboard/chat" className="text-gray-500 hover:text-gray-900 transition text-sm font-medium">
+                Chat
+              </a>
               <a href="/dashboard" className="text-gray-500 hover:text-gray-900 transition text-sm font-medium">
                 Dashboard
               </a>
@@ -94,18 +97,26 @@ export default function Home() {
             </SignedOut>
             <SignedIn>
               <a
+                href="/dashboard/chat"
+                className="bg-[#2383e2] text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-[#1a6bc4] transition"
+              >
+                Open Chat Assistant
+              </a>
+              <a
                 href="/dashboard"
-                className="bg-gray-900 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-gray-800 transition"
+                className="text-gray-600 px-8 py-4 rounded-xl text-lg font-semibold hover:text-gray-900 transition border border-gray-200 hover:border-gray-300"
               >
                 Go to Dashboard
               </a>
             </SignedIn>
-            <a
-              href="https://docs.debtstack.ai"
-              className="text-gray-600 px-8 py-4 rounded-xl text-lg font-semibold hover:text-gray-900 transition border border-gray-200 hover:border-gray-300"
-            >
-              View Docs
-            </a>
+            <SignedOut>
+              <a
+                href="https://docs.debtstack.ai"
+                className="text-gray-600 px-8 py-4 rounded-xl text-lg font-semibold hover:text-gray-900 transition border border-gray-200 hover:border-gray-300"
+              >
+                View Docs
+              </a>
+            </SignedOut>
           </div>
           <p className="mt-4 text-sm text-gray-400">Pay only for what you use. No monthly commitment required.</p>
         </div>
