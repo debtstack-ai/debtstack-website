@@ -187,7 +187,8 @@ export async function executeTool(
 
       case "search_documents": {
         const params = new URLSearchParams();
-        params.set("q", String(args.query ?? ""));
+        const q = String(args.query ?? "").trim();
+        params.set("q", q.length >= 2 ? q : String(args.section_type ?? args.ticker ?? "debt"));
         if (args.ticker) params.set("ticker", String(args.ticker));
         if (args.section_type)
           params.set("section_type", String(args.section_type));
