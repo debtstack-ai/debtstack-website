@@ -10,27 +10,27 @@ const DEBT_STRUCTURE_EXAMPLE = {
   query: "What's GOOGL's debt stack?",
   header: { name: 'Alphabet Inc. (GOOGL)', sector: 'Technology', leverage: '0.22x Leverage' },
   bonds: [
-    { name: 'Revolving Credit Facility', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-600', coupon: '--', maturity: 'Apr 2026' },
-    { name: 'GOOGL 1.998% Notes due 2026', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-600', coupon: '1.998%', maturity: 'Dec 2026' },
-    { name: 'GOOGL 0.8% Note due 2027', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-600', coupon: '0.800%', maturity: 'Aug 2027' },
-    { name: 'GOOGL 3.875% due 2028', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-600', coupon: '3.875%', maturity: 'Nov 2028' },
-    { name: 'GOOGL 4.0% due 2030', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-600', coupon: '4.000%', maturity: 'May 2030' },
-    { name: 'GOOGL 1.1% Note due 2030', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-600', coupon: '1.100%', maturity: 'Aug 2030' },
-    { name: 'GOOGL 4.1% due 2030', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-600', coupon: '4.100%', maturity: 'Nov 2030' },
-    { name: 'GOOGL 4.375% due 2032', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-600', coupon: '4.375%', maturity: 'Nov 2032' },
-    { name: 'GOOGL 4.5% due 2035', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-600', coupon: '4.500%', maturity: 'May 2035' },
-    { name: 'GOOGL 4.7% due 2035', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-600', coupon: '4.700%', maturity: 'Nov 2035' },
-    { name: 'GOOGL 1.9% Note due 2040', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-600', coupon: '1.900%', maturity: 'Aug 2040' },
-    { name: 'GOOGL 5.35% due 2045', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-600', coupon: '5.350%', maturity: 'Nov 2045' },
-    { name: 'GOOGL 2.05% Notes due 2050', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-600', coupon: '2.050%', maturity: 'Aug 2050' },
-    { name: 'GOOGL 5.25% due 2055', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-600', coupon: '5.250%', maturity: 'May 2055' },
-    { name: 'GOOGL 5.45% due 2055', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-600', coupon: '5.450%', maturity: 'Nov 2055' },
-    { name: 'GOOGL 2.25% Note due 2060', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-600', coupon: '2.250%', maturity: 'Aug 2060' },
-    { name: 'GOOGL 5.3% due 2065', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-600', coupon: '5.300%', maturity: 'May 2065' },
-    { name: 'GOOGL 5.7% due 2075', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-600', coupon: '5.700%', maturity: 'Nov 2075' },
-    { name: 'Commercial Paper Program', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-600', coupon: '--', maturity: '--' },
-    { name: '$6.0B Revolving Credit Facility', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-600', coupon: '--', maturity: '--' },
-    { name: '$4.0B Revolving Credit Facility', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-600', coupon: '--', maturity: '--' },
+    { name: 'Revolving Credit Facility', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '--', maturity: 'Apr 2026' },
+    { name: 'GOOGL 1.998% Notes due 2026', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '1.998%', maturity: 'Dec 2026' },
+    { name: 'GOOGL 0.8% Note due 2027', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '0.800%', maturity: 'Aug 2027' },
+    { name: 'GOOGL 3.875% due 2028', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '3.875%', maturity: 'Nov 2028' },
+    { name: 'GOOGL 4.0% due 2030', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '4.000%', maturity: 'May 2030' },
+    { name: 'GOOGL 1.1% Note due 2030', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '1.100%', maturity: 'Aug 2030' },
+    { name: 'GOOGL 4.1% due 2030', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '4.100%', maturity: 'Nov 2030' },
+    { name: 'GOOGL 4.375% due 2032', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '4.375%', maturity: 'Nov 2032' },
+    { name: 'GOOGL 4.5% due 2035', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '4.500%', maturity: 'May 2035' },
+    { name: 'GOOGL 4.7% due 2035', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '4.700%', maturity: 'Nov 2035' },
+    { name: 'GOOGL 1.9% Note due 2040', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '1.900%', maturity: 'Aug 2040' },
+    { name: 'GOOGL 5.35% due 2045', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '5.350%', maturity: 'Nov 2045' },
+    { name: 'GOOGL 2.05% Notes due 2050', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '2.050%', maturity: 'Aug 2050' },
+    { name: 'GOOGL 5.25% due 2055', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '5.250%', maturity: 'May 2055' },
+    { name: 'GOOGL 5.45% due 2055', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '5.450%', maturity: 'Nov 2055' },
+    { name: 'GOOGL 2.25% Note due 2060', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '2.250%', maturity: 'Aug 2060' },
+    { name: 'GOOGL 5.3% due 2065', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '5.300%', maturity: 'May 2065' },
+    { name: 'GOOGL 5.7% due 2075', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '5.700%', maturity: 'Nov 2075' },
+    { name: 'Commercial Paper Program', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '--', maturity: '--' },
+    { name: '$6.0B Revolving Credit Facility', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '--', maturity: '--' },
+    { name: '$4.0B Revolving Credit Facility', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '--', maturity: '--' },
   ],
 };
 
@@ -55,12 +55,12 @@ const COVENANT_EXAMPLE = {
   query: 'Compare covenants on DISH 5.25% Secured 2026 vs DISH 7.375% Unsecured 2028',
   bonds: ['DISH 5.25% Sr Secured 2026', 'DISH 7.375% Sr Unsecured 2028'],
   rows: [
-    { label: 'Seniority', values: ['Sr Secured', 'Sr Unsecured'], highlights: ['text-emerald-600', 'text-amber-600'] },
-    { label: 'Debt Incurrence', values: ['Secured Leverage Test', 'No Restriction'], highlights: ['text-gray-900', 'text-red-500'] },
-    { label: 'Restricted Payments', values: ['Builder Basket + 50% CNI', 'Unlimited above 2.0x Coverage'], highlights: ['text-gray-900', 'text-gray-900'] },
-    { label: 'Change of Control', values: ['101% Put', '101% Put'], highlights: ['text-gray-900', 'text-gray-900'] },
-    { label: 'Asset Sale Proceeds', values: ['75% Cash Consideration', 'No Requirement'], highlights: ['text-gray-900', 'text-red-500'] },
-    { label: 'Guarantees', values: ['Subsidiary Guarantee', 'None'], highlights: ['text-emerald-600', 'text-red-500'] },
+    { label: 'Seniority', values: ['Sr Secured', 'Sr Unsecured'], highlights: ['text-emerald-400', 'text-amber-400'] },
+    { label: 'Debt Incurrence', values: ['Secured Leverage Test', 'No Restriction'], highlights: ['text-gray-300', 'text-red-400'] },
+    { label: 'Restricted Payments', values: ['Builder Basket + 50% CNI', 'Unlimited above 2.0x Coverage'], highlights: ['text-gray-300', 'text-gray-300'] },
+    { label: 'Change of Control', values: ['101% Put', '101% Put'], highlights: ['text-gray-300', 'text-gray-300'] },
+    { label: 'Asset Sale Proceeds', values: ['75% Cash Consideration', 'No Requirement'], highlights: ['text-gray-300', 'text-red-400'] },
+    { label: 'Guarantees', values: ['Subsidiary Guarantee', 'None'], highlights: ['text-emerald-400', 'text-red-400'] },
   ],
 };
 
@@ -257,44 +257,44 @@ export default function Home() {
           </div>
 
           {/* Query + Output Card */}
-          <div className="bg-[#D5D8DF] rounded-lg p-5 md:p-6 border border-gray-300/50">
+          <div className="bg-gray-900 rounded-lg p-5 md:p-6 border border-gray-700/50">
             {/* Query input */}
-            <div className="flex items-center gap-3 mb-5 bg-white rounded-lg px-4 py-2.5 border border-gray-200">
-              <span className="text-gray-400 text-sm shrink-0">&gt;</span>
-              <span className="text-sm text-gray-900 font-mono">
+            <div className="flex items-center gap-3 mb-5 px-4 py-2.5 bg-gray-800/50 rounded-lg border border-gray-700/50">
+              <span className="text-emerald-400 text-sm shrink-0 font-mono">$</span>
+              <span className="text-sm text-gray-100 font-mono">
                 {typedText}
-                {isTyping && <span className="inline-block w-0.5 h-4 bg-[#2383e2] ml-0.5 animate-pulse align-middle" />}
+                {isTyping && <span className="inline-block w-0.5 h-4 bg-emerald-400 ml-0.5 animate-pulse align-middle" />}
               </span>
             </div>
 
             {/* Output */}
             <div className={`transition-all duration-500 ${showOutput ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'}`}>
               {activeExample === 0 && (
-                <div className="bg-white rounded-lg p-5 border border-gray-200">
+                <div className="rounded-lg p-5">
                   <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mb-4 text-sm">
-                    <span className="font-semibold text-gray-900">{DEBT_STRUCTURE_EXAMPLE.header.name}</span>
-                    <span className="text-gray-300">|</span>
-                    <span className="text-gray-500">{DEBT_STRUCTURE_EXAMPLE.header.sector}</span>
-                    <span className="text-gray-300">|</span>
-                    <span className="text-[#2383e2] font-semibold">{DEBT_STRUCTURE_EXAMPLE.header.leverage}</span>
+                    <span className="font-semibold text-gray-100">{DEBT_STRUCTURE_EXAMPLE.header.name}</span>
+                    <span className="text-gray-600">|</span>
+                    <span className="text-gray-400">{DEBT_STRUCTURE_EXAMPLE.header.sector}</span>
+                    <span className="text-gray-600">|</span>
+                    <span className="text-emerald-400 font-semibold">{DEBT_STRUCTURE_EXAMPLE.header.leverage}</span>
                   </div>
-                  <div className="overflow-x-auto">
+                  <div className="overflow-x-auto max-h-[320px] overflow-y-auto">
                     <table className="w-full text-left text-sm">
-                      <thead>
-                        <tr className="text-gray-400 border-b border-gray-100">
+                      <thead className="sticky top-0 bg-gray-900">
+                        <tr className="text-gray-500 border-b border-gray-700/50">
                           <th className="pb-2 pr-4 font-medium">Bond</th>
                           <th className="pb-2 pr-4 font-medium">Seniority</th>
                           <th className="pb-2 pr-4 font-medium">Coupon</th>
                           <th className="pb-2 font-medium">Maturity</th>
                         </tr>
                       </thead>
-                      <tbody className="text-gray-700">
+                      <tbody className="text-gray-300">
                         {DEBT_STRUCTURE_EXAMPLE.bonds.map((bond, i) => (
-                          <tr key={i} className={i < DEBT_STRUCTURE_EXAMPLE.bonds.length - 1 ? 'border-b border-gray-50' : ''}>
-                            <td className="py-2.5 pr-4 font-medium">{bond.name}</td>
-                            <td className={`py-2.5 pr-4 ${bond.seniorityColor}`}>{bond.seniority}</td>
-                            <td className="py-2.5 pr-4">{bond.coupon}</td>
-                            <td className="py-2.5">{bond.maturity}</td>
+                          <tr key={i} className={i < DEBT_STRUCTURE_EXAMPLE.bonds.length - 1 ? 'border-b border-gray-800' : ''}>
+                            <td className="py-2 pr-4 font-medium text-gray-100">{bond.name}</td>
+                            <td className={`py-2 pr-4 ${bond.seniorityColor}`}>{bond.seniority}</td>
+                            <td className="py-2 pr-4">{bond.coupon}</td>
+                            <td className="py-2">{bond.maturity}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -304,18 +304,18 @@ export default function Home() {
               )}
 
               {activeExample === 1 && (
-                <div className="bg-white rounded-lg p-5 border border-gray-200">
+                <div className="rounded-lg p-5">
                   <div className="flex items-center gap-2 mb-4 text-sm">
-                    <span className="text-gray-500">{BOND_SEARCH_EXAMPLE.results.length} bonds found</span>
-                    <span className="text-gray-300">|</span>
-                    <span className="text-gray-500">Min YTM: 7%</span>
-                    <span className="text-gray-300">|</span>
-                    <span className="text-gray-500">TRACE Priced</span>
+                    <span className="text-gray-400">{BOND_SEARCH_EXAMPLE.results.length} bonds found</span>
+                    <span className="text-gray-600">|</span>
+                    <span className="text-gray-400">Min YTM: 7%</span>
+                    <span className="text-gray-600">|</span>
+                    <span className="text-gray-400">TRACE Priced</span>
                   </div>
-                  <div className="overflow-x-auto">
+                  <div className="overflow-x-auto max-h-[320px] overflow-y-auto">
                     <table className="w-full text-left text-sm">
-                      <thead>
-                        <tr className="text-gray-400 border-b border-gray-100">
+                      <thead className="sticky top-0 bg-gray-900">
+                        <tr className="text-gray-500 border-b border-gray-700/50">
                           <th className="pb-2 pr-4 font-medium">Ticker</th>
                           <th className="pb-2 pr-4 font-medium">Bond</th>
                           <th className="pb-2 pr-4 font-medium">YTM</th>
@@ -323,14 +323,14 @@ export default function Home() {
                           <th className="pb-2 font-medium">Price</th>
                         </tr>
                       </thead>
-                      <tbody className="text-gray-700">
+                      <tbody className="text-gray-300">
                         {BOND_SEARCH_EXAMPLE.results.map((bond, i) => (
-                          <tr key={i} className={i < BOND_SEARCH_EXAMPLE.results.length - 1 ? 'border-b border-gray-50' : ''}>
-                            <td className="py-2.5 pr-4 font-semibold text-[#2383e2]">{bond.ticker}</td>
-                            <td className="py-2.5 pr-4 font-medium">{bond.name}</td>
-                            <td className="py-2.5 pr-4">{bond.ytm}</td>
-                            <td className="py-2.5 pr-4 text-gray-500">{bond.spread}</td>
-                            <td className="py-2.5">{bond.price}</td>
+                          <tr key={i} className={i < BOND_SEARCH_EXAMPLE.results.length - 1 ? 'border-b border-gray-800' : ''}>
+                            <td className="py-2 pr-4 font-semibold text-emerald-400">{bond.ticker}</td>
+                            <td className="py-2 pr-4 font-medium text-gray-100">{bond.name}</td>
+                            <td className="py-2 pr-4">{bond.ytm}</td>
+                            <td className="py-2 pr-4 text-gray-400">{bond.spread}</td>
+                            <td className="py-2">{bond.price}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -340,22 +340,22 @@ export default function Home() {
               )}
 
               {activeExample === 2 && (
-                <div className="bg-white rounded-lg p-5 border border-gray-200">
+                <div className="rounded-lg p-5">
                   <div className="overflow-x-auto">
                     <table className="w-full text-left text-sm">
                       <thead>
-                        <tr className="border-b border-gray-100">
-                          <th className="pb-3 pr-4 font-medium text-gray-400 w-1/4">Covenant</th>
-                          <th className="pb-3 pr-4 font-medium text-gray-900 w-[37.5%]">{COVENANT_EXAMPLE.bonds[0]}</th>
-                          <th className="pb-3 font-medium text-gray-900 w-[37.5%]">{COVENANT_EXAMPLE.bonds[1]}</th>
+                        <tr className="border-b border-gray-700/50">
+                          <th className="pb-3 pr-4 font-medium text-gray-500 w-1/4">Covenant</th>
+                          <th className="pb-3 pr-4 font-medium text-gray-100 w-[37.5%]">{COVENANT_EXAMPLE.bonds[0]}</th>
+                          <th className="pb-3 font-medium text-gray-100 w-[37.5%]">{COVENANT_EXAMPLE.bonds[1]}</th>
                         </tr>
                       </thead>
                       <tbody>
                         {COVENANT_EXAMPLE.rows.map((row, i) => (
-                          <tr key={i} className={i < COVENANT_EXAMPLE.rows.length - 1 ? 'border-b border-gray-50' : ''}>
-                            <td className="py-2.5 pr-4 text-gray-500 font-medium">{row.label}</td>
-                            <td className={`py-2.5 pr-4 ${row.highlights[0]}`}>{row.values[0]}</td>
-                            <td className={`py-2.5 ${row.highlights[1]}`}>{row.values[1]}</td>
+                          <tr key={i} className={i < COVENANT_EXAMPLE.rows.length - 1 ? 'border-b border-gray-800' : ''}>
+                            <td className="py-2 pr-4 text-gray-500 font-medium">{row.label}</td>
+                            <td className={`py-2 pr-4 ${row.highlights[0]}`}>{row.values[0]}</td>
+                            <td className={`py-2 ${row.highlights[1]}`}>{row.values[1]}</td>
                           </tr>
                         ))}
                       </tbody>
