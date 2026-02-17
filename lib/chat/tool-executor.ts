@@ -70,7 +70,7 @@ export async function executeTool(
     switch (toolName) {
       case "search_companies": {
         const params = new URLSearchParams();
-        if (args.ticker) params.set("ticker", String(args.ticker));
+        if (args.ticker) params.set("ticker", String(args.ticker).toUpperCase());
         if (args.sector) params.set("sector", String(args.sector));
         if (args.min_leverage) params.set("min_leverage", String(args.min_leverage));
         if (args.max_leverage) params.set("max_leverage", String(args.max_leverage));
@@ -88,7 +88,7 @@ export async function executeTool(
 
       case "search_bonds": {
         const params = new URLSearchParams();
-        if (args.ticker) params.set("ticker", String(args.ticker));
+        if (args.ticker) params.set("ticker", String(args.ticker).toUpperCase());
         if (args.seniority) params.set("seniority", String(args.seniority));
         if (args.min_ytm) params.set("min_ytm", String(args.min_ytm));
         if (args.has_pricing !== undefined)
