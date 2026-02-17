@@ -40,14 +40,14 @@ export default function TreasuryTicker() {
 
   useEffect(() => {
     fetchYields(true);
-    const interval = setInterval(() => fetchYields(false), 300_000); // 5 min — stays within 800 credits/day free tier
+    const interval = setInterval(() => fetchYields(false), 60_000);
     return () => clearInterval(interval);
   }, [fetchYields]);
 
   if (loading) {
     return (
       <div className="bg-gray-900 px-4 py-1.5 flex items-center gap-6 min-h-[32px]">
-        {['2Y', '5Y', '10Y', '30Y'].map((m) => (
+        {['5Y', '10Y', '30Y'].map((m) => (
           <div key={m} className="flex items-center gap-2">
             <span className="text-gray-500 text-xs font-mono">{m}</span>
             <div className="h-3 w-12 bg-gray-700 rounded animate-pulse" />

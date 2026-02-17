@@ -1,74 +1,62 @@
 // app/api/treasury/route.ts
-// Server-side proxy to Twelve Data API for treasury yield data
-// Keeps API key out of client bundles
+// Server-side proxy to Yahoo Finance for treasury yield data
+// No API key required — uses free Yahoo Finance chart endpoint
 
 import { NextResponse } from 'next/server';
 
-const TWELVE_DATA_API_KEY = process.env.TWELVE_DATA_API_KEY || process.env.NEXT_PUBLIC_TWELVE_DATA_API_KEY;
+// Yahoo Finance CBOE yield index symbols
+const YIELD_SYMBOLS = [
+  { symbol: '^FVX', maturity: '5Y' },
+  { symbol: '^TNX', maturity: '10Y' },
+  { symbol: '^TYX', maturity: '30Y' },
+];
 
-const SYMBOLS = 'US2Y,US5Y,US10Y,US30Y';
-const MATURITY_MAP: Record<string, string> = {
-  'US2Y': '2Y',
-  'US5Y': '5Y',
-  'US10Y': '10Y',
-  'US30Y': '30Y',
-};
-
-interface TwelveDataQuote {
-  symbol: string;
-  close: string;
-  change: string;
-  percent_change: string;
-  previous_close: string;
-  datetime: string;
+interface YahooChartResult {
+  meta: {
+    symbol: string;
+    regularMarketPrice: number;
+    chartPreviousClose: number;
+    regularMarketTime: number;
+  };
 }
 
 export async function GET() {
-  if (!TWELVE_DATA_API_KEY) {
-    return NextResponse.json(
-      { error: 'Treasury data API key not configured' },
-      { status: 503 }
-    );
-  }
-
   try {
-    const url = `https://api.twelvedata.com/quote?symbol=${SYMBOLS}&apikey=${TWELVE_DATA_API_KEY}`;
-    const response = await fetch(url, { cache: 'no-store' });
+    const results = await Promise.all(
+      YIELD_SYMBOLS.map(async ({ symbol, maturity }) => {
+        try {
+          const url = `https://query2.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1d&range=2d`;
+          const res = await fetch(url, {
+            headers: { 'User-Agent': 'Mozilla/5.0' },
+            cache: 'no-store',
+          });
 
-    if (!response.ok) {
-      return NextResponse.json(
-        { error: 'Failed to fetch treasury data' },
-        { status: response.status }
-      );
-    }
+          if (!res.ok) return { maturity, yield: null, change: null, percentChange: null, previousClose: null, timestamp: null };
 
-    const data = await response.json();
+          const data = await res.json();
+          const result: YahooChartResult = data.chart?.result?.[0];
+          if (!result?.meta) return { maturity, yield: null, change: null, percentChange: null, previousClose: null, timestamp: null };
 
-    // Twelve Data returns an object keyed by symbol when multiple symbols are requested
-    const yields = Object.entries(MATURITY_MAP).map(([symbol, maturity]) => {
-      const quote: TwelveDataQuote = data[symbol];
-      if (!quote || quote.close === undefined) {
-        return {
-          maturity,
-          yield: null,
-          change: null,
-          percentChange: null,
-          previousClose: null,
-          timestamp: null,
-        };
-      }
-      return {
-        maturity,
-        yield: parseFloat(quote.close),
-        change: parseFloat(quote.change),
-        percentChange: parseFloat(quote.percent_change),
-        previousClose: parseFloat(quote.previous_close),
-        timestamp: quote.datetime,
-      };
-    });
+          const { regularMarketPrice, chartPreviousClose, regularMarketTime } = result.meta;
+          const change = regularMarketPrice - chartPreviousClose;
+          const percentChange = chartPreviousClose !== 0 ? (change / chartPreviousClose) * 100 : 0;
+
+          return {
+            maturity,
+            yield: regularMarketPrice,
+            change: parseFloat(change.toFixed(3)),
+            percentChange: parseFloat(percentChange.toFixed(2)),
+            previousClose: chartPreviousClose,
+            timestamp: new Date(regularMarketTime * 1000).toISOString(),
+          };
+        } catch {
+          return { maturity, yield: null, change: null, percentChange: null, previousClose: null, timestamp: null };
+        }
+      })
+    );
 
     return NextResponse.json(
-      { yields },
+      { yields: results },
       {
         headers: {
           'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
