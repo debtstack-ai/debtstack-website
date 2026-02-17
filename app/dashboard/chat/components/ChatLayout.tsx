@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import ChatInput from './ChatInput';
 import ChatMessages, { Message, ToolCallStatus } from './ChatMessages';
-import { STARTER_PROMPTS, PROMPT_CATEGORIES, type StarterPrompt } from '@/lib/chat/prompts';
+import DataSearch from './DataSearch';
 
 interface ChatSession {
   id: string;
@@ -77,7 +77,6 @@ export default function ChatLayout({ apiKey }: ChatLayoutProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [watchlist, setWatchlist] = useState<WatchlistItem[]>([]);
   const [watchlistInput, setWatchlistInput] = useState('');
-  const [activePromptCategory, setActivePromptCategory] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
 
   // Load from localStorage on mount
@@ -319,15 +318,6 @@ export default function ChatLayout({ apiKey }: ChatLayoutProps) {
       )
     : sessions;
 
-  const groupedPrompts = STARTER_PROMPTS.reduce(
-    (acc, p) => {
-      if (!acc[p.category]) acc[p.category] = [];
-      acc[p.category].push(p);
-      return acc;
-    },
-    {} as Record<string, StarterPrompt[]>
-  );
-
   const sessionTitle =
     messages.length > 0
       ? messages.find((m) => m.role === 'user')?.content.slice(0, 50) || 'Chat'
@@ -391,41 +381,11 @@ export default function ChatLayout({ apiKey }: ChatLayoutProps) {
               </div>
             )}
 
-            {/* Prompt library */}
-            <div className="p-3 border-t border-gray-100">
-              <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 px-1">
-                Prompts
-              </h3>
-              <div className="space-y-1">
-                {Object.entries(PROMPT_CATEGORIES).map(([key, cat]) => (
-                  <div key={key}>
-                    <button
-                      onClick={() =>
-                        setActivePromptCategory(
-                          activePromptCategory === key ? null : key
-                        )
-                      }
-                      className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition"
-                    >
-                      <span className="flex-1 text-left">{cat.label}</span>
-                      <span className="text-gray-400 text-xs">
-                        {activePromptCategory === key ? '−' : '+'}
-                      </span>
-                    </button>
-                    {activePromptCategory === key &&
-                      groupedPrompts[key]?.map((prompt) => (
-                        <button
-                          key={prompt.id}
-                          onClick={() => sendMessage(prompt.prompt)}
-                          className="w-full px-3 py-1.5 ml-4 rounded-lg text-xs text-gray-600 hover:bg-blue-50 hover:text-[#2383e2] transition text-left truncate"
-                        >
-                          {prompt.label}
-                        </button>
-                      ))}
-                  </div>
-                ))}
-              </div>
-            </div>
+            {/* Company & Bond search */}
+            <DataSearch
+              apiKey={apiKey}
+              onSelect={(message) => sendMessage(message)}
+            />
 
             {/* Watchlist */}
             <div className="p-3 border-t border-gray-100">
