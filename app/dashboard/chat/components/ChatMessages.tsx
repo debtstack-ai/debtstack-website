@@ -1,8 +1,62 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+
+function CopyableTable({ children }: { children: React.ReactNode }) {
+  const tableRef = useRef<HTMLTableElement>(null);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = useCallback(async () => {
+    const table = tableRef.current;
+    if (!table) return;
+
+    const rows = table.querySelectorAll('tr');
+    const tsv = Array.from(rows)
+      .map((row) =>
+        Array.from(row.querySelectorAll('th, td'))
+          .map((cell) => cell.textContent?.trim() ?? '')
+          .join('\t')
+      )
+      .join('\n');
+
+    await navigator.clipboard.writeText(tsv);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }, []);
+
+  return (
+    <div className="relative my-3">
+      <button
+        onClick={handleCopy}
+        className="absolute -top-2 right-0 z-10 flex items-center gap-1 rounded-md border border-gray-200 bg-white px-2 py-0.5 text-[11px] font-medium text-gray-500 shadow-sm hover:bg-gray-50 hover:text-gray-700 transition-colors"
+      >
+        {copied ? (
+          <>
+            <svg className="h-3 w-3 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+            Copied!
+          </>
+        ) : (
+          <>
+            <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+              <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+            </svg>
+            Copy table
+          </>
+        )}
+      </button>
+      <div className="overflow-x-auto rounded-lg border border-gray-200">
+        <table ref={tableRef} className="chat-table">
+          {children}
+        </table>
+      </div>
+    </div>
+  );
+}
 
 export interface ToolCallStatus {
   id: string;
@@ -115,7 +169,12 @@ export default function ChatMessages({ messages, onSuggestionClick }: ChatMessag
                   {/* Message content */}
                   {msg.content && (
                     <div className="rounded-2xl bg-white border border-gray-200 px-4 py-3 text-sm text-gray-900 prose prose-sm max-w-none prose-table:text-sm prose-th:text-left prose-th:px-2 prose-th:py-1 prose-td:px-2 prose-td:py-1">
-                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        components={{
+                          table: ({ children }) => <CopyableTable>{children}</CopyableTable>,
+                        }}
+                      >
                         {msg.content.replace(/<!--suggestions:\[[\s\S]*?\]-->/, '')}
                       </ReactMarkdown>
                     </div>

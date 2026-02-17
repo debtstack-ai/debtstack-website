@@ -407,7 +407,6 @@ export default function ChatLayout({ apiKey }: ChatLayoutProps) {
                       }
                       className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition"
                     >
-                      <span>{cat.icon}</span>
                       <span className="flex-1 text-left">{cat.label}</span>
                       <span className="text-gray-400 text-xs">
                         {activePromptCategory === key ? '−' : '+'}
@@ -418,12 +417,9 @@ export default function ChatLayout({ apiKey }: ChatLayoutProps) {
                         <button
                           key={prompt.id}
                           onClick={() => sendMessage(prompt.prompt)}
-                          className="w-full flex items-center gap-2 px-3 py-1.5 ml-4 rounded-lg text-xs text-gray-600 hover:bg-blue-50 hover:text-[#2383e2] transition"
+                          className="w-full px-3 py-1.5 ml-4 rounded-lg text-xs text-gray-600 hover:bg-blue-50 hover:text-[#2383e2] transition text-left truncate"
                         >
-                          <span>{prompt.icon}</span>
-                          <span className="text-left truncate">
-                            {prompt.label}
-                          </span>
+                          {prompt.label}
                         </button>
                       ))}
                   </div>
