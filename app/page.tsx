@@ -155,15 +155,15 @@ export default function Home() {
       </header>
 
       {/* Hero Section */}
-      <section className="px-6 pt-12 pb-24 md:pt-20 md:pb-40">
+      <section className="px-6 pt-12 pb-16 md:pt-20 md:pb-24">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight text-gray-900">
-            Connect Your AI Agent
+            Credit Data
             <br />
-            <span className="text-[#2383e2]">to the Credit Markets</span>
+            <span className="text-[#2383e2]">Built for Every Workflow</span>
           </h1>
           <p className="text-xl md:text-2xl text-gray-500 mb-8 max-w-2xl mx-auto">
-            Real-time search, bond pricing, debt structures, and covenant analysis through a single, secure API.
+            Debt structures, bond pricing, covenant analysis, and corporate hierarchies — via chat, API, or agent tooling.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -201,66 +201,11 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Integrations Section */}
-      <section
-        ref={(el) => { sectionsRef.current[0] = el; }}
-        className="px-6 py-24 border-t border-gray-100 opacity-0"
-      >
-        <div className="max-w-4xl mx-auto">
-          <p className="text-center text-gray-400 mb-12 text-sm uppercase tracking-widest">Works with your stack</p>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <div className="group text-center p-8 rounded-2xl border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all duration-300 cursor-default">
-              <div className="mb-4 flex justify-center group-hover:scale-110 transition-transform duration-300">
-                <div className="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center">
-                  <svg className="w-6 h-6 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                    <path d="M13 10V3L4 14h7v7l9-11h-7z" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </div>
-              </div>
-              <p className="text-gray-500 group-hover:text-gray-900 transition-colors font-medium">LangChain</p>
-            </div>
-            <div className="group text-center p-8 rounded-2xl border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all duration-300 cursor-default">
-              <div className="mb-4 flex justify-center group-hover:scale-110 transition-transform duration-300">
-                <div className="w-12 h-12 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center">
-                  <svg className="w-6 h-6 text-orange-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </div>
-              </div>
-              <p className="text-gray-500 group-hover:text-gray-900 transition-colors font-medium">MCP</p>
-            </div>
-            <div className="group text-center p-8 rounded-2xl border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all duration-300 cursor-default">
-              <div className="mb-4 flex justify-center group-hover:scale-110 transition-transform duration-300">
-                <div className="w-12 h-12 rounded-xl bg-purple-50 border border-purple-100 flex items-center justify-center">
-                  <svg className="w-6 h-6 text-purple-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                    <circle cx="12" cy="12" r="3"/>
-                    <path d="M12 2v4m0 12v4m10-10h-4M6 12H2m15.07-7.07l-2.83 2.83M9.76 14.24l-2.83 2.83m0-10.14l2.83 2.83m4.48 4.48l2.83 2.83" strokeLinecap="round"/>
-                  </svg>
-                </div>
-              </div>
-              <p className="text-gray-500 group-hover:text-gray-900 transition-colors font-medium">LlamaIndex</p>
-            </div>
-            <div className="group text-center p-8 rounded-2xl border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all duration-300 cursor-default">
-              <div className="mb-4 flex justify-center group-hover:scale-110 transition-transform duration-300">
-                <div className="w-12 h-12 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center">
-                  <svg className="w-6 h-6 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                    <path d="M4 6h16M4 12h16M4 18h10" strokeLinecap="round"/>
-                    <circle cx="19" cy="18" r="2"/>
-                    <path d="M17 18h-3" strokeLinecap="round"/>
-                  </svg>
-                </div>
-              </div>
-              <p className="text-gray-500 group-hover:text-gray-900 transition-colors font-medium">REST API</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Example Output Section */}
       <section
         id="example-output"
-        ref={(el) => { sectionsRef.current[1] = el; }}
-        className="px-6 py-24 border-t border-gray-100 opacity-0"
+        ref={(el) => { sectionsRef.current[0] = el; }}
+        className="px-6 py-16 border-t border-gray-100 opacity-0"
       >
         <div className="max-w-4xl mx-auto">
           <p className="text-center text-gray-400 mb-4 text-sm uppercase tracking-widest">Example Queries</p>
@@ -406,10 +351,65 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Integrations Section */}
+      <section
+        ref={(el) => { sectionsRef.current[1] = el; }}
+        className="px-6 py-16 border-t border-gray-100 opacity-0"
+      >
+        <div className="max-w-4xl mx-auto">
+          <p className="text-center text-gray-400 mb-10 text-sm uppercase tracking-widest">Works with your stack</p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div className="group text-center p-6 rounded-2xl border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all duration-300 cursor-default">
+              <div className="mb-3 flex justify-center group-hover:scale-110 transition-transform duration-300">
+                <div className="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center">
+                  <svg className="w-6 h-6 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <path d="M13 10V3L4 14h7v7l9-11h-7z" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+              </div>
+              <p className="text-gray-500 group-hover:text-gray-900 transition-colors font-medium">LangChain</p>
+            </div>
+            <div className="group text-center p-6 rounded-2xl border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all duration-300 cursor-default">
+              <div className="mb-3 flex justify-center group-hover:scale-110 transition-transform duration-300">
+                <div className="w-12 h-12 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center">
+                  <svg className="w-6 h-6 text-orange-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+              </div>
+              <p className="text-gray-500 group-hover:text-gray-900 transition-colors font-medium">MCP</p>
+            </div>
+            <div className="group text-center p-6 rounded-2xl border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all duration-300 cursor-default">
+              <div className="mb-3 flex justify-center group-hover:scale-110 transition-transform duration-300">
+                <div className="w-12 h-12 rounded-xl bg-purple-50 border border-purple-100 flex items-center justify-center">
+                  <svg className="w-6 h-6 text-purple-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <circle cx="12" cy="12" r="3"/>
+                    <path d="M12 2v4m0 12v4m10-10h-4M6 12H2m15.07-7.07l-2.83 2.83M9.76 14.24l-2.83 2.83m0-10.14l2.83 2.83m4.48 4.48l2.83 2.83" strokeLinecap="round"/>
+                  </svg>
+                </div>
+              </div>
+              <p className="text-gray-500 group-hover:text-gray-900 transition-colors font-medium">LlamaIndex</p>
+            </div>
+            <div className="group text-center p-6 rounded-2xl border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all duration-300 cursor-default">
+              <div className="mb-3 flex justify-center group-hover:scale-110 transition-transform duration-300">
+                <div className="w-12 h-12 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center">
+                  <svg className="w-6 h-6 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <path d="M4 6h16M4 12h16M4 18h10" strokeLinecap="round"/>
+                    <circle cx="19" cy="18" r="2"/>
+                    <path d="M17 18h-3" strokeLinecap="round"/>
+                  </svg>
+                </div>
+              </div>
+              <p className="text-gray-500 group-hover:text-gray-900 transition-colors font-medium">REST API</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Use Cases Section */}
       <section
         ref={(el) => { sectionsRef.current[2] = el; }}
-        className="px-6 py-24 border-t border-gray-100 opacity-0"
+        className="px-6 py-16 border-t border-gray-100 opacity-0"
       >
         <div className="max-w-4xl mx-auto">
           <p className="text-center text-gray-400 mb-4 text-sm uppercase tracking-widest">Built For Credit Professionals</p>
@@ -463,7 +463,7 @@ export default function Home() {
       {/* Social Proof / Data Coverage Section */}
       <section
         ref={(el) => { sectionsRef.current[3] = el; }}
-        className="px-6 py-24 border-t border-gray-100 opacity-0"
+        className="px-6 py-16 border-t border-gray-100 opacity-0"
       >
         <div className="max-w-4xl mx-auto">
           <p className="text-center text-gray-400 mb-4 text-sm uppercase tracking-widest">The Credit Data Platform</p>
@@ -495,7 +495,7 @@ export default function Home() {
       <section
         id="get-started"
         ref={(el) => { sectionsRef.current[4] = el; }}
-        className="px-6 py-32 border-t border-gray-100 opacity-0"
+        className="px-6 py-20 border-t border-gray-100 opacity-0"
       >
         <div className="max-w-xl mx-auto text-center">
           <h2 className="text-3xl md:text-5xl font-bold mb-6 text-gray-900">
