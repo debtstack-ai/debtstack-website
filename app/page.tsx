@@ -51,6 +51,9 @@ export default function Home() {
               Docs
             </a>
             <SignedOut>
+              <a href="/chat" className="text-gray-500 hover:text-gray-900 transition text-sm font-medium">
+                Chat
+              </a>
               <SignInButton mode="modal">
                 <button className="text-gray-500 hover:text-gray-900 transition text-sm font-medium">
                   Sign In
@@ -111,10 +114,10 @@ export default function Home() {
             </SignedIn>
             <SignedOut>
               <a
-                href="https://docs.debtstack.ai"
+                href="/chat"
                 className="text-gray-600 px-8 py-4 rounded-xl text-lg font-semibold hover:text-gray-900 transition border border-gray-200 hover:border-gray-300"
               >
-                View Docs
+                Try Chat Assistant
               </a>
             </SignedOut>
           </div>

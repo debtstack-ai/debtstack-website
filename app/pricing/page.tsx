@@ -146,6 +146,9 @@ export default function PricingPage() {
               Docs
             </a>
             <SignedOut>
+              <a href="/chat" className="text-gray-500 hover:text-gray-900 transition text-sm font-medium">
+                Chat
+              </a>
               <SignInButton mode="modal">
                 <button className="text-gray-500 hover:text-gray-900 transition text-sm font-medium">
                   Sign In
