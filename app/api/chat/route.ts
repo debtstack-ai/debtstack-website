@@ -3,7 +3,12 @@
 
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest } from "next/server";
-import { GoogleGenerativeAI, type Content, type Part } from "@google/generative-ai";
+import {
+  GoogleGenerativeAI,
+  DynamicRetrievalMode,
+  type Content,
+  type Part,
+} from "@google/generative-ai";
 import { DEBTSTACK_TOOLS } from "@/lib/chat/tools";
 import { SYSTEM_PROMPT } from "@/lib/chat/system-prompt";
 import { executeTool } from "@/lib/chat/tool-executor";
@@ -81,7 +86,17 @@ export async function POST(request: NextRequest) {
       const model = genAI.getGenerativeModel({
         model: "gemini-2.5-flash",
         systemInstruction: SYSTEM_PROMPT,
-        tools: [{ functionDeclarations: DEBTSTACK_TOOLS }],
+        tools: [
+          { functionDeclarations: DEBTSTACK_TOOLS },
+          {
+            googleSearchRetrieval: {
+              dynamicRetrievalConfig: {
+                mode: DynamicRetrievalMode.MODE_DYNAMIC,
+                dynamicThreshold: 0.3,
+              },
+            },
+          },
+        ],
       });
       let totalCost = 0;
 
@@ -154,6 +169,39 @@ export async function POST(request: NextRequest) {
                 },
               });
             }
+          }
+
+          // Check for Google Search grounding and emit cost event
+          const groundingMetadata =
+            response.candidates?.[0]?.groundingMetadata;
+          if (
+            groundingMetadata?.webSearchQueries &&
+            groundingMetadata.webSearchQueries.length > 0
+          ) {
+            const searchCost = 0.03;
+            const searchId = `call_${round}_web_search_${Date.now()}`;
+            totalCost += searchCost;
+
+            controller.enqueue(
+              encoder.encode(
+                sseEvent("tool_call", {
+                  id: searchId,
+                  name: "web_search",
+                  args: {
+                    queries: groundingMetadata.webSearchQueries,
+                  },
+                })
+              )
+            );
+            controller.enqueue(
+              encoder.encode(
+                sseEvent("tool_result", {
+                  id: searchId,
+                  name: "web_search",
+                  cost: searchCost,
+                })
+              )
+            );
           }
 
           if (!hasFunctionCall) {

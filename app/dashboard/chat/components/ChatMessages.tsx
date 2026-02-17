@@ -87,6 +87,7 @@ const TOOL_LABELS: Record<string, string> = {
   search_pricing: 'Fetching pricing data',
   search_documents: 'Searching documents',
   get_changes: 'Checking changes',
+  web_search: 'Searching the web',
 };
 
 function ToolCallPill({ tool }: { tool: ToolCallStatus }) {

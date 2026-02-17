@@ -13,6 +13,7 @@ const ENDPOINT_COSTS: Record<string, number> = {
   search_pricing: 0.05,
   search_documents: 0.15,
   get_changes: 0.1,
+  web_search: 0.03,
 };
 
 const MAX_RESULT_ITEMS = 20;
