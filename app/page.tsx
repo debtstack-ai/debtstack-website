@@ -28,20 +28,22 @@ const BOND_SEARCH_EXAMPLE = {
   ],
 };
 
-const CORPORATE_STRUCTURE_EXAMPLE = {
-  id: 'corporate-structure',
-  label: 'Corporate Structure',
-  query: "Show CHTR's corporate structure",
-  company: 'Charter Communications Inc. (CHTR)',
-  totalDebt: '$95.7B',
-  entities: [
-    { name: 'Charter Communications Inc.', label: 'HoldCo', color: 'bg-blue-100 text-blue-700 border-blue-200', debt: '$1.2B' },
-    { name: 'CCO Holdings LLC', label: 'FinCo', color: 'bg-amber-100 text-amber-700 border-amber-200', debt: '$33.5B' },
-    { name: 'Charter Communications Operating LLC', label: 'OpCo', color: 'bg-emerald-100 text-emerald-700 border-emerald-200', debt: '$61.0B' },
+const COVENANT_EXAMPLE = {
+  id: 'covenant-analysis',
+  label: 'Covenant Analysis',
+  query: 'Compare covenants on RIG 8.75% 2030 vs RIG 6.875% 2027',
+  bonds: ['RIG 8.75% Sr Secured 2030', 'RIG 6.875% Sr Unsecured 2027'],
+  rows: [
+    { label: 'Seniority', values: ['1st Lien Secured', 'Sr Unsecured'], highlights: ['text-emerald-600', 'text-amber-600'] },
+    { label: 'Debt Incurrence', values: ['≤ 3.5x Secured Leverage', 'No Restriction'], highlights: ['text-gray-900', 'text-red-500'] },
+    { label: 'Restricted Payments', values: ['Builder Basket + 50% CNI', 'Unlimited above 2.0x Coverage'], highlights: ['text-gray-900', 'text-gray-900'] },
+    { label: 'Change of Control', values: ['101% Put', '101% Put'], highlights: ['text-gray-900', 'text-gray-900'] },
+    { label: 'Asset Sale Proceeds', values: ['75% Cash Consideration', 'No Requirement'], highlights: ['text-gray-900', 'text-red-500'] },
+    { label: 'Guarantees', values: ['Subsidiary Guarantee', 'None'], highlights: ['text-emerald-600', 'text-red-500'] },
   ],
 };
 
-const EXAMPLES = [DEBT_STRUCTURE_EXAMPLE, BOND_SEARCH_EXAMPLE, CORPORATE_STRUCTURE_EXAMPLE];
+const EXAMPLES = [DEBT_STRUCTURE_EXAMPLE, BOND_SEARCH_EXAMPLE, COVENANT_EXAMPLE];
 
 export default function Home() {
   const sectionsRef = useRef<(HTMLElement | null)[]>([]);
@@ -377,29 +379,25 @@ export default function Home() {
 
               {activeExample === 2 && (
                 <div className="bg-white rounded-xl p-5 border border-gray-200">
-                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mb-5 text-sm">
-                    <span className="font-semibold text-gray-900">{CORPORATE_STRUCTURE_EXAMPLE.company}</span>
-                    <span className="text-gray-300">|</span>
-                    <span className="text-gray-500">Total Debt: {CORPORATE_STRUCTURE_EXAMPLE.totalDebt}</span>
-                  </div>
-                  <div className="space-y-3">
-                    {CORPORATE_STRUCTURE_EXAMPLE.entities.map((entity, i) => (
-                      <div key={i} className="flex items-center gap-4">
-                        {/* Connector line */}
-                        <div className="flex flex-col items-center w-6 shrink-0">
-                          {i > 0 && <div className="w-px h-3 bg-gray-200" />}
-                          <div className="w-2.5 h-2.5 rounded-full border-2 border-gray-300 bg-white" />
-                          {i < CORPORATE_STRUCTURE_EXAMPLE.entities.length - 1 && <div className="w-px h-3 bg-gray-200" />}
-                        </div>
-                        <div className="flex-1 flex items-center justify-between bg-gray-50 rounded-lg px-4 py-3 border border-gray-100">
-                          <div className="flex items-center gap-3">
-                            <span className={`text-xs font-semibold px-2 py-0.5 rounded border ${entity.color}`}>{entity.label}</span>
-                            <span className="text-sm font-medium text-gray-900">{entity.name}</span>
-                          </div>
-                          <span className="text-sm text-gray-500 font-mono">{entity.debt}</span>
-                        </div>
-                      </div>
-                    ))}
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-sm">
+                      <thead>
+                        <tr className="border-b border-gray-100">
+                          <th className="pb-3 pr-4 font-medium text-gray-400 w-1/4">Covenant</th>
+                          <th className="pb-3 pr-4 font-medium text-gray-900 w-[37.5%]">{COVENANT_EXAMPLE.bonds[0]}</th>
+                          <th className="pb-3 font-medium text-gray-900 w-[37.5%]">{COVENANT_EXAMPLE.bonds[1]}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {COVENANT_EXAMPLE.rows.map((row, i) => (
+                          <tr key={i} className={i < COVENANT_EXAMPLE.rows.length - 1 ? 'border-b border-gray-50' : ''}>
+                            <td className="py-2.5 pr-4 text-gray-500 font-medium">{row.label}</td>
+                            <td className={`py-2.5 pr-4 ${row.highlights[0]}`}>{row.values[0]}</td>
+                            <td className={`py-2.5 ${row.highlights[1]}`}>{row.values[1]}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
                 </div>
               )}
