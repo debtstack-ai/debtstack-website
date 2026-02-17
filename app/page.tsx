@@ -7,7 +7,7 @@ import { SignInButton, SignUpButton, SignedIn, SignedOut, UserButton } from "@cl
 const DEBT_STRUCTURE_EXAMPLE = {
   id: 'debt-structure',
   label: 'Debt Structure',
-  query: "What's GOOGL's debt structure and leverage?",
+  query: "What's GOOGL's debt stack?",
   header: { name: 'Alphabet Inc. (GOOGL)', sector: 'Technology', leverage: '0.22x Leverage' },
   bonds: [
     { name: 'Revolving Credit Facility', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-600', coupon: '--', maturity: 'Apr 2026' },
@@ -37,12 +37,15 @@ const DEBT_STRUCTURE_EXAMPLE = {
 const BOND_SEARCH_EXAMPLE = {
   id: 'bond-search',
   label: 'Bond Pricing',
-  query: 'Find bonds yielding above 8% with TRACE pricing',
+  query: 'Find bonds yielding above 7% with TRACE pricing',
   results: [
+    { ticker: 'APA', name: 'APA Corp 7.7% 2026', ytm: '7.20%', spread: '+284 bps', price: '$100.24' },
     { ticker: 'IHRT', name: 'iHeartMedia 6.375% 2026', ytm: '8.98%', spread: '+462 bps', price: '$98.75' },
     { ticker: 'HTZ', name: 'Hertz 4.625% 2026', ytm: '10.36%', spread: '+619 bps', price: '$94.67' },
     { ticker: 'DISH', name: 'DISH Network 5.25% Sr Secured 2026', ytm: '8.23%', spread: '+406 bps', price: '$97.19' },
+    { ticker: 'IHRT', name: 'iHeartMedia 8.375% 2027', ytm: '13.68%', spread: '+951 bps', price: '$93.00' },
     { ticker: 'AMC', name: 'AMC Entertainment 6.125% 2027', ytm: '14.38%', spread: '+1021 bps', price: '$89.19' },
+    { ticker: 'DISH', name: 'DISH Network 11.75% Sr Secured 2027', ytm: '9.57%', spread: '+532 bps', price: '$103.88' },
   ],
 };
 
@@ -305,9 +308,9 @@ export default function Home() {
                   <div className="flex items-center gap-2 mb-4 text-sm">
                     <span className="text-gray-500">{BOND_SEARCH_EXAMPLE.results.length} bonds found</span>
                     <span className="text-gray-300">|</span>
-                    <span className="text-gray-500">Sector: Energy</span>
+                    <span className="text-gray-500">Min YTM: 7%</span>
                     <span className="text-gray-300">|</span>
-                    <span className="text-gray-500">Min YTM: 8%</span>
+                    <span className="text-gray-500">TRACE Priced</span>
                   </div>
                   <div className="overflow-x-auto">
                     <table className="w-full text-left text-sm">
