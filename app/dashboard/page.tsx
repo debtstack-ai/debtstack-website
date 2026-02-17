@@ -76,6 +76,16 @@ function DashboardContent() {
       }
 
       const data = await response.json();
+      // If the API returned a full key (new user), persist it in localStorage
+      if (data.api_key) {
+        localStorage.setItem('debtstack_api_key', data.api_key);
+      } else {
+        // Try to restore from localStorage (key saved from signup or regeneration)
+        const savedKey = localStorage.getItem('debtstack_api_key');
+        if (savedKey) {
+          data.api_key = savedKey;
+        }
+      }
       setUserData(data);
       if (data.is_new) {
         setIsNewUser(true);
@@ -116,6 +126,10 @@ function DashboardContent() {
       }
 
       const data = await response.json();
+      // Persist the new key in localStorage so chat page can access it
+      if (data.api_key) {
+        localStorage.setItem('debtstack_api_key', data.api_key);
+      }
       setUserData(prev => prev ? { ...prev, api_key: data.api_key, api_key_prefix: data.api_key_prefix } : null);
       setShowApiKey(true);
     } catch (err) {

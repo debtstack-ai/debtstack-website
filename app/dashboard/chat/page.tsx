@@ -34,6 +34,13 @@ function ChatPageContent() {
         });
         if (!response.ok) throw new Error('Failed to fetch user data');
         const data = await response.json();
+        // If no full key from API, try localStorage (saved from signup or regeneration)
+        if (!data.api_key) {
+          const savedKey = localStorage.getItem('debtstack_api_key');
+          if (savedKey) {
+            data.api_key = savedKey;
+          }
+        }
         setUserData(data);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Something went wrong');
