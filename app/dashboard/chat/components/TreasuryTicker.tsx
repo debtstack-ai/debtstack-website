@@ -60,7 +60,7 @@ export default function TreasuryTicker() {
 
   if (loading) {
     return (
-      <div className="bg-gray-900 overflow-hidden min-h-[32px] flex items-center px-4">
+      <div className="bg-gray-900 overflow-hidden h-[32px] flex items-center px-4">
         <div className="flex items-center gap-4">
           {TICKER_LABELS.map((label) => (
             <div key={label} className="flex items-center gap-2">
@@ -75,7 +75,7 @@ export default function TreasuryTicker() {
 
   if (error && items.length === 0) {
     return (
-      <div className="bg-gray-900 overflow-hidden min-h-[32px] flex items-center px-4">
+      <div className="bg-gray-900 overflow-hidden h-[32px] flex items-center px-4">
         <span className="text-gray-500 text-xs font-mono">Rates unavailable</span>
       </div>
     );
@@ -110,9 +110,9 @@ export default function TreasuryTicker() {
   ));
 
   return (
-    <div className="bg-gray-900 overflow-hidden min-h-[32px] group">
+    <div className="bg-gray-900 overflow-hidden h-[32px] flex items-center group">
       <div
-        className="flex items-center py-1.5 whitespace-nowrap"
+        className="flex items-center whitespace-nowrap"
         style={{
           animation: 'ticker-scroll 60s linear infinite',
           animationPlayState: 'running',
