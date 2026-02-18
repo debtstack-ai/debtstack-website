@@ -174,15 +174,21 @@ export async function POST(request: NextRequest) {
               }
 
               // Notify client of tool result
+              const resultMeta: Record<string, unknown> = {
+                id: toolId,
+                name: toolName,
+                cost: toolResult.cost,
+                error: toolResult.error,
+              };
+              // Include item count for debugging
+              if (!toolResult.error && toolResult.data) {
+                const d = toolResult.data as Record<string, unknown>;
+                if (Array.isArray(d.data)) {
+                  resultMeta.itemCount = d.data.length;
+                }
+              }
               controller.enqueue(
-                encoder.encode(
-                  sseEvent("tool_result", {
-                    id: toolId,
-                    name: toolName,
-                    cost: toolResult.cost,
-                    error: toolResult.error,
-                  })
-                )
+                encoder.encode(sseEvent("tool_result", resultMeta))
               );
 
               functionResponseParts.push({
