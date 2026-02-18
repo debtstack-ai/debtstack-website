@@ -92,28 +92,39 @@ export default function DataSearch({ apiKey, onSelect }: DataSearchProps) {
     return () => { cancelled = true; };
   }, [apiKey]);
 
-  // Filter companies client-side
+  // Filter companies client-side — ticker matches first
   const filteredCompanies = useMemo(() => {
     if (!searchQuery.trim()) return companies;
     const q = searchQuery.toLowerCase();
-    return companies.filter(
+    const matches = companies.filter(
       (c) =>
         c.ticker.toLowerCase().startsWith(q) ||
         c.name.toLowerCase().includes(q)
     );
+    matches.sort((a, b) => {
+      const aExact = a.ticker.toLowerCase() === q ? 0 : a.ticker.toLowerCase().startsWith(q) ? 1 : 2;
+      const bExact = b.ticker.toLowerCase() === q ? 0 : b.ticker.toLowerCase().startsWith(q) ? 1 : 2;
+      return aExact - bExact;
+    });
+    return matches;
   }, [companies, searchQuery]);
 
-  // Filtered companies for bond ticker autocomplete
+  // Filtered companies for bond ticker autocomplete — ticker matches first
   const bondTickerMatches = useMemo(() => {
     if (!bondTickerQuery.trim() || selectedTicker) return [];
     const q = bondTickerQuery.toLowerCase();
-    return companies
-      .filter(
-        (c) =>
-          c.ticker.toLowerCase().startsWith(q) ||
-          c.name.toLowerCase().includes(q)
-      )
-      .slice(0, 8);
+    const matches = companies.filter(
+      (c) =>
+        c.ticker.toLowerCase().startsWith(q) ||
+        c.name.toLowerCase().includes(q)
+    );
+    // Sort: exact ticker match first, then ticker prefix, then name matches
+    matches.sort((a, b) => {
+      const aExact = a.ticker.toLowerCase() === q ? 0 : a.ticker.toLowerCase().startsWith(q) ? 1 : 2;
+      const bExact = b.ticker.toLowerCase() === q ? 0 : b.ticker.toLowerCase().startsWith(q) ? 1 : 2;
+      return aExact - bExact;
+    });
+    return matches.slice(0, 8);
   }, [companies, bondTickerQuery, selectedTicker]);
 
   // Fetch bonds for a ticker
