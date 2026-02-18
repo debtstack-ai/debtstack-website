@@ -22,7 +22,7 @@ interface ChatMessage {
   content: string;
 }
 
-const GEMINI_TIMEOUT_MS = 30_000;
+const GEMINI_TIMEOUT_MS = 45_000;
 
 function sseEvent(event: string, data: unknown): string {
   return `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`;
@@ -126,6 +126,7 @@ export async function POST(request: NextRequest) {
 
         // Tool-use loop
         for (let round = 0; round < MAX_TOOL_ROUNDS; round++) {
+          console.log(`[chat] Gemini round ${round + 1} starting, ${geminiContents.length} messages in context`);
           const result = await withTimeout(
             model.generateContent({ contents: geminiContents }),
             GEMINI_TIMEOUT_MS,
@@ -133,7 +134,10 @@ export async function POST(request: NextRequest) {
           );
 
           const response = result.response;
-          const parts = response.candidates?.[0]?.content?.parts ?? [];
+          const candidate = response.candidates?.[0];
+          const parts = candidate?.content?.parts ?? [];
+          const finishReason = candidate?.finishReason;
+          console.log(`[chat] Gemini round ${round + 1} done: ${parts.length} parts, finishReason=${finishReason}`);
 
           // Process parts
           let hasFunctionCall = false;
