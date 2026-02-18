@@ -151,7 +151,11 @@ export async function POST(request: NextRequest) {
               totalCost += toolResult.cost;
 
               // Check if this tool returned actual data
-              if (!toolResult.error) {
+              if (toolResult.error) {
+                // Tool errors (timeouts, auth failures) are not the same as empty data —
+                // don't fall back to web search for API errors
+                allToolResultsEmpty = false;
+              } else {
                 const data = toolResult.data as Record<string, unknown> | null;
                 if (data) {
                   const items = Array.isArray(data.data) ? data.data : null;

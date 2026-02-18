@@ -72,7 +72,7 @@ export const DEBTSTACK_TOOLS: FunctionDeclaration[] = [
           type: SchemaType.STRING,
           format: "enum",
           enum: ["senior_secured", "senior_unsecured", "subordinated"],
-          description: "Bond seniority level",
+          description: "Bond seniority level. Use 'senior_secured' for secured bonds, 'senior_unsecured' for unsecured, 'subordinated' for sub debt.",
         },
         min_ytm: {
           type: SchemaType.NUMBER,

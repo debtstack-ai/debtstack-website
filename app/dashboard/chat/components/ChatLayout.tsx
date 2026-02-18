@@ -358,7 +358,7 @@ export default function ChatLayout({ apiKey }: ChatLayoutProps) {
                   {filteredSessions.map((session) => (
                     <div
                       key={session.id}
-                      className={`group flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer text-sm transition ${
+                      className={`group flex items-center gap-2 px-3 py-1.5 rounded-lg cursor-pointer text-xs transition ${
                         session.id === currentSessionId
                           ? 'bg-blue-50 text-[#2383e2]'
                           : 'text-gray-700 hover:bg-gray-50'
