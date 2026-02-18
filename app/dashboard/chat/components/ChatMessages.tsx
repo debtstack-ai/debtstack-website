@@ -78,35 +78,97 @@ interface ChatMessagesProps {
   onSuggestionClick: (suggestion: string) => void;
 }
 
-const TOOL_LABELS: Record<string, string> = {
-  search_companies: 'Searching companies',
-  search_bonds: 'Searching bonds',
-  resolve_bond: 'Resolving bond',
-  get_guarantors: 'Finding guarantors',
-  get_corporate_structure: 'Loading corporate structure',
-  search_pricing: 'Fetching pricing data',
-  search_documents: 'Searching documents',
-  get_changes: 'Checking changes',
-  web_search: 'Searching the web',
+// Credit analyst "thinking out loud" quips — rotated randomly per tool call
+const TOOL_QUIPS: Record<string, string[]> = {
+  search_companies: [
+    'Pulling up the cap structure...',
+    'Let me check the leverage on this one...',
+    'Digging through the company universe...',
+    'Running the screen, one sec...',
+    'Checking if this name is in our coverage...',
+  ],
+  search_bonds: [
+    'Rifling through the debt stack...',
+    'Let me pull the bond list...',
+    'Checking what\'s outstanding...',
+    'Scanning the maturity wall...',
+    'Pulling CUSIP data, bear with me...',
+  ],
+  resolve_bond: [
+    'Tracking down that CUSIP...',
+    'Let me find that specific issue...',
+    'Cross-referencing identifiers...',
+    'Looking up that bond...',
+  ],
+  get_guarantors: [
+    'Checking who\'s on the hook...',
+    'Tracing the guarantee chain...',
+    'Let me see who backstops this...',
+    'Following the guarantor trail...',
+  ],
+  get_corporate_structure: [
+    'Mapping the org chart...',
+    'Untangling the subsidiary web...',
+    'Following the corporate plumbing...',
+    'Let me trace the entity structure...',
+    'Checking for structural subordination...',
+  ],
+  search_pricing: [
+    'Pulling TRACE prints...',
+    'Checking where these are trading...',
+    'Let me grab the latest levels...',
+    'Pulling up the runs...',
+    'Checking the bid side...',
+  ],
+  search_documents: [
+    'Diving into the filing...',
+    'Reading the fine print...',
+    'Searching the indenture...',
+    'Checking the 10-K footnotes...',
+    'Parsing the credit agreement...',
+  ],
+  get_changes: [
+    'Checking what\'s changed...',
+    'Looking for any new issuance...',
+    'Scanning for material changes...',
+    'Let me diff the debt stack...',
+  ],
+  web_search: [
+    'Checking public sources...',
+    'Let me look this up...',
+    'Searching the web for this one...',
+  ],
 };
 
+function getToolQuip(toolName: string): string {
+  const quips = TOOL_QUIPS[toolName];
+  if (!quips || quips.length === 0) return toolName;
+  return quips[Math.floor(Math.random() * quips.length)];
+}
+
+// Cache quips per tool call ID so they don't change on re-render
+const quipCache = new Map<string, string>();
+
 function ToolCallPill({ tool }: { tool: ToolCallStatus }) {
-  const label = TOOL_LABELS[tool.name] || tool.name;
+  if (!quipCache.has(tool.id)) {
+    quipCache.set(tool.id, getToolQuip(tool.name));
+  }
+  const label = quipCache.get(tool.id)!;
 
   if (tool.status === 'pending') {
     return (
-      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-medium">
+      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gray-100 text-gray-500 text-xs italic">
         <svg className="animate-spin h-3 w-3" viewBox="0 0 24 24" fill="none">
           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
         </svg>
-        {label}...
+        {label}
       </span>
     );
   }
 
   return (
-    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-50 text-green-700 text-xs font-medium">
+    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gray-50 text-gray-400 text-xs italic">
       <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
       </svg>
