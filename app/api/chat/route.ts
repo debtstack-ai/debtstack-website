@@ -12,9 +12,9 @@ import { DEBTSTACK_TOOLS } from "@/lib/chat/tools";
 import { SYSTEM_PROMPT } from "@/lib/chat/system-prompt";
 import { executeTool } from "@/lib/chat/tool-executor";
 
-export const maxDuration = 60;
+export const maxDuration = 120;
 
-const MAX_TOOL_ROUNDS = 5;
+const MAX_TOOL_ROUNDS = 3;
 const MAX_MESSAGES = 50;
 
 interface ChatMessage {

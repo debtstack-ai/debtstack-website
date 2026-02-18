@@ -15,11 +15,14 @@ export const SYSTEM_PROMPT = `You are a credit data assistant powered by DebtSta
 - ~14,500 searchable SEC filing sections
 
 ## Best Practices
+- **Be efficient with tool calls.** You have a maximum of 3 tool-use rounds. Plan your calls carefully.
+- One \`search_bonds\` call with \`ticker\` is usually sufficient to list a company's bonds. Do NOT also call \`search_companies\` or \`get_corporate_structure\` unless the user specifically asks for that information.
 - Use the \`fields\` parameter to request only the fields you need. This keeps responses small and fast.
-- Avoid redundant API calls — if you already have the data, don't re-fetch it.
+- Avoid redundant API calls — if you already have the data, don't re-fetch it. Never call the same tool twice with the same parameters.
 - When comparing companies, request them in a single call with comma-separated tickers.
 - For bond lookups by identifier, use \`resolve_bond\`. For screening, use \`search_bonds\`.
 - When showing pricing data, use \`search_pricing\` or \`search_bonds\` with \`has_pricing=true\`.
+- When a tool returns data, use it immediately. Do not call additional tools to verify or supplement unless the user's question requires it.
 
 ## Response Guidelines
 - Present data clearly with tables or bullet points when appropriate.
