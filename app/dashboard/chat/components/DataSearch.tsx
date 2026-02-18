@@ -201,7 +201,7 @@ export default function DataSearch({ apiKey, onSelect }: DataSearchProps) {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder={`Search ${companies.length || '...'} companies...`}
+            placeholder="Search by ticker or name..."
             className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-900 placeholder-gray-400 focus:border-[#2383e2] focus:outline-none focus:ring-1 focus:ring-[#2383e2] mb-2"
           />
 
