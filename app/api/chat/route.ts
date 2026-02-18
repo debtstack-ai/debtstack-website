@@ -147,7 +147,15 @@ export async function POST(request: NextRequest) {
               );
 
               // Execute the tool
+              console.log(`[chat] Tool call: ${toolName}`, JSON.stringify(toolArgs));
               const toolResult = await executeTool(toolName, toolArgs, apiKey);
+              if (toolResult.error) {
+                console.error(`[chat] Tool error: ${toolName}:`, toolResult.error);
+              } else {
+                const dataObj = toolResult.data as Record<string, unknown> | null;
+                const count = dataObj && Array.isArray(dataObj.data) ? dataObj.data.length : 'n/a';
+                console.log(`[chat] Tool result: ${toolName} returned ${count} items`);
+              }
               totalCost += toolResult.cost;
 
               // Check if this tool returned actual data
@@ -285,6 +293,7 @@ export async function POST(request: NextRequest) {
           encoder.encode(sseEvent("done", { totalCost }))
         );
       } catch (err) {
+        console.error("[chat] Stream error:", err);
         const message =
           err instanceof Error ? err.message : "Unknown error";
         controller.enqueue(
