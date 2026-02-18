@@ -53,7 +53,7 @@ export default function ChatPreview() {
   );
 
   return (
-    <div className="flex h-screen bg-[#EAECF0]">
+    <div className="flex h-screen bg-[#EAECF0]" style={{ fontFamily: 'var(--font-jetbrains), monospace' }}>
       {/* Hidden SignUpButton that we trigger programmatically */}
       <SignUpButton mode="modal" forceRedirectUrl="/dashboard/chat">
         <button ref={signUpButtonRef} className="hidden" aria-hidden="true" />

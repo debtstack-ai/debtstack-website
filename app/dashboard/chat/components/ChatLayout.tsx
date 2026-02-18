@@ -325,7 +325,7 @@ export default function ChatLayout({ apiKey }: ChatLayoutProps) {
       : 'New Chat';
 
   return (
-    <div className="flex h-screen bg-[#EAECF0]">
+    <div className="flex h-screen bg-[#EAECF0]" style={{ fontFamily: 'var(--font-jetbrains), monospace' }}>
       {/* Sidebar */}
       {sidebarOpen && (
         <aside className="w-[280px] flex-shrink-0 bg-white border-r border-gray-200 flex flex-col">
