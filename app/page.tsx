@@ -146,14 +146,14 @@ export default function Home() {
                 Chat
               </a>
             </SignedIn>
+            <a href="https://docs.debtstack.ai" className="text-gray-500 hover:text-gray-900 transition text-sm font-medium">
+              API
+            </a>
             <a href="/pricing" className="text-gray-500 hover:text-gray-900 transition text-sm font-medium">
               Pricing
             </a>
             <a href="/blog" className="text-gray-500 hover:text-gray-900 transition text-sm font-medium">
               Blog
-            </a>
-            <a href="https://docs.debtstack.ai" className="text-gray-500 hover:text-gray-900 transition text-sm font-medium">
-              Docs
             </a>
             <SignedOut>
               <SignInButton mode="modal">
@@ -197,11 +197,12 @@ export default function Home() {
               >
                 Try the Chat Assistant
               </a>
-              <SignUpButton mode="modal" forceRedirectUrl="/dashboard">
-                <button className="text-gray-600 px-6 py-3 rounded-lg text-sm font-semibold hover:text-gray-900 transition border border-gray-300">
-                  Get Started with Free Credits
-                </button>
-              </SignUpButton>
+              <a
+                href="https://docs.debtstack.ai"
+                className="text-gray-600 px-6 py-3 rounded-lg text-sm font-semibold hover:text-gray-900 transition border border-gray-300"
+              >
+                Explore the API
+              </a>
             </SignedOut>
             <SignedIn>
               <a
@@ -211,10 +212,10 @@ export default function Home() {
                 Open Chat Assistant
               </a>
               <a
-                href="/dashboard"
+                href="https://docs.debtstack.ai"
                 className="text-gray-600 px-6 py-3 rounded-lg text-sm font-semibold hover:text-gray-900 transition border border-gray-300"
               >
-                Go to Dashboard
+                Explore the API
               </a>
             </SignedIn>
           </div>
