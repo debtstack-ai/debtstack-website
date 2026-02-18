@@ -14,7 +14,7 @@ import { executeTool } from "@/lib/chat/tool-executor";
 
 export const maxDuration = 120;
 
-const MAX_TOOL_ROUNDS = 3;
+const MAX_TOOL_ROUNDS = 5;
 const MAX_MESSAGES = 50;
 
 interface ChatMessage {
@@ -22,8 +22,19 @@ interface ChatMessage {
   content: string;
 }
 
+const GEMINI_TIMEOUT_MS = 30_000;
+
 function sseEvent(event: string, data: unknown): string {
   return `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`;
+}
+
+function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms)
+    ),
+  ]);
 }
 
 export async function POST(request: NextRequest) {
@@ -115,9 +126,11 @@ export async function POST(request: NextRequest) {
 
         // Tool-use loop
         for (let round = 0; round < MAX_TOOL_ROUNDS; round++) {
-          const result = await model.generateContent({
-            contents: geminiContents,
-          });
+          const result = await withTimeout(
+            model.generateContent({ contents: geminiContents }),
+            GEMINI_TIMEOUT_MS,
+            `Gemini generateContent (round ${round + 1})`
+          );
 
           const response = result.response;
           const parts = response.candidates?.[0]?.content?.parts ?? [];
@@ -252,9 +265,11 @@ export async function POST(request: NextRequest) {
             )
           );
 
-          const searchResult = await searchModel.generateContent({
-            contents: searchContents,
-          });
+          const searchResult = await withTimeout(
+            searchModel.generateContent({ contents: searchContents }),
+            GEMINI_TIMEOUT_MS,
+            "Gemini web search fallback"
+          );
 
           const searchResponse = searchResult.response;
           const searchParts =
