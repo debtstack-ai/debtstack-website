@@ -25,15 +25,40 @@ export interface ToolResult {
   error?: string;
 }
 
+// Slim down individual items to reduce token count for Gemini
+function slimItem(item: unknown): unknown {
+  if (!item || typeof item !== "object") return item;
+  const obj = item as Record<string, unknown>;
+  const slim: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(obj)) {
+    // Skip verbose fields that bloat the response
+    if (key === "collateral" || key === "collateral_data_confidence" || key === "guarantee_data_confidence") continue;
+    // Slim down pricing to just the key fields
+    if (key === "pricing" && value && typeof value === "object") {
+      const p = value as Record<string, unknown>;
+      slim.pricing = {
+        last_price: p.last_price,
+        ytm: p.ytm,
+        spread: p.spread,
+        price_source: p.price_source,
+      };
+      continue;
+    }
+    slim[key] = value;
+  }
+  return slim;
+}
+
 function truncateResults(data: unknown): unknown {
   if (data && typeof data === "object" && "data" in (data as Record<string, unknown>)) {
     const obj = data as Record<string, unknown>;
-    if (Array.isArray(obj.data) && obj.data.length > MAX_RESULT_ITEMS) {
+    if (Array.isArray(obj.data)) {
       const total = obj.data.length;
+      const slimmed = obj.data.slice(0, MAX_RESULT_ITEMS).map(slimItem);
       return {
         ...obj,
-        data: obj.data.slice(0, MAX_RESULT_ITEMS),
-        _truncated: { shown: MAX_RESULT_ITEMS, total },
+        data: slimmed,
+        ...(total > MAX_RESULT_ITEMS ? { _truncated: { shown: MAX_RESULT_ITEMS, total } } : {}),
       };
     }
   }

@@ -94,7 +94,7 @@ debtstack-website/
 
 ### Chat Assistant (Gemini + DebtStack API)
 - Full-page chat at `/dashboard/chat` — authenticated users ask credit questions in natural language
-- Gemini 2.5 Flash (`gemini-2.5-flash`) acts as agent, calling 8 DebtStack API tools via tool-use loop
+- Gemini 2.5 Pro (`gemini-2.5-pro`) acts as agent, calling 8 DebtStack API tools via tool-use loop
 - **Architecture**: Browser → `POST /api/chat` (SSE) → Gemini (up to 5 tool-use rounds) → `api.debtstack.ai` (user's API key)
 - **API route** (`app/api/chat/route.ts`): Authenticated via Clerk, streams SSE events (`text`, `tool_call`, `tool_result`, `done`, `error`)
 - **Tool definitions** (`lib/chat/tools.ts`): 8 tools ported from MCP server — `search_companies`, `search_bonds`, `resolve_bond`, `get_guarantors`, `get_corporate_structure`, `search_pricing`, `search_documents`, `get_changes`
@@ -114,8 +114,8 @@ debtstack-website/
 
 | Tier | Price | Queries | Features |
 |------|-------|---------|----------|
-| Pay-as-You-Go | $0/mo | Pay per call ($0.05-$0.15) | 211 companies, 60 rpm |
-| Pro | $199/mo | Unlimited | 211 companies, 100 rpm |
+| Pay-as-You-Go | $0/mo | Pay per call ($0.05-$0.15) | 291 companies, 60 rpm |
+| Pro | $199/mo | Unlimited | 291 companies, 100 rpm |
 | Business | $499/mo | Unlimited | Historical pricing, bulk export, 5 team seats, 500 rpm |
 
 ## Environment Variables

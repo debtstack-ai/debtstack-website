@@ -85,14 +85,14 @@ export async function POST(request: NextRequest) {
 
       // Primary model with DebtStack function tools
       const model = genAI.getGenerativeModel({
-        model: "gemini-2.5-flash",
+        model: "gemini-2.5-pro",
         systemInstruction: SYSTEM_PROMPT,
         tools: [{ functionDeclarations: DEBTSTACK_TOOLS }],
       });
 
       // Fallback model with Google Search grounding (can't combine with function calling)
       const searchModel = genAI.getGenerativeModel({
-        model: "gemini-2.5-flash",
+        model: "gemini-2.5-pro",
         systemInstruction: SYSTEM_PROMPT,
         tools: [{ googleSearch: {} } as never],
       });
