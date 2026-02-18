@@ -37,11 +37,6 @@ export const DEBTSTACK_TOOLS: FunctionDeclaration[] = [
           type: SchemaType.BOOLEAN,
           description: "Filter for structural subordination",
         },
-        fields: {
-          type: SchemaType.STRING,
-          description:
-            "Comma-separated fields to return (e.g., 'ticker,name,net_leverage_ratio,total_debt')",
-        },
         sort: {
           type: SchemaType.STRING,
           description:
@@ -85,11 +80,6 @@ export const DEBTSTACK_TOOLS: FunctionDeclaration[] = [
         maturity_before: {
           type: SchemaType.STRING,
           description: "Maturity before date (YYYY-MM-DD)",
-        },
-        fields: {
-          type: SchemaType.STRING,
-          description:
-            "Comma-separated fields to return (e.g., 'name,cusip,ticker,pricing')",
         },
         limit: {
           type: SchemaType.INTEGER,
@@ -171,10 +161,6 @@ export const DEBTSTACK_TOOLS: FunctionDeclaration[] = [
         min_ytm: {
           type: SchemaType.NUMBER,
           description: "Minimum yield to maturity (%)",
-        },
-        fields: {
-          type: SchemaType.STRING,
-          description: "Comma-separated fields to return",
         },
         limit: {
           type: SchemaType.INTEGER,

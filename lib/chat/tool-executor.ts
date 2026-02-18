@@ -118,7 +118,7 @@ export async function executeTool(
         if (args.max_leverage) params.set("max_leverage", String(args.max_leverage));
         if (args.has_structural_sub !== undefined)
           params.set("has_structural_sub", String(args.has_structural_sub));
-        if (args.fields) params.set("fields", String(args.fields));
+        // Skip args.fields — Gemini often guesses invalid field names causing 400s
         if (args.sort) params.set("sort", String(args.sort));
         params.set("limit", String(args.limit ?? 10));
         response = await fetchWithTimeout(
@@ -137,7 +137,7 @@ export async function executeTool(
           params.set("has_pricing", String(args.has_pricing));
         if (args.maturity_before)
           params.set("maturity_before", String(args.maturity_before));
-        if (args.fields) params.set("fields", String(args.fields));
+        // Skip args.fields — Gemini often guesses invalid field names causing 400s
         params.set("limit", String(args.limit ?? 10));
         response = await fetchWithTimeout(
           `${BACKEND_URL}/v1/bonds?${params}`,
@@ -218,7 +218,7 @@ export async function executeTool(
         if (args.ticker) params.set("ticker", normalizeTicker(String(args.ticker)));
         if (args.cusip) params.set("cusip", String(args.cusip));
         if (args.min_ytm) params.set("min_ytm", String(args.min_ytm));
-        if (args.fields) params.set("fields", String(args.fields));
+        // Skip args.fields — Gemini often guesses invalid field names causing 400s
         params.set("has_pricing", "true");
         params.set("limit", String(args.limit ?? 10));
         response = await fetchWithTimeout(
