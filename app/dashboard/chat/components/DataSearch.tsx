@@ -46,32 +46,29 @@ export default function DataSearch({ apiKey, onSelect }: DataSearchProps) {
       setCompaniesLoading(true);
       setCompaniesError(null);
       try {
-        // Fetch first page
-        const res1 = await fetch('/api/search', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ apiKey, type: 'companies', offset: 0 }),
-        });
-        if (!res1.ok) {
-          const err = await res1.json().catch(() => ({}));
-          throw new Error(err.error || 'Failed to load companies');
-        }
-        const page1 = await res1.json();
-        const firstBatch: Company[] = page1.data?.data || page1.data || [];
+        const allCompanies: Company[] = [];
+        let offset = 0;
+        const PAGE_SIZE = 100;
 
-        // Fetch second page if first returned 100
-        let allCompanies = firstBatch;
-        if (firstBatch.length >= 100) {
-          const res2 = await fetch('/api/search', {
+        // Fetch all pages
+        while (true) {
+          const res = await fetch('/api/search', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ apiKey, type: 'companies', offset: 100 }),
+            body: JSON.stringify({ apiKey, type: 'companies', offset }),
           });
-          if (res2.ok) {
-            const page2 = await res2.json();
-            const secondBatch: Company[] = page2.data?.data || page2.data || [];
-            allCompanies = [...firstBatch, ...secondBatch];
+          if (!res.ok) {
+            if (offset === 0) {
+              const err = await res.json().catch(() => ({}));
+              throw new Error(err.error || 'Failed to load companies');
+            }
+            break;
           }
+          const page = await res.json();
+          const batch: Company[] = page.data?.data || page.data || [];
+          allCompanies.push(...batch);
+          if (batch.length < PAGE_SIZE) break;
+          offset += PAGE_SIZE;
         }
 
         if (!cancelled) {
