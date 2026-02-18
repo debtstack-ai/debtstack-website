@@ -14,7 +14,7 @@ import { executeTool } from "@/lib/chat/tool-executor";
 
 export const maxDuration = 120;
 
-const MAX_TOOL_ROUNDS = 5;
+const MAX_TOOL_ROUNDS = 3;
 const MAX_MESSAGES = 50;
 
 interface ChatMessage {
@@ -123,6 +123,8 @@ export async function POST(request: NextRequest) {
         let hadToolCalls = false;
         // Buffer the final text so we can discard it if falling back to web search
         let bufferedText = "";
+        // Deduplicate tool calls — prevent Gemini from calling the same tool with same args
+        const toolCallCache = new Map<string, object>();
 
         // Tool-use loop
         for (let round = 0; round < MAX_TOOL_ROUNDS; round++) {
@@ -163,15 +165,27 @@ export async function POST(request: NextRequest) {
                 )
               );
 
-              // Execute the tool
-              console.log(`[chat] Tool call: ${toolName}`, JSON.stringify(toolArgs));
-              const toolResult = await executeTool(toolName, toolArgs, apiKey);
-              if (toolResult.error) {
-                console.error(`[chat] Tool error: ${toolName}:`, toolResult.error);
+              // Execute the tool (with deduplication)
+              const cacheKey = `${toolName}:${JSON.stringify(toolArgs)}`;
+              const cached = toolCallCache.get(cacheKey);
+              let toolResult: import("@/lib/chat/tool-executor").ToolResult;
+
+              if (cached) {
+                console.log(`[chat] Tool call DEDUPLICATED: ${toolName}`, JSON.stringify(toolArgs));
+                toolResult = { data: cached, cost: 0 };
               } else {
-                const dataObj = toolResult.data as Record<string, unknown> | null;
-                const count = dataObj && Array.isArray(dataObj.data) ? dataObj.data.length : 'n/a';
-                console.log(`[chat] Tool result: ${toolName} returned ${count} items`);
+                console.log(`[chat] Tool call: ${toolName}`, JSON.stringify(toolArgs));
+                toolResult = await executeTool(toolName, toolArgs, apiKey);
+                if (toolResult.error) {
+                  console.error(`[chat] Tool error: ${toolName}:`, toolResult.error);
+                } else {
+                  const dataObj = toolResult.data as Record<string, unknown> | null;
+                  const count = dataObj && Array.isArray(dataObj.data) ? dataObj.data.length : 'n/a';
+                  console.log(`[chat] Tool result: ${toolName} returned ${count} items`);
+                  if (toolResult.data) {
+                    toolCallCache.set(cacheKey, toolResult.data as object);
+                  }
+                }
               }
               totalCost += toolResult.cost;
 

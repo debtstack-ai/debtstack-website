@@ -138,7 +138,7 @@ export async function executeTool(
         if (args.maturity_before)
           params.set("maturity_before", String(args.maturity_before));
         // Skip args.fields — Gemini often guesses invalid field names causing 400s
-        params.set("limit", String(args.limit ?? 10));
+        params.set("limit", String(args.limit ?? 50));
         response = await fetchWithTimeout(
           `${BACKEND_URL}/v1/bonds?${params}`,
           { headers }
