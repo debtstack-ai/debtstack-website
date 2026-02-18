@@ -257,9 +257,9 @@ export default function Home() {
           </div>
 
           {/* Query + Output Card */}
-          <div className="bg-gray-900 rounded-lg p-5 md:p-6 border border-gray-700/50">
+          <div className="bg-gray-900 rounded-lg p-5 md:p-6 border border-gray-700/50" style={{ fontFamily: 'var(--font-jetbrains), monospace' }}>
             {/* Query input */}
-            <div className="flex items-center gap-3 mb-5 px-4 py-2.5 bg-gray-800/50 rounded-lg border border-gray-700/50" style={{ fontFamily: 'var(--font-jetbrains), monospace' }}>
+            <div className="flex items-center gap-3 mb-5 px-4 py-2.5 bg-gray-800/50 rounded-lg border border-gray-700/50">
               <span className="text-emerald-400 text-sm shrink-0">$</span>
               <span className="text-sm text-gray-100">
                 {typedText}
