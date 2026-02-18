@@ -7,30 +7,29 @@ import { SignInButton, SignUpButton, SignedIn, SignedOut, UserButton } from "@cl
 const DEBT_STRUCTURE_EXAMPLE = {
   id: 'debt-structure',
   label: 'Debt Structure',
-  query: "What's GOOGL's debt stack?",
-  header: { name: 'Alphabet Inc. (GOOGL)', sector: 'Technology', leverage: '0.22x Leverage' },
+  query: "What's AT&T's debt stack?",
+  header: { name: 'AT&T Inc. (T)', sector: 'Telecommunications', leverage: '3.06x Leverage' },
   bonds: [
-    { name: 'Revolving Credit Facility', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '--', maturity: 'Apr 2026' },
-    { name: 'GOOGL 1.998% Notes due 2026', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '1.998%', maturity: 'Dec 2026' },
-    { name: 'GOOGL 0.8% Note due 2027', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '0.800%', maturity: 'Aug 2027' },
-    { name: 'GOOGL 3.875% due 2028', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '3.875%', maturity: 'Nov 2028' },
-    { name: 'GOOGL 4.0% due 2030', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '4.000%', maturity: 'May 2030' },
-    { name: 'GOOGL 1.1% Note due 2030', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '1.100%', maturity: 'Aug 2030' },
-    { name: 'GOOGL 4.1% due 2030', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '4.100%', maturity: 'Nov 2030' },
-    { name: 'GOOGL 4.375% due 2032', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '4.375%', maturity: 'Nov 2032' },
-    { name: 'GOOGL 4.5% due 2035', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '4.500%', maturity: 'May 2035' },
-    { name: 'GOOGL 4.7% due 2035', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '4.700%', maturity: 'Nov 2035' },
-    { name: 'GOOGL 1.9% Note due 2040', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '1.900%', maturity: 'Aug 2040' },
-    { name: 'GOOGL 5.35% due 2045', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '5.350%', maturity: 'Nov 2045' },
-    { name: 'GOOGL 2.05% Notes due 2050', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '2.050%', maturity: 'Aug 2050' },
-    { name: 'GOOGL 5.25% due 2055', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '5.250%', maturity: 'May 2055' },
-    { name: 'GOOGL 5.45% due 2055', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '5.450%', maturity: 'Nov 2055' },
-    { name: 'GOOGL 2.25% Note due 2060', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '2.250%', maturity: 'Aug 2060' },
-    { name: 'GOOGL 5.3% due 2065', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '5.300%', maturity: 'May 2065' },
-    { name: 'GOOGL 5.7% due 2075', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '5.700%', maturity: 'Nov 2075' },
-    { name: 'Commercial Paper Program', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '--', maturity: '--' },
-    { name: '$6.0B Revolving Credit Facility', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '--', maturity: '--' },
-    { name: '$4.0B Revolving Credit Facility', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '--', maturity: '--' },
+    { name: 'T 7.125% due 2026', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '7.125%', maturity: 'Mar 2026', ytm: '6.56%', price: '$100.27' },
+    { name: 'T 2.95% due 2026', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '2.950%', maturity: 'Jul 2026', ytm: '3.70%', price: '$99.63' },
+    { name: 'T 3.8% due 2027', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '3.800%', maturity: 'Feb 2027', ytm: '3.81%', price: '$99.98' },
+    { name: 'T 4.25% due 2027', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '4.250%', maturity: 'Mar 2027', ytm: '4.01%', price: '$100.34' },
+    { name: 'T 6.55% due 2028', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '6.550%', maturity: 'Jan 2028', ytm: '4.23%', price: '$104.39' },
+    { name: 'T 4.1% due 2028', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '4.100%', maturity: 'Feb 2028', ytm: '3.95%', price: '$100.32' },
+    { name: 'T 6.375% due 2028', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '6.375%', maturity: 'Jun 2028', ytm: '4.11%', price: '$105.32' },
+    { name: 'T 4.35% due 2029', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '4.350%', maturity: 'Mar 2029', ytm: '4.04%', price: '$100.95' },
+    { name: 'T 7.875% due 2030', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '7.875%', maturity: 'Feb 2030', ytm: '4.69%', price: '$112.73' },
+    { name: 'T 4.3% due 2030', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '4.300%', maturity: 'Feb 2030', ytm: '4.21%', price: '$100.34' },
+    { name: 'T 8.75% due 2031', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '8.750%', maturity: 'Mar 2031', ytm: '4.77%', price: '$119.03' },
+    { name: 'T 6.55% due 2034', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '6.550%', maturity: 'Jun 2034', ytm: '5.15%', price: '$109.53' },
+    { name: 'T 4.5% due 2035', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '4.500%', maturity: 'May 2035', ytm: '5.02%', price: '$96.08' },
+    { name: 'T 6.8% due 2036', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '6.800%', maturity: 'May 2036', ytm: '5.36%', price: '$111.41' },
+    { name: 'T 5.25% due 2037', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '5.250%', maturity: 'Mar 2037', ytm: '5.14%', price: '$100.94' },
+    { name: 'T 6.3% due 2038', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '6.300%', maturity: 'Jan 2038', ytm: '5.35%', price: '$108.30' },
+    { name: 'T 6.55% due 2039', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '6.550%', maturity: 'Feb 2039', ytm: '5.52%', price: '$109.69' },
+    { name: 'T 6.375% due 2041', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '6.375%', maturity: 'Mar 2041', ytm: '5.63%', price: '$107.53' },
+    { name: 'Revolving Credit Agreement', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '--', maturity: 'Nov 2030', ytm: '--', price: '--' },
+    { name: '364-Day Term Loan', seniority: 'Sr Unsecured', seniorityColor: 'text-emerald-400', coupon: '--', maturity: 'Nov 2026', ytm: '--', price: '--' },
   ],
 };
 
@@ -283,18 +282,20 @@ export default function Home() {
                       <thead className="sticky top-0 bg-gray-900">
                         <tr className="text-gray-500 border-b border-gray-700/50">
                           <th className="pb-2 pr-4 font-medium">Bond</th>
-                          <th className="pb-2 pr-4 font-medium">Seniority</th>
                           <th className="pb-2 pr-4 font-medium">Coupon</th>
-                          <th className="pb-2 font-medium">Maturity</th>
+                          <th className="pb-2 pr-4 font-medium">Maturity</th>
+                          <th className="pb-2 pr-4 font-medium">YTM</th>
+                          <th className="pb-2 font-medium">Price</th>
                         </tr>
                       </thead>
                       <tbody className="text-gray-300">
                         {DEBT_STRUCTURE_EXAMPLE.bonds.map((bond, i) => (
                           <tr key={i} className={i < DEBT_STRUCTURE_EXAMPLE.bonds.length - 1 ? 'border-b border-gray-800' : ''}>
                             <td className="py-2 pr-4 font-medium text-gray-100">{bond.name}</td>
-                            <td className={`py-2 pr-4 ${bond.seniorityColor}`}>{bond.seniority}</td>
                             <td className="py-2 pr-4">{bond.coupon}</td>
-                            <td className="py-2">{bond.maturity}</td>
+                            <td className="py-2 pr-4">{bond.maturity}</td>
+                            <td className="py-2 pr-4">{bond.ytm}</td>
+                            <td className="py-2">{bond.price}</td>
                           </tr>
                         ))}
                       </tbody>
