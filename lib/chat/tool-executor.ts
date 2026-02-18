@@ -65,6 +65,23 @@ function truncateResults(data: unknown): unknown {
   return data;
 }
 
+// Common ticker aliases — map alternate tickers to their DebtStack canonical form
+const TICKER_ALIASES: Record<string, string> = {
+  GOOG: "GOOGL",
+  BRK: "BRK.B",
+  "BRK.A": "BRK.B",
+  FB: "META",
+};
+
+function normalizeTicker(ticker: string): string {
+  const upper = ticker.toUpperCase().trim();
+  // Handle comma-separated tickers
+  if (upper.includes(",")) {
+    return upper.split(",").map(t => TICKER_ALIASES[t.trim()] || t.trim()).join(",");
+  }
+  return TICKER_ALIASES[upper] || upper;
+}
+
 async function fetchWithTimeout(
   url: string,
   options: RequestInit
@@ -95,7 +112,7 @@ export async function executeTool(
     switch (toolName) {
       case "search_companies": {
         const params = new URLSearchParams();
-        if (args.ticker) params.set("ticker", String(args.ticker).toUpperCase());
+        if (args.ticker) params.set("ticker", normalizeTicker(String(args.ticker)));
         if (args.sector) params.set("sector", String(args.sector));
         if (args.min_leverage) params.set("min_leverage", String(args.min_leverage));
         if (args.max_leverage) params.set("max_leverage", String(args.max_leverage));
@@ -113,7 +130,7 @@ export async function executeTool(
 
       case "search_bonds": {
         const params = new URLSearchParams();
-        if (args.ticker) params.set("ticker", String(args.ticker).toUpperCase());
+        if (args.ticker) params.set("ticker", normalizeTicker(String(args.ticker)));
         if (args.seniority) params.set("seniority", String(args.seniority));
         if (args.min_ytm) params.set("min_ytm", String(args.min_ytm));
         if (args.has_pricing !== undefined)
@@ -171,7 +188,7 @@ export async function executeTool(
       }
 
       case "get_corporate_structure": {
-        const ticker = String(args.ticker ?? "").toUpperCase();
+        const ticker = normalizeTicker(String(args.ticker ?? ""));
         response = await fetchWithTimeout(
           `${BACKEND_URL}/v1/entities/traverse`,
           {
@@ -198,7 +215,7 @@ export async function executeTool(
 
       case "search_pricing": {
         const params = new URLSearchParams();
-        if (args.ticker) params.set("ticker", String(args.ticker));
+        if (args.ticker) params.set("ticker", normalizeTicker(String(args.ticker)));
         if (args.cusip) params.set("cusip", String(args.cusip));
         if (args.min_ytm) params.set("min_ytm", String(args.min_ytm));
         if (args.fields) params.set("fields", String(args.fields));
@@ -215,7 +232,7 @@ export async function executeTool(
         const params = new URLSearchParams();
         const q = String(args.query ?? "").trim();
         params.set("q", q.length >= 2 ? q : String(args.section_type ?? args.ticker ?? "debt"));
-        if (args.ticker) params.set("ticker", String(args.ticker));
+        if (args.ticker) params.set("ticker", normalizeTicker(String(args.ticker)));
         if (args.section_type)
           params.set("section_type", String(args.section_type));
         params.set("limit", String(args.limit ?? 10));
@@ -227,7 +244,7 @@ export async function executeTool(
       }
 
       case "get_changes": {
-        const ticker = String(args.ticker ?? "").toUpperCase();
+        const ticker = normalizeTicker(String(args.ticker ?? ""));
         const since = String(args.since ?? "");
         const params = new URLSearchParams();
         if (since) params.set("since", since);
