@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 136 72">
+  <!--
+    MIT block logo — based on the official MIT geometric mark
+    7 rectangular bars forming M, I, T
+    Color: MIT Red #A31F34 (I-dot uses #8A8B8C silver gray per brand)
+  -->
+  <g fill="#A31F34">
+    <!-- M: three vertical bars -->
+    <rect x="0" y="0" width="16" height="72"/>
+    <rect x="24" y="0" width="16" height="56"/>
+    <rect x="48" y="0" width="16" height="72"/>
+
+    <!-- I: dot + body -->
+    <rect x="72" y="0" width="16" height="16" fill="#8A8B8C"/>
+    <rect x="72" y="24" width="16" height="48"/>
+
+    <!-- T: crossbar + stem -->
+    <rect x="96" y="0" width="40" height="16"/>
+    <rect x="96" y="24" width="16" height="48"/>
+  </g>
+</svg>
