@@ -222,7 +222,7 @@ function DashboardContent() {
           <div className="flex items-center gap-4">
             <span className="text-gray-500 text-sm">{user.primaryEmailAddress?.emailAddress}</span>
             <a href="/dashboard/chat" className="px-3 py-1 rounded-full bg-[#2383e2] text-white text-sm font-medium hover:bg-[#1a6bc4] transition">
-              Chat
+              Ask Hermes
             </a>
             <a href="/" className="text-gray-500 hover:text-gray-900 text-sm transition">Home</a>
           </div>

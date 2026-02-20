@@ -76,6 +76,13 @@ export const STARTER_PROMPTS: StarterPrompt[] = [
     category: "deep_dive",
     icon: "🔋",
   },
+  {
+    id: "d5",
+    label: "Research GM debt (SEC)",
+    prompt: "Research General Motors' debt structure from their SEC filings",
+    category: "deep_dive",
+    icon: "🔬",
+  },
 
   // Covenants
   {

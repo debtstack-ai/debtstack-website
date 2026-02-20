@@ -14,10 +14,12 @@ const ENDPOINT_COSTS: Record<string, number> = {
   search_documents: 0.15,
   get_changes: 0.1,
   web_search: 0.03,
+  research_company: 0.0,
 };
 
 const MAX_RESULT_ITEMS = 20;
 const TIMEOUT_MS = 15_000;
+const RESEARCH_TIMEOUT_MS = 45_000;
 
 export interface ToolResult {
   data: unknown;
@@ -84,10 +86,11 @@ function normalizeTicker(ticker: string): string {
 
 async function fetchWithTimeout(
   url: string,
-  options: RequestInit
+  options: RequestInit,
+  timeoutMs: number = TIMEOUT_MS
 ): Promise<Response> {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), TIMEOUT_MS);
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
   try {
     return await fetch(url, { ...options, signal: controller.signal });
   } finally {
@@ -255,6 +258,24 @@ export async function executeTool(
         break;
       }
 
+      case "research_company": {
+        const ticker = normalizeTicker(String(args.ticker ?? ""));
+        const companyName = args.company_name ? String(args.company_name) : undefined;
+        // Use internal URL to avoid routing through public internet
+        const port = process.env.PORT || "3000";
+        const internalUrl = process.env.INTERNAL_API_URL || `http://localhost:${port}`;
+        response = await fetchWithTimeout(
+          `${internalUrl}/api/chat/research`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ ticker, company_name: companyName }),
+          },
+          RESEARCH_TIMEOUT_MS
+        );
+        break;
+      }
+
       default:
         return { data: null, cost: 0, error: `Unknown tool: ${toolName}` };
     }
@@ -297,7 +318,8 @@ export async function executeTool(
     return { data: truncateResults(data), cost };
   } catch (err) {
     if (err instanceof DOMException && err.name === "AbortError") {
-      return { data: null, cost: 0, error: "Request timed out (15s). Please try again." };
+      const timeoutSec = toolName === "research_company" ? RESEARCH_TIMEOUT_MS / 1000 : TIMEOUT_MS / 1000;
+      return { data: null, cost: 0, error: `Request timed out (${timeoutSec}s). Please try again.` };
     }
     const message = err instanceof Error ? err.message : "Unknown error";
     return { data: null, cost: 0, error: `Failed to call DebtStack API: ${message}` };

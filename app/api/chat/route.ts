@@ -197,8 +197,13 @@ export async function POST(request: NextRequest) {
               } else {
                 const data = toolResult.data as Record<string, unknown> | null;
                 if (data) {
-                  const items = Array.isArray(data.data) ? data.data : null;
-                  if (items === null || items.length > 0) {
+                  if (Array.isArray(data.data)) {
+                    // Standard DebtStack response: data.data is an array of items
+                    if (data.data.length > 0) {
+                      allToolResultsEmpty = false;
+                    }
+                  } else if (data.data !== null && data.data !== undefined) {
+                    // Non-array data (e.g., research_company returns an object)
                     allToolResultsEmpty = false;
                   }
                 }

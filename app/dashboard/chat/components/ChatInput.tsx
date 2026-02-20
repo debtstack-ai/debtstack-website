@@ -51,7 +51,7 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
             adjustHeight();
           }}
           onKeyDown={handleKeyDown}
-          placeholder="Ask about corporate debt, bonds, leverage..."
+          placeholder="Ask Hermes about debt structures, bonds, leverage..."
           disabled={disabled}
           rows={1}
           className="flex-1 resize-none rounded-xl border border-gray-300 px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:border-[#2383e2] focus:outline-none focus:ring-1 focus:ring-[#2383e2] disabled:opacity-50 disabled:cursor-not-allowed"

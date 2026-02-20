@@ -70,17 +70,24 @@ export default async function BlogPost({ params }: Props) {
             <img src="/logo-transparent.png" alt="DebtStack" className="h-32 md:h-48 w-auto invert" />
           </a>
           <nav className="flex items-center gap-6">
-            <a href="/#demo" className="text-gray-500 hover:text-gray-900 transition text-sm font-medium">
-              Demo
+            <SignedOut>
+              <a href="/chat" className="text-[#2383e2] hover:text-[#1a6bc4] transition text-sm font-semibold">
+                Ask Hermes
+              </a>
+            </SignedOut>
+            <SignedIn>
+              <a href="/dashboard/chat" className="text-[#2383e2] hover:text-[#1a6bc4] transition text-sm font-semibold">
+                Ask Hermes
+              </a>
+            </SignedIn>
+            <a href="https://docs.debtstack.ai" className="text-gray-500 hover:text-gray-900 transition text-sm font-medium">
+              API
             </a>
             <a href="/pricing" className="text-gray-500 hover:text-gray-900 transition text-sm font-medium">
               Pricing
             </a>
-            <a href="/blog" className="text-gray-900 transition text-sm font-medium">
+            <a href="/blog" className="text-gray-500 hover:text-gray-900 transition text-sm font-medium">
               Blog
-            </a>
-            <a href="https://docs.debtstack.ai" className="text-gray-500 hover:text-gray-900 transition text-sm font-medium">
-              Docs
             </a>
             <SignedOut>
               <SignInButton mode="modal">

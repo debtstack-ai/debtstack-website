@@ -126,6 +126,11 @@ const TOOL_QUIPS: Record<string, string[]> = {
     'checking public sources...',
     'looking this up...',
   ],
+  research_company: [
+    'researching SEC filings...',
+    'pulling the 10-K...',
+    'extracting from EDGAR...',
+  ],
 };
 
 function getToolQuip(toolName: string): string {
@@ -165,6 +170,86 @@ function ToolCallPill({ tool }: { tool: ToolCallStatus }) {
   );
 }
 
+// Parse <!--request_coverage:{"ticker":"...","company_name":"..."}--> from message content
+function parseCoverageRequest(content: string): { ticker: string; company_name: string } | null {
+  const match = content.match(/<!--request_coverage:(.*?)-->/);
+  if (!match) return null;
+  try {
+    return JSON.parse(match[1]);
+  } catch {
+    return null;
+  }
+}
+
+function CoverageRequestButton({ ticker, companyName }: { ticker: string; companyName: string }) {
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+
+  const handleRequest = useCallback(async () => {
+    setStatus('loading');
+    try {
+      const resp = await fetch('/api/chat/request-coverage', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ticker, companyName }),
+      });
+      if (resp.ok) {
+        setStatus('success');
+      } else {
+        setStatus('error');
+      }
+    } catch {
+      setStatus('error');
+    }
+  }, [ticker, companyName]);
+
+  if (status === 'success') {
+    return (
+      <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-green-50 border border-green-200 text-green-700 text-sm">
+        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+        </svg>
+        Coverage requested! We&apos;ll add {companyName || ticker} within 24-48 hours.
+      </div>
+    );
+  }
+
+  if (status === 'error') {
+    return (
+      <button
+        onClick={handleRequest}
+        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm hover:bg-red-100 transition"
+      >
+        Failed to request. Try again.
+      </button>
+    );
+  }
+
+  return (
+    <button
+      onClick={handleRequest}
+      disabled={status === 'loading'}
+      className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition disabled:opacity-60"
+    >
+      {status === 'loading' ? (
+        <>
+          <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+          </svg>
+          Requesting...
+        </>
+      ) : (
+        <>
+          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+          </svg>
+          Request Full Coverage for {companyName || ticker}
+        </>
+      )}
+    </button>
+  );
+}
+
 export default function ChatMessages({ messages, onSuggestionClick }: ChatMessagesProps) {
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -176,10 +261,9 @@ export default function ChatMessages({ messages, onSuggestionClick }: ChatMessag
     return (
       <div className="flex-1 flex items-center justify-center">
         <div className="text-center px-6">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-2">DebtStack Chat</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 mb-2">Hermes</h2>
           <p className="text-gray-500 max-w-md">
-            Ask questions about corporate debt structures, bond pricing, leverage ratios, and more.
-            Powered by Claude + DebtStack API.
+            DebtStack&apos;s credit data assistant. Ask about debt structures, bond pricing, leverage ratios, covenants, and more.
           </p>
         </div>
       </div>
@@ -218,10 +302,23 @@ export default function ChatMessages({ messages, onSuggestionClick }: ChatMessag
                           table: ({ children }) => <CopyableTable>{children}</CopyableTable>,
                         }}
                       >
-                        {msg.content.replace(/<!--suggestions:\[[\s\S]*?\]-->/, '')}
+                        {msg.content
+                          .replace(/<!--suggestions:\[[\s\S]*?\]-->/, '')
+                          .replace(/<!--request_coverage:.*?-->/, '')}
                       </ReactMarkdown>
                     </div>
                   )}
+
+                  {/* Coverage request button */}
+                  {msg.content && (() => {
+                    const coverage = parseCoverageRequest(msg.content);
+                    return coverage ? (
+                      <CoverageRequestButton
+                        ticker={coverage.ticker}
+                        companyName={coverage.company_name}
+                      />
+                    ) : null;
+                  })()}
 
                   {/* Suggested follow-ups */}
                   {msg.suggestions && msg.suggestions.length > 0 && (

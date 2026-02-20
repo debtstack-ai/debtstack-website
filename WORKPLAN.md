@@ -23,7 +23,7 @@ Browser (/dashboard/chat)
 ```
 
 **New files (9):**
-- `lib/chat/tools.ts` — 8 Claude tool definitions (ported from MCP server)
+- `lib/chat/tools.ts` — 9 Gemini tool definitions (8 ported from MCP server + `research_company` for live SEC research)
 - `lib/chat/system-prompt.ts` — System prompt (data conventions, follow-up format)
 - `lib/chat/tool-executor.ts` — Execute tools against DebtStack API (error handling, cost tracking, truncation)
 - `lib/chat/prompts.ts` — 14 starter prompts in 4 categories (Screening, Deep Dive, Covenants, Comparisons)

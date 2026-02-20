@@ -4,7 +4,7 @@ This file provides context for Claude Code when working on this repository.
 
 ## Project Overview
 
-DebtStack Website is the Next.js frontend for DebtStack.ai - an API platform providing corporate debt structure data for AI agents. This repo handles the marketing site, user dashboard, authentication, Stripe billing integration, and an AI chat assistant.
+DebtStack Website is the Next.js frontend for DebtStack.ai - an API platform providing corporate debt structure data for AI agents. This repo handles the marketing site, user dashboard, authentication, Stripe billing integration, and Hermes (the AI chat assistant).
 
 ## Tech Stack
 
@@ -14,7 +14,7 @@ DebtStack Website is the Next.js frontend for DebtStack.ai - an API platform pro
 - **Analytics**: Vercel Analytics + PostHog (events, funnels, session replay)
 - **Error Tracking**: Sentry (client + server)
 - **Styling**: Tailwind CSS v4
-- **AI**: Google Generative AI SDK (`@google/generative-ai`) — Gemini-powered chat assistant
+- **AI**: Google Generative AI SDK (`@google/generative-ai`) — powers Hermes, the Gemini-based chat assistant
 - **Language**: TypeScript
 - **Deployment**: Railway
 
@@ -29,7 +29,7 @@ debtstack-website/
 │   │   ├── user/          # User sync with backend
 │   │   └── waitlist/      # Waitlist signup
 │   ├── dashboard/         # User dashboard (API key, usage, billing)
-│   │   └── chat/          # Full-page chat assistant
+│   │   └── chat/          # Hermes — full-page chat assistant
 │   │       ├── page.tsx   # Chat page (gates on API key)
 │   │       └── components/
 │   │           ├── ChatLayout.tsx    # Sidebar + main area layout
@@ -42,9 +42,9 @@ debtstack-website/
 ├── docs/                   # Mintlify documentation (docs.debtstack.ai)
 ├── lib/                    # Shared utilities
 │   ├── stripe.ts          # Stripe client & tier config
-│   └── chat/              # Chat assistant utilities
-│       ├── tools.ts       # 8 Gemini tool definitions (FunctionDeclaration format)
-│       ├── system-prompt.ts # System prompt for Gemini
+│   └── chat/              # Hermes chat assistant utilities
+│       ├── tools.ts       # 9 Gemini tool definitions (FunctionDeclaration format)
+│       ├── system-prompt.ts # Hermes system prompt for Gemini
 │       ├── tool-executor.ts # Execute tools against DebtStack API
 │       └── prompts.ts     # Starter prompt library (14 prompts, 4 categories)
 ├── public/                 # Static assets
@@ -92,17 +92,20 @@ debtstack-website/
 - Custom events tracked: `viewed_pricing`, `clicked_subscribe`, `viewed_dashboard`, `copied_api_key`
 - Guarded by `NEXT_PUBLIC_POSTHOG_KEY` — silently disabled when not set
 
-### Chat Assistant (Gemini + DebtStack API)
+### Hermes — Chat Assistant (Gemini + DebtStack API)
+- **Hermes** is DebtStack's named chat assistant (named after the Greek god of commerce and trade)
 - Full-page chat at `/dashboard/chat` — authenticated users ask credit questions in natural language
-- Gemini 2.5 Pro (`gemini-2.5-pro`) acts as agent, calling 8 DebtStack API tools via tool-use loop
+- Gemini 2.5 Pro (`gemini-2.5-pro`) acts as agent, calling 9 DebtStack API tools via tool-use loop
 - **Architecture**: Browser → `POST /api/chat` (SSE) → Gemini (up to 5 tool-use rounds) → `api.debtstack.ai` (user's API key)
 - **API route** (`app/api/chat/route.ts`): Authenticated via Clerk, streams SSE events (`text`, `tool_call`, `tool_result`, `done`, `error`)
-- **Tool definitions** (`lib/chat/tools.ts`): 8 tools ported from MCP server — `search_companies`, `search_bonds`, `resolve_bond`, `get_guarantors`, `get_corporate_structure`, `search_pricing`, `search_documents`, `get_changes`
+- **Tool definitions** (`lib/chat/tools.ts`): 9 tools — `search_companies`, `search_bonds`, `resolve_bond`, `get_guarantors`, `get_corporate_structure`, `search_pricing`, `search_documents`, `get_changes`, `research_company` (live SEC filing research for non-covered companies)
 - **Safety**: Max 5 tool-use rounds, max 50 messages/conversation, 15s timeout per API call, results truncated to 20 items
 - **State**: Chat history + watchlists in `localStorage` (no server-side state, no new DB tables)
 - **Gating**: Requires `userData.api_key` to be available (full key, not just prefix) — users without it see a "regenerate key" prompt
+- **Branding**: All UI references use "Hermes" (nav links, welcome screen, input placeholder, header). System prompt identifies as "Hermes, the credit data assistant built by DebtStack.ai"
 - **Cost**: DebtStack API costs ($0.05-$0.15/tool call) tracked per session. Gemini inference cost (~$0.001-0.005/turn) absorbed by DebtStack
-- **Features**: Chat history with search, starter prompt library (14 prompts in 4 categories), suggested follow-ups (parsed from Gemini response), ticker watchlists
+- **Features**: Chat history with search, starter prompt library (14 prompts in 4 categories), suggested follow-ups (parsed from Gemini response), ticker watchlists, live SEC research for non-covered companies
+- **Live SEC Research**: `research_company` tool fetches 10-K from EDGAR, extracts debt instruments via Gemini. Results labeled "Live SEC Filing Research". Coverage request button (parsed from `<!--request_coverage:...-->` tag) lets users request full coverage.
 
 ### Sentry
 - `sentry.client.config.ts` (browser) + `sentry.server.config.ts` (server)
@@ -140,7 +143,7 @@ NEXT_PUBLIC_APP_URL=https://debtstack.ai
 NEXT_PUBLIC_POSTHOG_KEY=phc_...
 NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 
-# Google Gemini (required for chat assistant)
+# Google Gemini (required for Hermes chat assistant)
 GEMINI_API_KEY=...
 
 # Sentry (optional — error tracking disabled if not set)

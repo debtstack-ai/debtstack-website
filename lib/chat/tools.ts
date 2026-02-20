@@ -210,6 +210,28 @@ export const DEBTSTACK_TOOLS: FunctionDeclaration[] = [
     },
   },
   {
+    name: "research_company",
+    description:
+      "Research a company NOT in DebtStack by fetching its latest SEC 10-K filing " +
+      "and extracting debt instruments. ONLY use when: (1) the user explicitly asks " +
+      "to research a non-covered company, AND (2) search_companies returned no data. " +
+      "Results are live SEC filing research, NOT DebtStack database data.",
+    parameters: {
+      type: SchemaType.OBJECT,
+      properties: {
+        ticker: {
+          type: SchemaType.STRING,
+          description: "Stock ticker (e.g., 'F', 'GM')",
+        },
+        company_name: {
+          type: SchemaType.STRING,
+          description: "Full company name (optional, helps with identification)",
+        },
+      },
+      required: ["ticker"],
+    },
+  },
+  {
     name: "get_changes",
     description:
       "See what changed in a company's debt structure since a date. " +

@@ -20,7 +20,7 @@ curl "https://api.debtstack.ai/v1/companies" \
 
 ## Endpoints
 
-DebtStack provides 11 core primitives for corporate debt analysis:
+DebtStack provides 12 core primitives for corporate debt analysis:
 
 ### Companies
 
@@ -72,6 +72,12 @@ DebtStack provides 11 core primitives for corporate debt analysis:
 | Method | Endpoint | Description | Cost |
 |--------|----------|-------------|------|
 | POST | `/v1/batch` | Execute multiple operations | Sum of operations |
+
+### Coverage
+
+| Method | Endpoint | Description | Cost |
+|--------|----------|-------------|------|
+| POST | `/v1/coverage/request` | Request coverage for non-covered companies | Free |
 
 ### Business-Only Endpoints
 

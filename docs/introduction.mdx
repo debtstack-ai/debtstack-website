@@ -87,9 +87,9 @@ print(response.json())
 # {"data": [{"ticker": "TSLA", "name": "Tesla, Inc.", "net_leverage_ratio": 1.8}]}
 ```
 
-## 11 Core Primitives
+## 12 Core Primitives
 
-DebtStack offers 11 atomic API endpoints optimized for AI agents:
+DebtStack offers 12 atomic API endpoints optimized for AI agents:
 
 | Primitive | Endpoint | Cost | Purpose |
 |-----------|----------|------|---------|
@@ -104,6 +104,7 @@ DebtStack offers 11 atomic API endpoints optimized for AI agents:
 | Traverse Entities | `POST /v1/entities/traverse` | $0.15 | Follow guarantor chains |
 | Search Documents | `GET /v1/documents/search` | $0.15 | Full-text search SEC filings |
 | Batch | `POST /v1/batch` | Sum | Execute multiple operations |
+| Request Coverage | `POST /v1/coverage/request` | Free | Request coverage for non-covered companies |
 
 ## Data Quality
 

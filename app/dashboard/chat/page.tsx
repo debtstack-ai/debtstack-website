@@ -64,7 +64,7 @@ function ChatPageContent() {
     return (
       <main className="min-h-screen bg-[#EAECF0] flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-500 mb-4">Please sign in to access the chat assistant</p>
+          <p className="text-gray-500 mb-4">Please sign in to access Hermes</p>
           <a href="/" className="text-[#2383e2] hover:underline">Go to homepage</a>
         </div>
       </main>
@@ -88,7 +88,7 @@ function ChatPageContent() {
         <div className="text-center max-w-md px-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-3">API Key Required</h2>
           <p className="text-gray-500 mb-4">
-            The chat assistant requires your API key. Your key is only available right after signup
+            Hermes requires your API key. Your key is only available right after signup
             or regeneration.
           </p>
           <a
