@@ -168,14 +168,14 @@ export default function ChatPreview() {
             </svg>
           </button>
           <h1 className="text-sm font-medium text-gray-900 truncate flex-1">
-            Hermes
+            Medici
           </h1>
         </header>
 
         {/* Empty state / welcome message */}
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center px-6">
-            <h2 className="text-2xl font-semibold text-gray-900 mb-2">Hermes</h2>
+            <h2 className="text-2xl font-semibold text-gray-900 mb-2">Medici</h2>
             <p className="text-gray-500 max-w-md">
               DebtStack&apos;s credit data assistant. Ask about debt structures, bond pricing, leverage ratios, covenants, and more.
             </p>
@@ -196,7 +196,7 @@ export default function ChatPreview() {
                 adjustHeight();
               }}
               onKeyDown={handleKeyDown}
-              placeholder="Ask Hermes about debt structures, bonds, leverage..."
+              placeholder="Ask Medici about debt structures, bonds, leverage..."
               rows={1}
               className="flex-1 resize-none rounded-xl border border-gray-300 px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:border-[#2383e2] focus:outline-none focus:ring-1 focus:ring-[#2383e2]"
               style={{ lineHeight: '24px' }}

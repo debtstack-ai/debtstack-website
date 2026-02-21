@@ -321,8 +321,8 @@ export default function ChatLayout({ apiKey }: ChatLayoutProps) {
 
   const sessionTitle =
     messages.length > 0
-      ? messages.find((m) => m.role === 'user')?.content.slice(0, 50) || 'Hermes'
-      : 'Hermes';
+      ? messages.find((m) => m.role === 'user')?.content.slice(0, 50) || 'Medici'
+      : 'Medici';
 
   return (
     <div className="flex h-screen bg-[#EAECF0]" style={{ fontFamily: 'var(--font-jetbrains), monospace' }}>

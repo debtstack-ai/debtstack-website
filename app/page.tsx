@@ -247,12 +247,12 @@ export default function Home() {
           <nav className="flex items-center gap-6">
             <SignedOut>
               <a href="/chat" className="text-[#2383e2] hover:text-[#1a6bc4] transition text-sm font-semibold">
-                Ask Hermes
+                Ask Medici
               </a>
             </SignedOut>
             <SignedIn>
               <a href="/dashboard/chat" className="text-[#2383e2] hover:text-[#1a6bc4] transition text-sm font-semibold">
-                Ask Hermes
+                Ask Medici
               </a>
             </SignedIn>
             <a href="https://docs.debtstack.ai" className="text-gray-500 hover:text-black transition text-sm font-medium">
@@ -324,7 +324,7 @@ export default function Home() {
                 href="/chat"
                 className="bg-[#2383e2] text-white px-6 py-3 rounded-lg text-sm font-semibold hover:bg-[#1a6bc4] transition hover:shadow-lg hover:shadow-[#2383e2]/20"
               >
-                Ask Hermes
+                Ask Medici
               </a>
               <a
                 href="https://docs.debtstack.ai"
@@ -338,7 +338,7 @@ export default function Home() {
                 href="/dashboard/chat"
                 className="bg-[#2383e2] text-white px-6 py-3 rounded-lg text-sm font-semibold hover:bg-[#1a6bc4] transition hover:shadow-lg hover:shadow-[#2383e2]/20"
               >
-                Ask Hermes
+                Ask Medici
               </a>
               <a
                 href="https://docs.debtstack.ai"

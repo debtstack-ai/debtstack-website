@@ -261,7 +261,7 @@ export default function ChatMessages({ messages, onSuggestionClick }: ChatMessag
     return (
       <div className="flex-1 flex items-center justify-center">
         <div className="text-center px-6">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-2">Hermes</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 mb-2">Medici</h2>
           <p className="text-gray-500 max-w-md">
             DebtStack&apos;s credit data assistant. Ask about debt structures, bond pricing, leverage ratios, covenants, and more.
           </p>

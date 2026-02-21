@@ -72,12 +72,12 @@ export default async function BlogPost({ params }: Props) {
           <nav className="flex items-center gap-6">
             <SignedOut>
               <a href="/chat" className="text-[#2383e2] hover:text-[#1a6bc4] transition text-sm font-semibold">
-                Ask Hermes
+                Ask Medici
               </a>
             </SignedOut>
             <SignedIn>
               <a href="/dashboard/chat" className="text-[#2383e2] hover:text-[#1a6bc4] transition text-sm font-semibold">
-                Ask Hermes
+                Ask Medici
               </a>
             </SignedIn>
             <a href="https://docs.debtstack.ai" className="text-gray-500 hover:text-gray-900 transition text-sm font-medium">
