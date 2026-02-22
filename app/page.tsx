@@ -866,11 +866,15 @@ export default function Home() {
               <a href="/pricing" className="hover:text-black transition">Pricing</a>
               <a href="/blog" className="hover:text-black transition">Blog</a>
               <a href="https://docs.debtstack.ai" className="hover:text-black transition">Docs</a>
-              <a href="mailto:hello@debtstack.ai" className="hover:text-black transition">Contact</a>
+              <a href="mailto:debtstackai@gmail.com" className="hover:text-black transition">Contact</a>
             </div>
           </div>
-          <div className="mt-6 pt-6 border-t border-gray-100 text-center text-xs text-gray-400">
-            &copy; 2026 DebtStack
+          <div className="mt-6 pt-6 border-t border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-400">
+            <span>&copy; 2026 DebtStack</span>
+            <div className="flex gap-6">
+              <a href="/privacy" className="hover:text-black transition">Privacy Policy</a>
+              <a href="/terms" className="hover:text-black transition">Terms of Service</a>
+            </div>
           </div>
         </div>
       </footer>
