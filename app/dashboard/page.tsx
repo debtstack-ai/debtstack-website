@@ -425,7 +425,7 @@ function DashboardContent() {
                 {upgrading ? 'Loading...' : 'Upgrade to Business — $499/mo'}
               </button>
               <a
-                href="mailto:hello@debtstack.ai"
+                href="mailto:debtstackai@gmail.com"
                 className="px-6 py-3 rounded-lg border border-gray-200 hover:bg-gray-50 text-sm font-semibold transition"
               >
                 Contact Sales
