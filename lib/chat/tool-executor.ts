@@ -3,6 +3,9 @@
 
 const BACKEND_URL = process.env.BACKEND_URL || "https://api.debtstack.ai";
 
+// Fixed per-turn inference cost (covers Gemini input/output tokens)
+export const INFERENCE_COST_PER_TURN = 0.01;
+
 // Cost per endpoint (Pay-as-You-Go tier)
 const ENDPOINT_COSTS: Record<string, number> = {
   search_companies: 0.05,

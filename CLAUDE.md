@@ -103,7 +103,7 @@ debtstack-website/
 - **State**: Chat history + watchlists in `localStorage` (no server-side state, no new DB tables)
 - **Gating**: Requires `userData.api_key` to be available (full key, not just prefix) — users without it see a "regenerate key" prompt
 - **Branding**: All UI references use "Medici" (nav links, welcome screen, input placeholder, header). System prompt identifies as "Medici, the credit data assistant built by DebtStack.ai"
-- **Cost**: DebtStack API costs ($0.05-$0.15/tool call) tracked per session. Gemini inference cost (~$0.001-0.005/turn) absorbed by DebtStack
+- **Cost**: DebtStack API costs ($0.05-$0.15/tool call) + $0.01/turn inference fee tracked per session
 - **Features**: Chat history with search, starter prompt library (14 prompts in 4 categories), suggested follow-ups (parsed from Gemini response), ticker watchlists, live SEC research for non-covered companies
 - **Live SEC Research**: `research_company` tool fetches 10-K from EDGAR, extracts debt instruments via Gemini. Results labeled "Live SEC Filing Research". Coverage request button (parsed from `<!--request_coverage:...-->` tag) lets users request full coverage.
 

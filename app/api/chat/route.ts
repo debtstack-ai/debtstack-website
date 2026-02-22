@@ -10,7 +10,7 @@ import {
 } from "@google/generative-ai";
 import { DEBTSTACK_TOOLS } from "@/lib/chat/tools";
 import { SYSTEM_PROMPT } from "@/lib/chat/system-prompt";
-import { executeTool } from "@/lib/chat/tool-executor";
+import { executeTool, INFERENCE_COST_PER_TURN } from "@/lib/chat/tool-executor";
 
 export const maxDuration = 120;
 
@@ -108,7 +108,7 @@ export async function POST(request: NextRequest) {
         tools: [{ googleSearch: {} } as never],
       });
 
-      let totalCost = 0;
+      let totalCost = INFERENCE_COST_PER_TURN;
 
       try {
         // Build Gemini content history
