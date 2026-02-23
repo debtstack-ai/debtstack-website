@@ -99,8 +99,9 @@ export async function POST(request: NextRequest) {
       const latestUserMessage = messages[messages.length - 1]?.content ?? "";
       const knowledgeContext = await getRelevantKnowledge(latestUserMessage, geminiKey);
       const augmentedPrompt = knowledgeContext
-        ? `${SYSTEM_PROMPT}\n\n## Credit Analysis Frameworks\n\n${knowledgeContext}`
+        ? `${SYSTEM_PROMPT}\n\n## Credit Analysis Frameworks\n\nUse the following frameworks to guide your analysis. When the user asks an analysis question (investment advice, credit risk, comparison), follow these workflows and use multiple tool calls as described.\n\n${knowledgeContext}`
         : SYSTEM_PROMPT;
+      console.log(`[chat] Knowledge retrieval: ${knowledgeContext ? `${knowledgeContext.length} chars injected` : 'no matches'}`);
 
       // Primary model with DebtStack function tools
       const model = genAI.getGenerativeModel({
