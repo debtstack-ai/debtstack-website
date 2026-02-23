@@ -6,7 +6,7 @@ import { getPool } from "@/lib/db";
 
 const EMBEDDING_MODEL = "gemini-embedding-001";
 const EMBEDDING_DIMS = 768; // Truncate to match pgvector column (Matryoshka embedding)
-const MAX_CHUNKS = 3;
+const MAX_CHUNKS = 5;
 const SIMILARITY_THRESHOLD = 0.3;
 
 /**
