@@ -11,6 +11,7 @@ import {
 import { DEBTSTACK_TOOLS } from "@/lib/chat/tools";
 import { SYSTEM_PROMPT } from "@/lib/chat/system-prompt";
 import { executeTool, INFERENCE_COST_PER_TURN } from "@/lib/chat/tool-executor";
+import { getRelevantKnowledge } from "@/lib/chat/knowledge";
 
 export const maxDuration = 120;
 
@@ -94,17 +95,24 @@ export async function POST(request: NextRequest) {
     async start(controller) {
       const genAI = new GoogleGenerativeAI(geminiKey);
 
+      // Retrieve relevant knowledge chunks for the latest user message
+      const latestUserMessage = messages[messages.length - 1]?.content ?? "";
+      const knowledgeContext = await getRelevantKnowledge(latestUserMessage, geminiKey);
+      const augmentedPrompt = knowledgeContext
+        ? `${SYSTEM_PROMPT}\n\n## Credit Analysis Frameworks\n\n${knowledgeContext}`
+        : SYSTEM_PROMPT;
+
       // Primary model with DebtStack function tools
       const model = genAI.getGenerativeModel({
         model: "gemini-2.5-pro",
-        systemInstruction: SYSTEM_PROMPT,
+        systemInstruction: augmentedPrompt,
         tools: [{ functionDeclarations: DEBTSTACK_TOOLS }],
       });
 
       // Fallback model with Google Search grounding (can't combine with function calling)
       const searchModel = genAI.getGenerativeModel({
         model: "gemini-2.5-pro",
-        systemInstruction: SYSTEM_PROMPT,
+        systemInstruction: augmentedPrompt,
         tools: [{ googleSearch: {} } as never],
       });
 

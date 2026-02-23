@@ -46,6 +46,7 @@ debtstack-website/
 │       ├── tools.ts       # 9 Gemini tool definitions (FunctionDeclaration format)
 │       ├── system-prompt.ts # Medici system prompt for Gemini
 │       ├── tool-executor.ts # Execute tools against DebtStack API
+│       ├── knowledge.ts   # RAG retrieval: embed query → pgvector → knowledge chunks
 │       └── prompts.ts     # Starter prompt library (14 prompts, 4 categories)
 ├── public/                 # Static assets
 ├── sentry.client.config.ts # Sentry browser config
@@ -59,7 +60,9 @@ debtstack-website/
   - Handles all API endpoints (`/v1/companies`, `/v1/bonds`, etc.)
   - User authentication via API keys
   - Stripe webhooks at `/v1/auth/webhook`
-  - Database: PostgreSQL
+  - Database: PostgreSQL (Neon + pgvector)
+- **Medici Knowledge Base** (`credible/medici/`): Knowledge files, ingestion scripts, and RAG pipeline config
+  - See `credible/medici/CLAUDE.md` for knowledge base rules, RAG architecture, and ingestion instructions
 
 ## Key Integrations
 
@@ -96,15 +99,16 @@ debtstack-website/
 - **Medici** is DebtStack's named chat assistant (named after the Medici banking family that pioneered modern finance)
 - Full-page chat at `/dashboard/chat` — authenticated users ask credit questions in natural language
 - Gemini 2.5 Pro (`gemini-2.5-pro`) acts as agent, calling 9 DebtStack API tools via tool-use loop
-- **Architecture**: Browser → `POST /api/chat` (SSE) → Gemini (up to 5 tool-use rounds) → `api.debtstack.ai` (user's API key)
+- **Architecture**: Browser → `POST /api/chat` (SSE) → RAG knowledge retrieval → Gemini (up to 5 tool-use rounds) → `api.debtstack.ai` (user's API key)
 - **API route** (`app/api/chat/route.ts`): Authenticated via Clerk, streams SSE events (`text`, `tool_call`, `tool_result`, `done`, `error`)
 - **Tool definitions** (`lib/chat/tools.ts`): 9 tools — `search_companies`, `search_bonds`, `resolve_bond`, `get_guarantors`, `get_corporate_structure`, `search_pricing`, `search_documents`, `get_changes`, `research_company` (live SEC filing research for non-covered companies)
+- **RAG Knowledge Retrieval** (`lib/chat/knowledge.ts`): On each user message, embeds query with Gemini `gemini-embedding-001`, searches `knowledge_chunks` table (Neon pgvector) for top 3 similar chunks, and prepends them to the system prompt as `## Credit Analysis Frameworks`. Knowledge source files live in `credible/medici/knowledge/` — see `credible/medici/CLAUDE.md` for ingestion instructions and knowledge base rules.
 - **Safety**: Max 5 tool-use rounds, max 50 messages/conversation, 15s timeout per API call, results truncated to 20 items
 - **State**: Chat history + watchlists in `localStorage` (no server-side state, no new DB tables)
 - **Gating**: Requires `userData.api_key` to be available (full key, not just prefix) — users without it see a "regenerate key" prompt
 - **Branding**: All UI references use "Medici" (nav links, welcome screen, input placeholder, header). System prompt identifies as "Medici, the credit data assistant built by DebtStack.ai"
-- **Cost**: DebtStack API costs ($0.05-$0.15/tool call) + $0.01/turn inference fee tracked per session
-- **Features**: Chat history with search, starter prompt library (14 prompts in 4 categories), suggested follow-ups (parsed from Gemini response), ticker watchlists, live SEC research for non-covered companies
+- **Cost**: DebtStack API costs ($0.05-$0.15/tool call) + $0.01/turn inference fee tracked per session + ~$0.00001/turn for query embedding
+- **Features**: Chat history with search, starter prompt library (14 prompts in 4 categories), suggested follow-ups (parsed from Gemini response), ticker watchlists, live SEC research for non-covered companies, RAG-powered credit analysis frameworks
 - **Live SEC Research**: `research_company` tool fetches 10-K from EDGAR, extracts debt instruments via Gemini. Results labeled "Live SEC Filing Research". Coverage request button (parsed from `<!--request_coverage:...-->` tag) lets users request full coverage.
 
 ### Sentry
