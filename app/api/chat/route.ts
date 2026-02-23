@@ -99,7 +99,7 @@ export async function POST(request: NextRequest) {
       const latestUserMessage = messages[messages.length - 1]?.content ?? "";
       const knowledgeContext = await getRelevantKnowledge(latestUserMessage, geminiKey);
       const augmentedPrompt = knowledgeContext
-        ? `${SYSTEM_PROMPT}\n\n## Credit Analysis Frameworks\n\nYou MUST use the following frameworks to structure your analysis. Explicitly name the framework you are applying (e.g., "Applying the four-trigger distress framework..."). Reference case studies when the situation has parallels. These frameworks are your analytical toolkit — use them.\n\n${knowledgeContext}`
+        ? `${SYSTEM_PROMPT}\n\n## Credit Analysis Frameworks\n\nUse the following to guide your analysis. Apply the concepts and reasoning — but do NOT name the frameworks or label your steps (e.g., don't say "Applying the Four Triggers framework"). Just analyze directly. Mention real-world case parallels naturally when relevant.\n\n${knowledgeContext}`
         : SYSTEM_PROMPT;
       console.log(`[chat] Knowledge retrieval: ${knowledgeContext ? `${knowledgeContext.length} chars injected` : 'no matches'}`);
 
