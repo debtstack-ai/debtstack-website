@@ -232,6 +232,32 @@ export const DEBTSTACK_TOOLS: FunctionDeclaration[] = [
     },
   },
   {
+    name: "get_financials",
+    description:
+      "Get quarterly financial statements for a company. " +
+      "Returns revenue, EBITDA, cash, total debt, operating income, capex, and more. " +
+      "Use period='TTM' for trailing twelve months, 'latest' for most recent quarter. " +
+      "Essential for assessing earnings trajectory, cash position, and deleveraging progress.",
+    parameters: {
+      type: SchemaType.OBJECT,
+      properties: {
+        ticker: {
+          type: SchemaType.STRING,
+          description: "Company ticker (e.g., 'AAL', 'RIG')",
+        },
+        period: {
+          type: SchemaType.STRING,
+          description: "Period: 'TTM' (trailing 12 months), 'latest' (most recent quarter), or specific like '2025Q3'",
+        },
+        limit: {
+          type: SchemaType.INTEGER,
+          description: "Maximum results (default 4 for quarterly history)",
+        },
+      },
+      required: ["ticker"],
+    },
+  },
+  {
     name: "search_covenants",
     description:
       "Search structured covenant data for a company. " +
