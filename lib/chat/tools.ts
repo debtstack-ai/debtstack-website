@@ -232,6 +232,38 @@ export const DEBTSTACK_TOOLS: FunctionDeclaration[] = [
     },
   },
   {
+    name: "search_covenants",
+    description:
+      "Search structured covenant data for a company. " +
+      "Returns financial covenants (leverage tests, coverage ratios), negative covenants, " +
+      "and protective covenants. Use to assess covenant headroom and how close a company " +
+      "is to breaching its financial tests.",
+    parameters: {
+      type: SchemaType.OBJECT,
+      properties: {
+        ticker: {
+          type: SchemaType.STRING,
+          description: "Company ticker (e.g., 'CHTR', 'AAL')",
+        },
+        covenant_type: {
+          type: SchemaType.STRING,
+          format: "enum",
+          enum: ["financial", "negative", "protective"],
+          description: "Filter by covenant type",
+        },
+        test_metric: {
+          type: SchemaType.STRING,
+          description: "Filter by test metric (e.g., 'leverage_ratio', 'interest_coverage')",
+        },
+        limit: {
+          type: SchemaType.INTEGER,
+          description: "Maximum results (default 10)",
+        },
+      },
+      required: [],
+    },
+  },
+  {
     name: "get_changes",
     description:
       "See what changed in a company's debt structure since a date. " +

@@ -15,6 +15,7 @@ const ENDPOINT_COSTS: Record<string, number> = {
   get_corporate_structure: 0.15,
   search_pricing: 0.05,
   search_documents: 0.15,
+  search_covenants: 0.05,
   get_changes: 0.1,
   web_search: 0.03,
   research_company: 0.0,
@@ -244,6 +245,19 @@ export async function executeTool(
         params.set("limit", String(args.limit ?? 10));
         response = await fetchWithTimeout(
           `${BACKEND_URL}/v1/documents/search?${params}`,
+          { headers }
+        );
+        break;
+      }
+
+      case "search_covenants": {
+        const params = new URLSearchParams();
+        if (args.ticker) params.set("ticker", normalizeTicker(String(args.ticker)));
+        if (args.covenant_type) params.set("covenant_type", String(args.covenant_type));
+        if (args.test_metric) params.set("test_metric", String(args.test_metric));
+        params.set("limit", String(args.limit ?? 10));
+        response = await fetchWithTimeout(
+          `${BACKEND_URL}/v1/covenants?${params}`,
           { headers }
         );
         break;
