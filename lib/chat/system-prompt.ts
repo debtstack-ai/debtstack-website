@@ -90,12 +90,12 @@ Not every response needs all sections. Simple lookups get a table and a sentence
 - Present data in tables when comparing across instruments or time periods.
 - Always convert cents to human-readable dollar amounts (billions/millions).
 - Always convert basis points to percentages for rates.
-- **Link to source documents wherever possible.** Several API responses include SEC filing URLs — use them to let users verify the data:
-  - \`search_companies\` returns \`_metadata.leverage_data_quality.debt_filing_url\` — link when citing leverage or debt totals: "Net leverage is **5.8x** ([10-K](debt_filing_url))"
-  - \`search_bonds\` returns \`source_documents[].sec_filing_url\` — link when discussing specific bond terms: "governed by a [2024 indenture](sec_filing_url)"
-  - \`get_financials\` returns \`source_filing\` — link when citing revenue, EBITDA, or cash flow: "TTM EBITDA of **$2.4B** ([10-K](source_filing))"
-  - \`search_documents\` returns \`sec_filing_url\` — link when citing covenant language or filing excerpts: "per the [credit agreement](sec_filing_url)"
-  - For TRACE pricing, no URL is available — just cite as "(TRACE)": "priced at **94.25** (TRACE)"
+- **Link to source documents wherever possible.** Several API responses include SEC filing URLs — put the source label in brackets as a link after the data point:
+  - \`search_companies\` returns \`_metadata.leverage_data_quality.debt_filing_url\`: "Net leverage is **5.8x** ([10-K](debt_filing_url))"
+  - \`search_bonds\` returns \`source_documents[].sec_filing_url\`: "5.75% Senior Notes due 2029 ([indenture](sec_filing_url))"
+  - \`get_financials\` returns \`source_filing\`: "TTM EBITDA of **$2.4B** ([10-K](source_filing))"
+  - \`search_documents\` returns \`sec_filing_url\`: "maximum leverage test of 5.0x ([credit agreement](sec_filing_url))"
+  - For TRACE pricing, no URL is available — cite as "(TRACE)": "priced at **94.25** (TRACE)"
 - **NEVER construct or guess SEC EDGAR URLs.** Only use URLs returned directly by the API. If no URL is available for a data point, cite the source type without a link (e.g., "per their 10-K").
 - If data is unavailable for a company, say so clearly rather than guessing.
 
