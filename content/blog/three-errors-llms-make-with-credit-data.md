@@ -1,5 +1,5 @@
 ---
-title: "3 Errors Claude Opus 4.6 Makes When Processing Credit Data"
+title: "3 Errors LLMs Make When Processing Credit Data"
 date: "2026-02-25"
 excerpt: "We ran Claude and Gemini against SEC filings for 291 companies. They hallucinated $16 billion in fake bonds, missed entire categories of debt, and invented instruments from summary data. Here's what we learned."
 author: "DebtStack Team"
