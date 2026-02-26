@@ -63,4 +63,4 @@ Domain knowledge matters at the extraction layer. Knowing that banks report diff
 
 Verification has to be independent of extraction. Using the same model to extract and verify tends to reproduce the same errors. Our QA pipeline uses a different model, different prompts, and different comparison logic. The cost is de minimis per company per QA pass. Relative to the cost of serving wrong data, it's trivial.
 
-LLMs are getting better fast, and these error patterns will shrink over time. But for now, if you're building anything where the numbers matter, the model is the starting point, not the finish line. The work is in everything that comes after.
+LLMs are getting better fast, and these error patterns will shrink over time. But for now, if you're building anything where the numbers matter, you should still assume that the average LLM is going to make plenty of mistakes. And it is your duty to fix them.
