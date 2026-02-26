@@ -11,7 +11,7 @@ The models are genuinely impressive at this. Most of the time they get it right.
 
 We want to share three error patterns we've observed in our work so far. If you work with LLMs and financial data, you'll probably recognize some of these. None of this is to say that the models won't get better with time. We did see much better performance from the more expensive LLMs - you get what you pay for! And if they continue to get better, a lot of these errors will eventually disappear.
 
-## 1. Phantom debt
+## Phantom debt
 
 When a model can't find a specific piece of data in a filing, it sometimes fills the gap with fabricated data. This data often looks deceptively real i.e. they come with coupon rates, maturity dates, and dollar amounts.
 
@@ -23,7 +23,7 @@ Our extraction of Citigroup was interesting. The extraction assigned $317 billio
 
 Given these errors, we had to run checks on every extraction. Every extraction was tested for internal consistency, entity verification, debt verification, completeness, structure verification, and JV/VIE verification. If any of these checks fail, the data gets re-extracted with a different model.
 
-## 2. Missing entire categories of debt
+## Missing debt categories
 
 This one is about how literally LLMs follow instructions. Ask a model to "extract all debt instruments" and it will extract what it recognizes as debt instruments, which in practice means bonds. Senior notes, convertible notes, subordinated notes.
 
@@ -37,7 +37,7 @@ The cumulative undercounting of debt across major issuers was around 27 percent.
 
 The takeaway is that, with LLMs, you have to be exhaustive in what you tell the model to look for. We ended up building a taxonomy of 16 instrument types with 50+ variant names. When the extraction prompt explicitly lists term loans, revolving credit facilities, equipment trust certificates, government loans, special facility revenue bonds, and finance leases, coverage jumps dramatically. The model was always capable of extracting them. It just needed to be told they exist.
 
-## 3. Disaggregating summaries into fabricated detail
+## Invented detail
 
 This is probably the most interesting error pattern because it reveals something fundamental about how these models handle ambiguity.
 
