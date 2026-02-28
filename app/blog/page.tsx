@@ -6,9 +6,26 @@ import Link from 'next/link';
 export const metadata: Metadata = {
   title: 'Blog | DebtStack',
   description: 'Insights on credit data, AI in finance, and the future of debt markets.',
+  alternates: {
+    canonical: 'https://debtstack.ai/blog',
+  },
   openGraph: {
     title: 'Blog | DebtStack',
     description: 'Insights on credit data, AI in finance, and the future of debt markets.',
+    url: 'https://debtstack.ai/blog',
+    siteName: 'DebtStack',
+    images: [
+      {
+        url: 'https://debtstack.ai/logo.png',
+        alt: 'DebtStack',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Blog | DebtStack',
+    description: 'Insights on credit data, AI in finance, and the future of debt markets.',
+    images: ['https://debtstack.ai/logo.png'],
   },
 };
 

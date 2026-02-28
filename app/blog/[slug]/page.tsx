@@ -22,19 +22,33 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const post = getPostBySlug(slug);
   if (!post) return {};
 
+  const url = `https://debtstack.ai/blog/${slug}`;
+
   return {
     title: `${post.title} | DebtStack Blog`,
     description: post.excerpt,
+    alternates: {
+      canonical: url,
+    },
     openGraph: {
       title: post.title,
       description: post.excerpt,
       type: 'article',
       publishedTime: post.date,
+      url,
+      siteName: 'DebtStack',
+      images: [
+        {
+          url: 'https://debtstack.ai/logo.png',
+          alt: 'DebtStack',
+        },
+      ],
     },
     twitter: {
       card: 'summary_large_image',
       title: post.title,
       description: post.excerpt,
+      images: ['https://debtstack.ai/logo.png'],
     },
   };
 }
@@ -61,8 +75,37 @@ export default async function BlogPost({ params }: Props) {
 
   const headings = extractHeadings(post.content);
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: post.title,
+    description: post.excerpt,
+    datePublished: post.date,
+    author: {
+      '@type': 'Person',
+      name: post.author,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'DebtStack',
+      logo: {
+        '@type': 'ImageObject',
+        url: 'https://debtstack.ai/logo.png',
+      },
+    },
+    url: `https://debtstack.ai/blog/${slug}`,
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `https://debtstack.ai/blog/${slug}`,
+    },
+  };
+
   return (
     <main className="min-h-screen bg-[#EAECF0] text-gray-900">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* Header */}
       <header className="px-6 py-4 border-b border-gray-200">
         <div className="max-w-6xl mx-auto flex justify-between items-center">
