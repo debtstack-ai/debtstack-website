@@ -36,7 +36,67 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider>
+    <ClerkProvider
+      appearance={{
+        layout: {
+          logoImageUrl: undefined,
+          showOptionalFields: false,
+          socialButtonsVariant: "iconButton",
+          helpPageUrl: "https://debtstack.ai",
+          privacyPageUrl: "https://debtstack.ai/privacy",
+          termsPageUrl: "https://debtstack.ai/terms",
+        },
+        variables: {
+          colorPrimary: "#111827",
+          colorBackground: "#ffffff",
+          colorText: "#111827",
+          colorTextSecondary: "#6b7280",
+          colorInputBackground: "#f9fafb",
+          colorInputText: "#111827",
+          borderRadius: "0.5rem",
+          fontFamily: "Inter, sans-serif",
+        },
+        elements: {
+          // Hide Clerk branding
+          footer: { display: "none" },
+          logoBox: { display: "none" },
+          headerTitle: {
+            fontFamily: "Inter, sans-serif",
+            fontWeight: "700",
+          },
+          headerSubtitle: {
+            fontFamily: "Inter, sans-serif",
+          },
+          card: {
+            boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
+            border: "1px solid #e5e7eb",
+          },
+          formButtonPrimary: {
+            backgroundColor: "#111827",
+            fontSize: "14px",
+            fontWeight: "600",
+            "&:hover": {
+              backgroundColor: "#1f2937",
+            },
+          },
+          socialButtonsBlockButton: {
+            border: "1px solid #e5e7eb",
+            "&:hover": {
+              backgroundColor: "#f9fafb",
+            },
+          },
+          // UserButton styling
+          userButtonAvatarBox: {
+            width: "32px",
+            height: "32px",
+          },
+          userButtonPopoverCard: {
+            border: "1px solid #e5e7eb",
+          },
+          userButtonPopoverFooter: { display: "none" },
+        },
+      }}
+    >
       <html lang="en">
         <head>
           <Script
