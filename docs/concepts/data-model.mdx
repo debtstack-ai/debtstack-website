@@ -186,6 +186,13 @@ SEC filings are parsed into searchable sections:
 | `guarantor_list` | Guarantor subsidiaries | Notes |
 | `covenants` | Financial covenants | Notes/Exhibits |
 
+Sections support three search modes:
+- **Keyword search** — PostgreSQL full-text search with relevance ranking
+- **Semantic search** — Each section is split into overlapping chunks and embedded with Gemini (`gemini-embedding-001`, 768 dimensions). Queries are embedded and matched via cosine similarity, enabling natural language questions like "can they pay dividends" to find covenant language about restricted payments.
+- **Hybrid search** — Combines both via Reciprocal Rank Fusion for comprehensive results
+
+See the [Documents Search endpoint](/api-reference/documents/search) for details.
+
 ## Coverage
 
 211 companies covering S&P 100 and NASDAQ 100, with thousands of debt instruments, real-time bond pricing from FINRA TRACE, and searchable SEC filing sections. Expanding to 500+ companies.

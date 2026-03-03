@@ -27,7 +27,7 @@ Extracting accurate corporate structure and debt data from SEC filings is surpri
     title="Structured Data"
     icon="database"
   >
-    211 companies with debt instruments, covenants, guarantees, collateral, and full-text search across indentures, credit agreements, and SEC filings
+    211 companies with debt instruments, covenants, guarantees, collateral, and keyword/semantic/hybrid search across indentures, credit agreements, and SEC filings
   </Card>
   <Card
     title="AI-Optimized"
@@ -102,7 +102,7 @@ DebtStack offers 12 atomic API endpoints optimized for AI agents:
 | Compare Covenants | `GET /v1/covenants/compare` | Business | Compare covenants across companies |
 | Company Changes | `GET /v1/companies/{ticker}/changes` | $0.10 | Track debt structure changes |
 | Traverse Entities | `POST /v1/entities/traverse` | $0.15 | Follow guarantor chains |
-| Search Documents | `GET /v1/documents/search` | $0.15 | Full-text search SEC filings |
+| Search Documents | `GET /v1/documents/search` | $0.15 | Search SEC filings (keyword, semantic, hybrid) |
 | Batch | `POST /v1/batch` | Sum | Execute multiple operations |
 | Request Coverage | `POST /v1/coverage/request` | Free | Request coverage for non-covered companies |
 

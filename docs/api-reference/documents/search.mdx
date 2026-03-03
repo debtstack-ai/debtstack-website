@@ -1,19 +1,31 @@
 ---
 title: Search Documents
 api: GET /v1/documents/search
-description: 'Full-text search across SEC filings'
+description: 'Search SEC filings with keyword, semantic, or hybrid modes'
 ---
 
 ## Overview
 
 Search across SEC filing sections including debt footnotes, credit agreements, indentures, and MD&A sections. Find covenant language, guarantor lists, and specific debt terms.
 
+Supports three search modes:
+- **Keyword** (default) — PostgreSQL full-text search with relevance ranking
+- **Semantic** — Vector similarity search using Gemini embeddings (finds conceptually similar content even without keyword matches)
+- **Hybrid** — Combines keyword and semantic results via Reciprocal Rank Fusion for the best of both
+
 ## Request
 
 <ParamField query="q" type="string" required>
-  Full-text search query.
+  Search query. For keyword/hybrid mode, uses full-text search syntax. For semantic mode, use natural language.
 
-  Example: `maintenance covenant`, `subordinated`, `event of default`
+  Example: `maintenance covenant`, `subordinated`, `can they pay dividends`
+</ParamField>
+
+<ParamField query="mode" type="string" default="keyword">
+  Search mode. One of:
+  - `keyword` — Full-text search with relevance ranking (default)
+  - `semantic` — Vector similarity search using AI embeddings
+  - `hybrid` — Combines keyword + semantic via Reciprocal Rank Fusion
 </ParamField>
 
 <ParamField query="ticker" type="string">
@@ -41,7 +53,7 @@ Search across SEC filing sections including debt footnotes, credit agreements, i
 <ParamField query="fields" type="string">
   Fields to return.
 
-  Example: `ticker,section_type,snippet,relevance_score`
+  Example: `ticker,section_type,snippet,relevance_score,semantic_score`
 </ParamField>
 
 <ParamField query="sort" type="string" default="-relevance">
@@ -99,7 +111,10 @@ Search across SEC filing sections including debt footnotes, credit agreements, i
       Highlighted snippet with matching terms in `<b>` tags.
     </ResponseField>
     <ResponseField name="relevance_score" type="number">
-      Search relevance score (0-1).
+      Search relevance score (0-1). Available in keyword and hybrid modes.
+    </ResponseField>
+    <ResponseField name="semantic_score" type="number">
+      Cosine similarity score (0-1). Available in semantic and hybrid modes.
     </ResponseField>
     <ResponseField name="content" type="string">
       Full section content (if requested).
@@ -165,6 +180,7 @@ for doc in response.json()["data"]:
   ],
   "meta": {
     "query": "subordinated",
+    "mode": "keyword",
     "total": 42,
     "limit": 50,
     "offset": 0
@@ -187,6 +203,72 @@ Find events of default:
 
 ```bash
 curl "https://api.debtstack.ai/v1/documents/search?q=event%20of%20default&section_type=indenture&limit=10" \
+  -H "X-API-Key: ds_xxxxx"
+```
+
+### Semantic Search
+
+Find conceptually similar content using natural language — no exact keyword match needed:
+
+<CodeGroup>
+```bash curl
+curl "https://api.debtstack.ai/v1/documents/search?q=can%20they%20pay%20dividends&ticker=RIG&mode=semantic&fields=ticker,section_type,section_title,semantic_score" \
+  -H "X-API-Key: ds_xxxxx"
+```
+
+```python Python
+response = requests.get(
+    "https://api.debtstack.ai/v1/documents/search",
+    params={
+        "q": "can they pay dividends",
+        "ticker": "RIG",
+        "mode": "semantic",
+        "fields": "ticker,section_type,section_title,semantic_score"
+    },
+    headers={"X-API-Key": "ds_xxxxx"}
+)
+
+for doc in response.json()["data"]:
+    print(f"{doc['section_type']}: {doc['section_title']} (score: {doc['semantic_score']:.2f})")
+```
+</CodeGroup>
+
+```json
+{
+  "data": [
+    {
+      "ticker": "RIG",
+      "section_type": "indenture",
+      "section_title": "Limitation on Restricted Payments",
+      "semantic_score": 0.67
+    },
+    {
+      "ticker": "RIG",
+      "section_type": "indenture",
+      "section_title": "Covenants - Restricted Payments",
+      "semantic_score": 0.64
+    }
+  ],
+  "meta": {
+    "query": "can they pay dividends",
+    "mode": "semantic",
+    "total": 15,
+    "limit": 50,
+    "offset": 0
+  }
+}
+```
+
+<Note>
+  Semantic search finds "Limitation on Restricted Payments" for the query "can they pay dividends" — even though none of the keywords match. This is the power of vector similarity search.
+</Note>
+
+### Hybrid Search
+
+Combine keyword precision with semantic understanding:
+
+```bash
+curl "https://api.debtstack.ai/v1/documents/search?q=restricted%20payment%20basket&ticker=CHTR&mode=hybrid&fields=ticker,section_type,relevance_score,semantic_score" \
   -H "X-API-Key: ds_xxxxx"
 ```
 
@@ -289,10 +371,25 @@ def recent_filings(query, days=30):
 recent = recent_filings("refinancing OR amendment", days=90)
 ```
 
+## Search Modes
+
+| Mode | Best For | How It Works |
+|------|----------|-------------|
+| `keyword` | Exact terms, legal language | PostgreSQL full-text search with `ts_rank` relevance scoring |
+| `semantic` | Natural language questions, conceptual search | Embeds query with Gemini, finds similar document chunks via cosine similarity (threshold 0.3) |
+| `hybrid` | Best overall results | Runs both keyword and semantic, combines via Reciprocal Rank Fusion (RRF) |
+
+**When to use each mode:**
+- Use `keyword` when you know the exact terminology (e.g., `event of default`, `SOFR`)
+- Use `semantic` when asking questions in plain English (e.g., `can they pay dividends`, `what happens if they miss a payment`)
+- Use `hybrid` when you want comprehensive results that catch both exact matches and conceptually related content
+
 ## Notes
 
-- Search uses PostgreSQL full-text search with relevance ranking
-- Snippets highlight matching terms with `<b>` tags
+- **Keyword mode** uses PostgreSQL full-text search with relevance ranking
+- **Semantic mode** uses 768-dimensional Gemini embeddings with cosine similarity
+- **Hybrid mode** combines both via Reciprocal Rank Fusion (k=60)
+- Snippets highlight matching terms with `<b>` tags (keyword and hybrid modes)
 - Credit agreements and indentures can be large (up to 500K chars)
 - Use `content` field sparingly to avoid large responses
 - Credit cost: 3 credits per request
