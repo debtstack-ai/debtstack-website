@@ -128,6 +128,18 @@
             ]
           },
           {
+            "group": "Ratings",
+            "pages": [
+              "api-reference/ratings/search"
+            ]
+          },
+          {
+            "group": "Market Data",
+            "pages": [
+              "api-reference/market/cds"
+            ]
+          },
+          {
             "group": "Batch",
             "pages": [
               "api-reference/batch/operations"

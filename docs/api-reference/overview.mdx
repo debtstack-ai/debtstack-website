@@ -20,7 +20,7 @@ curl "https://api.debtstack.ai/v1/companies" \
 
 ## Endpoints
 
-DebtStack provides 12 core primitives for corporate debt analysis:
+DebtStack provides 14 core primitives for corporate debt analysis:
 
 ### Companies
 
@@ -54,6 +54,18 @@ DebtStack provides 12 core primitives for corporate debt analysis:
 |--------|----------|-------------|------|
 | GET | `/v1/covenants` | Search covenant terms | $0.05 |
 | GET | `/v1/covenants/compare` | Compare covenants across companies | Business only |
+
+### Ratings
+
+| Method | Endpoint | Description | Cost |
+|--------|----------|-------------|------|
+| GET | `/v1/ratings` | Search credit rating history (S&P, Moody's, Fitch) | $0.05 |
+
+### Market Data
+
+| Method | Endpoint | Description | Cost |
+|--------|----------|-------------|------|
+| GET | `/v1/market/cds` | CDS spread time series (bond spread-to-treasury proxy) | $0.05 |
 
 ### Entities
 
@@ -151,7 +163,7 @@ Each endpoint consumes credits based on complexity:
 
 | Endpoint Type | Cost | Endpoints |
 |--------------|------|-----------|
-| Simple | $0.05 | Companies, Bonds, Resolve, Financials, Collateral, Covenants |
+| Simple | $0.05 | Companies, Bonds, Resolve, Financials, Collateral, Covenants, Ratings, Market/CDS |
 | Complex | $0.10 | Company Changes |
 | Advanced | $0.15 | Traverse, Documents, Batch (per operation) |
 

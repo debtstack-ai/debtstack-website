@@ -35,6 +35,8 @@ const tiers = [
       '100 requests/minute',
       'Full company coverage',
       'Real-time bond pricing & YTM',
+      'Credit ratings (S&P, Moody\'s, Fitch)',
+      'CDS spread time series',
       'Leverage & coverage ratios',
       'Corporate hierarchy & guarantors',
       'Covenant analysis',
@@ -69,7 +71,7 @@ const tiers = [
 ];
 
 const endpointCosts = [
-  { category: 'Simple', cost: '$0.05', endpoints: '/companies, /bonds, /bonds/resolve, /financials, /collateral, /covenants' },
+  { category: 'Simple', cost: '$0.05', endpoints: '/companies, /bonds, /bonds/resolve, /financials, /collateral, /covenants, /ratings, /market/cds' },
   { category: 'Complex', cost: '$0.10', endpoints: '/companies/{ticker}/changes' },
   { category: 'Advanced', cost: '$0.15', endpoints: '/entities/traverse, /documents/search, /batch' },
 ];
@@ -409,6 +411,18 @@ export default function PricingPage() {
                   <td className="text-center py-4 px-4"><CheckIcon /></td>
                 </tr>
                 <tr>
+                  <td className="py-4 pr-4">Credit Ratings</td>
+                  <td className="text-center py-4 px-4"><CheckIcon /></td>
+                  <td className="text-center py-4 px-4"><CheckIcon /></td>
+                  <td className="text-center py-4 px-4"><CheckIcon /></td>
+                </tr>
+                <tr>
+                  <td className="py-4 pr-4">CDS Spreads</td>
+                  <td className="text-center py-4 px-4"><CheckIcon /></td>
+                  <td className="text-center py-4 px-4"><CheckIcon /></td>
+                  <td className="text-center py-4 px-4"><CheckIcon /></td>
+                </tr>
+                <tr>
                   <td className="py-4 pr-4">Historical Pricing</td>
                   <td className="text-center py-4 px-4"><XIcon /></td>
                   <td className="text-center py-4 px-4"><XIcon /></td>
@@ -482,7 +496,7 @@ export default function PricingPage() {
             <div className="p-5 rounded-xl bg-gray-50 border border-gray-200">
               <h3 className="font-semibold mb-2">What data is included?</h3>
               <p className="text-gray-500 text-sm">
-                All tiers include full access to our growing universe of companies, debt instruments, SEC document sections, and real-time bond pricing from FINRA TRACE.
+                All tiers include full access to our growing universe of companies, debt instruments, credit ratings (S&amp;P, Moody&apos;s, Fitch), CDS spread time series, SEC document sections, and real-time bond pricing from FINRA TRACE.
               </p>
             </div>
             <div className="p-5 rounded-xl bg-gray-50 border border-gray-200">

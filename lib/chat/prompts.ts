@@ -47,6 +47,14 @@ export const STARTER_PROMPTS: StarterPrompt[] = [
     icon: "📅",
   },
 
+  {
+    id: "s5",
+    label: "Investment grade screen",
+    prompt: "Which companies are rated investment grade by all three agencies?",
+    category: "screening",
+    icon: "🏆",
+  },
+
   // Deep Dive
   {
     id: "d1",
@@ -82,6 +90,14 @@ export const STARTER_PROMPTS: StarterPrompt[] = [
     prompt: "Research General Motors' debt structure from their SEC filings",
     category: "deep_dive",
     icon: "🔬",
+  },
+
+  {
+    id: "d6",
+    label: "AAPL credit spreads",
+    prompt: "Show me Apple's CDS spread history over the last year",
+    category: "deep_dive",
+    icon: "📈",
   },
 
   // Covenants
@@ -128,5 +144,12 @@ export const STARTER_PROMPTS: StarterPrompt[] = [
     prompt: "Compare total debt for AAPL, MSFT, GOOGL, and AMZN",
     category: "comparisons",
     icon: "💻",
+  },
+  {
+    id: "m4",
+    label: "MAG7 rating comparison",
+    prompt: "Compare credit ratings for the MAG7 companies",
+    category: "comparisons",
+    icon: "⭐",
   },
 ];

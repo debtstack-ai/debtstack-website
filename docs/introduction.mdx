@@ -20,14 +20,14 @@ Extracting accurate corporate structure and debt data from SEC filings is surpri
 
 ## Current Database
 
-**211 companies** covering S&P 100 and NASDAQ 100, with thousands of debt instruments, real-time bond pricing, and searchable SEC filing sections. Expanding to 500+ companies.
+**314 companies** covering S&P 100, NASDAQ 100, and broader S&P 500, with thousands of debt instruments, credit ratings, CDS spreads, real-time bond pricing, and searchable SEC filing sections. Expanding to 500+ companies.
 
 <CardGroup cols={2}>
   <Card
     title="Structured Data"
     icon="database"
   >
-    211 companies with debt instruments, covenants, guarantees, collateral, and keyword/semantic/hybrid search across indentures, credit agreements, and SEC filings
+    314 companies with debt instruments, credit ratings, covenants, guarantees, collateral, and keyword/semantic/hybrid search across indentures, credit agreements, and SEC filings
   </Card>
   <Card
     title="AI-Optimized"
@@ -42,6 +42,12 @@ Extracting accurate corporate structure and debt data from SEC filings is surpri
     Bond pricing from FINRA TRACE with yield-to-maturity and spread calculations
   </Card>
   <Card
+    title="Credit Ratings & Spreads"
+    icon="star"
+  >
+    S&P, Moody's, Fitch ratings + CDS spread time series across 250+ companies
+  </Card>
+  <Card
     title="Document Search"
     icon="file-magnifying-glass"
   >
@@ -51,7 +57,7 @@ Extracting accurate corporate structure and debt data from SEC filings is surpri
 
 ## Coverage
 
-S&P 100 and NASDAQ 100 companies across all sectors:
+S&P 100, NASDAQ 100, and broader S&P 500 companies across all sectors:
 
 | Sector | Sample Companies |
 |--------|------------------|
@@ -87,9 +93,9 @@ print(response.json())
 # {"data": [{"ticker": "TSLA", "name": "Tesla, Inc.", "net_leverage_ratio": 1.8}]}
 ```
 
-## 12 Core Primitives
+## 14 Core Primitives
 
-DebtStack offers 12 atomic API endpoints optimized for AI agents:
+DebtStack offers 14 atomic API endpoints optimized for AI agents:
 
 | Primitive | Endpoint | Cost | Purpose |
 |-----------|----------|------|---------|
@@ -99,6 +105,8 @@ DebtStack offers 12 atomic API endpoints optimized for AI agents:
 | Financials | `GET /v1/financials` | $0.05 | Quarterly income, balance, cash flow |
 | Collateral | `GET /v1/collateral` | $0.05 | Collateral securing debt |
 | Covenants | `GET /v1/covenants` | $0.05 | Search structured covenant data |
+| Ratings | `GET /v1/ratings` | $0.05 | Credit rating history (S&P, Moody's, Fitch) |
+| CDS Spreads | `GET /v1/market/cds` | $0.05 | CDS spread time series |
 | Compare Covenants | `GET /v1/covenants/compare` | Business | Compare covenants across companies |
 | Company Changes | `GET /v1/companies/{ticker}/changes` | $0.10 | Track debt structure changes |
 | Traverse Entities | `POST /v1/entities/traverse` | $0.15 | Follow guarantor chains |

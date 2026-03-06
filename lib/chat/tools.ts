@@ -290,6 +290,96 @@ export const DEBTSTACK_TOOLS: FunctionDeclaration[] = [
     },
   },
   {
+    name: "search_ratings",
+    description:
+      "Search credit ratings from S&P, Moody's, and Fitch. " +
+      "Use to look up credit ratings, screen by rating bucket (IG, HY-BB, HY-B, HY-CCC), " +
+      "or compare ratings across companies. " +
+      "Example: 'What are Apple's credit ratings?' or 'Which companies are rated BB?'",
+    parameters: {
+      type: SchemaType.OBJECT,
+      properties: {
+        ticker: {
+          type: SchemaType.STRING,
+          description: "Company ticker(s), comma-separated (e.g., 'AAPL,MSFT')",
+        },
+        rating_bucket: {
+          type: SchemaType.STRING,
+          format: "enum",
+          enum: ["IG", "HY-BB", "HY-B", "HY-CCC", "NR"],
+          description: "Rating bucket filter",
+        },
+        rating_type: {
+          type: SchemaType.STRING,
+          format: "enum",
+          enum: ["issuer", "senior_secured", "senior_unsecured", "subordinated", "corporate_family"],
+          description: "Rating type filter",
+        },
+        sp_rating: {
+          type: SchemaType.STRING,
+          description: "S&P rating filter (e.g., 'BB+', 'BBB-')",
+        },
+        moodys_rating: {
+          type: SchemaType.STRING,
+          description: "Moody's rating filter (e.g., 'Ba1', 'Baa3')",
+        },
+        issuer_only: {
+          type: SchemaType.BOOLEAN,
+          description: "Show only issuer-level ratings (default false)",
+        },
+        latest: {
+          type: SchemaType.BOOLEAN,
+          description: "Return only the most recent rating per company/agency (default false)",
+        },
+        limit: {
+          type: SchemaType.INTEGER,
+          description: "Maximum results (default 50)",
+        },
+      },
+      required: [],
+    },
+  },
+  {
+    name: "get_cds_spreads",
+    description:
+      "Get CDS spread time series for companies. " +
+      "Returns credit spread levels in basis points derived from TRACE bond pricing. " +
+      "Use for credit spread analysis, comparing relative credit risk, or tracking spread trends. " +
+      "Example: 'Show me Apple's CDS spreads' or 'Compare 5Y spreads for MAG7'",
+    parameters: {
+      type: SchemaType.OBJECT,
+      properties: {
+        ticker: {
+          type: SchemaType.STRING,
+          description: "Company ticker(s), comma-separated (e.g., 'AAPL,MSFT')",
+        },
+        tenor: {
+          type: SchemaType.STRING,
+          format: "enum",
+          enum: ["1Y", "3Y", "5Y", "7Y", "10Y"],
+          description: "CDS tenor (default 5Y)",
+        },
+        from_date: {
+          type: SchemaType.STRING,
+          description: "Start date (YYYY-MM-DD)",
+        },
+        to_date: {
+          type: SchemaType.STRING,
+          description: "End date (YYYY-MM-DD)",
+        },
+        latest_only: {
+          type: SchemaType.BOOLEAN,
+          description: "Return only most recent spread per company (default false)",
+        },
+        limit: {
+          type: SchemaType.INTEGER,
+          description: "Maximum results (default 50)",
+        },
+      },
+      required: [],
+    },
+  },
+  {
     name: "get_changes",
     description:
       "See what changed in a company's debt structure since a date. " +

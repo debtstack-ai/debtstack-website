@@ -17,6 +17,8 @@ const ENDPOINT_COSTS: Record<string, number> = {
   search_documents: 0.15,
   get_financials: 0.05,
   search_covenants: 0.05,
+  search_ratings: 0.05,
+  get_cds_spreads: 0.05,
   get_changes: 0.1,
   web_search: 0.03,
   research_company: 0.0,
@@ -271,6 +273,38 @@ export async function executeTool(
         params.set("limit", String(args.limit ?? 10));
         response = await fetchWithTimeout(
           `${BACKEND_URL}/v1/covenants?${params}`,
+          { headers }
+        );
+        break;
+      }
+
+      case "search_ratings": {
+        const params = new URLSearchParams();
+        if (args.ticker) params.set("ticker", normalizeTicker(String(args.ticker)));
+        if (args.rating_bucket) params.set("rating_bucket", String(args.rating_bucket));
+        if (args.rating_type) params.set("rating_type", String(args.rating_type));
+        if (args.sp_rating) params.set("sp_rating", String(args.sp_rating));
+        if (args.moodys_rating) params.set("moodys_rating", String(args.moodys_rating));
+        if (args.issuer_only) params.set("issuer_only", String(args.issuer_only));
+        if (args.latest) params.set("latest", String(args.latest));
+        params.set("limit", String(args.limit ?? 50));
+        response = await fetchWithTimeout(
+          `${BACKEND_URL}/v1/ratings?${params}`,
+          { headers }
+        );
+        break;
+      }
+
+      case "get_cds_spreads": {
+        const params = new URLSearchParams();
+        if (args.ticker) params.set("ticker", normalizeTicker(String(args.ticker)));
+        if (args.tenor) params.set("tenor", String(args.tenor));
+        if (args.from_date) params.set("from_date", String(args.from_date));
+        if (args.to_date) params.set("to_date", String(args.to_date));
+        if (args.latest_only) params.set("latest_only", String(args.latest_only));
+        params.set("limit", String(args.limit ?? 50));
+        response = await fetchWithTimeout(
+          `${BACKEND_URL}/v1/market/cds?${params}`,
           { headers }
         );
         break;

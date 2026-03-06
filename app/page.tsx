@@ -402,7 +402,7 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.25 }}
           >
-            Debt structures, bond pricing, covenant analysis, and corporate hierarchies. Access via chat, REST API, or agent tooling.
+            Debt structures, bond pricing, credit ratings, CDS spreads, covenant analysis, and corporate hierarchies. Access via chat, REST API, or agent tooling.
           </motion.p>
 
           <motion.div
@@ -501,7 +501,7 @@ export default function Home() {
                 Comprehensive
               </h2>
               <p className="text-gray-500 text-sm leading-relaxed mb-6">
-                250+ corporate issuers, 5,000+ bonds. Debt structures, leverage ratios, TRACE pricing, and covenant terms through a single API.
+                300+ corporate issuers, 5,800+ bonds. Debt structures, credit ratings, CDS spreads, TRACE pricing, and covenant terms through a single API.
               </p>
 
               {/* Tabs */}
@@ -879,7 +879,7 @@ export default function Home() {
             {[
               {
                 title: 'Credit Analysts',
-                desc: 'Screen 250+ issuers by leverage, seniority, and maturity. Pull debt structures and covenants for any name in the universe.',
+                desc: 'Screen 300+ issuers by leverage, seniority, and maturity. Pull debt structures, credit ratings, CDS spreads, and covenants for any name in the universe.',
               },
               {
                 title: 'AI Agent Builders',
@@ -887,7 +887,7 @@ export default function Home() {
               },
               {
                 title: 'Quant Researchers',
-                desc: 'Programmatic access to 5,000+ bonds with pricing, spreads, and corporate structure data via REST API.',
+                desc: 'Programmatic access to 5,800+ bonds with pricing, credit spreads, rating history, and corporate structure data via REST API.',
               },
             ].map((card) => (
               <motion.div

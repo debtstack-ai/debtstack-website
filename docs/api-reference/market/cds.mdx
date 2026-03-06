@@ -1,0 +1,166 @@
+---
+title: CDS Spreads
+api: GET /v1/market/cds
+description: 'CDS spread time series (bond spread-to-treasury proxy)'
+---
+
+## Overview
+
+Get CDS spread time series for corporate issuers. Spreads are derived from TRACE bond pricing data using a bond spread-to-treasury methodology, economically equivalent to CDS spreads (CDS-bond basis is typically within 20 bps for investment grade).
+
+## Request
+
+### Company Filters
+
+<ParamField query="ticker" type="string">
+  Filter by company ticker(s), comma-separated.
+
+  Example: `AAPL,MSFT`
+</ParamField>
+
+<ParamField query="sector" type="string">
+  Filter by sector.
+
+  Example: `Technology`
+</ParamField>
+
+### CDS Filters
+
+<ParamField query="tenor" type="string" default="5Y">
+  CDS tenor: `1Y`, `3Y`, `5Y`, `7Y`, `10Y`
+</ParamField>
+
+<ParamField query="source" type="string">
+  Data source filter: `bond_spread_proxy`, `dtcc_sdr`, `ice_settlement`
+</ParamField>
+
+### Date Filters
+
+<ParamField query="from_date" type="string">
+  Start date (YYYY-MM-DD).
+</ParamField>
+
+<ParamField query="to_date" type="string">
+  End date (YYYY-MM-DD).
+</ParamField>
+
+### Convenience
+
+<ParamField query="latest_only" type="boolean" default="false">
+  Return only the most recent spread per company.
+</ParamField>
+
+### Response Options
+
+<ParamField query="fields" type="string">
+  Comma-separated fields to return.
+
+  Example: `ticker,spread_date,spread_bps,trade_count`
+</ParamField>
+
+<ParamField query="sort" type="string" default="-spread_date">
+  Sort field. Prefix `-` for descending.
+</ParamField>
+
+<ParamField query="limit" type="integer" default="50">
+  Results per page. Maximum 200.
+</ParamField>
+
+<ParamField query="offset" type="integer" default="0">
+  Pagination offset.
+</ParamField>
+
+## Coverage
+
+- **111 companies** with CDS spread data
+- **~53,000 records** across all tenors and dates
+- **598 trading days** (March 2023 to present)
+- **5 tenors**: 1Y, 3Y, 5Y, 7Y, 10Y
+- **Updated daily** at 9:30 PM ET
+
+## Methodology
+
+Spreads are computed using a bond spread-to-treasury proxy:
+
+1. Select fixed-rate senior unsecured bonds with TRACE pricing
+2. Group by remaining maturity into tenor buckets (1Y / 3Y / 5Y / 7Y / 10Y)
+3. Apply data quality filters (price >= $60, no estimated pricing, maturity >= 1 year)
+4. Remove outliers (3-sigma for groups >= 4 bonds, range check for smaller groups)
+5. Report median spread-to-treasury in basis points
+
+Negative spreads are possible for premium investment grade issuers (floor: -200 bps).
+
+## Examples
+
+### Get Latest Spreads for a Company
+
+<CodeGroup>
+```bash curl
+curl "https://api.debtstack.ai/v1/market/cds?ticker=AAPL&latest_only=true" \
+  -H "X-API-Key: ds_xxxxx"
+```
+
+```python Python
+import requests
+
+response = requests.get(
+    "https://api.debtstack.ai/v1/market/cds",
+    params={"ticker": "AAPL", "latest_only": True},
+    headers={"X-API-Key": "ds_xxxxx"}
+)
+
+for s in response.json()["data"]:
+    print(f"{s['tenor']}: {s['spread_bps']} bps ({s['trade_count']} trades)")
+```
+</CodeGroup>
+
+### Response
+
+```json
+{
+  "data": [
+    {
+      "ticker": "AAPL",
+      "company_name": "Apple Inc.",
+      "spread_date": "2026-03-04",
+      "tenor": "5Y",
+      "spread_bps": 42.5,
+      "trade_count": 12,
+      "bond_count": 8,
+      "source": "bond_spread_proxy"
+    }
+  ],
+  "meta": {
+    "total": 1,
+    "limit": 50,
+    "offset": 0
+  }
+}
+```
+
+## More Examples
+
+### 1-Year Spread History
+
+```bash
+curl "https://api.debtstack.ai/v1/market/cds?ticker=AAPL&tenor=5Y&from_date=2025-03-01&to_date=2026-03-01" \
+  -H "X-API-Key: ds_xxxxx"
+```
+
+### Compare Spreads Across Companies
+
+```bash
+curl "https://api.debtstack.ai/v1/market/cds?ticker=AAPL,MSFT,GOOGL&tenor=5Y&latest_only=true" \
+  -H "X-API-Key: ds_xxxxx"
+```
+
+### Short-Term vs Long-Term Spread
+
+```bash
+# Compare 1Y and 10Y tenors for curve shape analysis
+curl "https://api.debtstack.ai/v1/market/cds?ticker=AAL&tenor=1Y&latest_only=true" \
+  -H "X-API-Key: ds_xxxxx"
+
+curl "https://api.debtstack.ai/v1/market/cds?ticker=AAL&tenor=10Y&latest_only=true" \
+  -H "X-API-Key: ds_xxxxx"
+```

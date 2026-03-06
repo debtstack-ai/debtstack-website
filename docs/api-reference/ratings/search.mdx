@@ -1,0 +1,189 @@
+---
+title: Search Ratings
+api: GET /v1/ratings
+description: 'Search credit rating history from S&P, Moody''s, and Fitch'
+---
+
+## Overview
+
+Search credit rating history across 253 companies. Returns issuer-level and instrument-level ratings from S&P, Moody's, and Fitch, sourced from SEC Rule 17g-7(b) NRSRO disclosures and LLM extraction from SEC filings.
+
+## Request
+
+### Company Filters
+
+<ParamField query="ticker" type="string">
+  Filter by company ticker(s), comma-separated.
+
+  Example: `AAPL,MSFT,GOOGL`
+</ParamField>
+
+<ParamField query="sector" type="string">
+  Filter by sector.
+
+  Example: `Technology`
+</ParamField>
+
+### Rating Filters
+
+<ParamField query="rating_bucket" type="string">
+  Filter by rating bucket: `IG`, `HY-BB`, `HY-B`, `HY-CCC`, `NR`
+</ParamField>
+
+<ParamField query="sp_rating" type="string">
+  Filter by S&P rating (e.g., `BB+`, `BBB-`)
+</ParamField>
+
+<ParamField query="moodys_rating" type="string">
+  Filter by Moody's rating (e.g., `Ba1`, `Baa3`)
+</ParamField>
+
+<ParamField query="rating_type" type="string">
+  Filter by rating type: `issuer`, `senior_secured`, `senior_unsecured`, `subordinated`, `corporate_family`
+</ParamField>
+
+<ParamField query="cusip" type="string">
+  Filter by instrument CUSIP for instrument-level ratings.
+</ParamField>
+
+<ParamField query="issuer_only" type="boolean" default="false">
+  Show only issuer-level ratings (exclude instrument-level).
+</ParamField>
+
+### Date Filters
+
+<ParamField query="from_date" type="string">
+  Start date (YYYY-MM-DD).
+</ParamField>
+
+<ParamField query="to_date" type="string">
+  End date (YYYY-MM-DD).
+</ParamField>
+
+### Convenience
+
+<ParamField query="latest" type="boolean" default="false">
+  Return only the most recent rating per company/agency.
+</ParamField>
+
+### Response Options
+
+<ParamField query="fields" type="string">
+  Comma-separated fields to return.
+
+  Example: `ticker,agency,rating,effective_date`
+</ParamField>
+
+<ParamField query="sort" type="string" default="-effective_date">
+  Sort field. Prefix `-` for descending.
+</ParamField>
+
+<ParamField query="limit" type="integer" default="50">
+  Results per page. Maximum 200.
+</ParamField>
+
+<ParamField query="offset" type="integer" default="0">
+  Pagination offset.
+</ParamField>
+
+## Coverage
+
+- **253 companies** with at least one rating
+- **607 total ratings** across S&P, Moody's, and Fitch
+- **Rating types**: issuer, senior_secured, senior_unsecured, subordinated, corporate_family
+- **Sources**: SEC Rule 17g-7(b) NRSRO disclosures (Fitch, Moody's) + LLM extraction from SEC filings (S&P)
+- **Refresh**: Monthly (1st Sunday, 2 AM ET)
+
+## Examples
+
+### Get Latest Ratings for a Company
+
+<CodeGroup>
+```bash curl
+curl "https://api.debtstack.ai/v1/ratings?ticker=AAPL&latest=true" \
+  -H "X-API-Key: ds_xxxxx"
+```
+
+```python Python
+import requests
+
+response = requests.get(
+    "https://api.debtstack.ai/v1/ratings",
+    params={"ticker": "AAPL", "latest": True},
+    headers={"X-API-Key": "ds_xxxxx"}
+)
+
+for r in response.json()["ratings"]:
+    print(f"{r['agency']}: {r['rating']} ({r['rating_type']})")
+```
+</CodeGroup>
+
+### Response
+
+```json
+{
+  "ratings": [
+    {
+      "ticker": "AAPL",
+      "company_name": "Apple Inc.",
+      "agency": "sp",
+      "rating": "AA+",
+      "rating_type": "issuer",
+      "outlook": "stable",
+      "effective_date": "2024-08-15",
+      "rating_bucket": "IG",
+      "source_section_type": "llm_extraction"
+    },
+    {
+      "ticker": "AAPL",
+      "company_name": "Apple Inc.",
+      "agency": "moodys",
+      "rating": "Aaa",
+      "rating_type": "issuer",
+      "outlook": "stable",
+      "effective_date": "2024-06-20",
+      "rating_bucket": "IG",
+      "source_section_type": "nrsro_17g7"
+    },
+    {
+      "ticker": "AAPL",
+      "company_name": "Apple Inc.",
+      "agency": "fitch",
+      "rating": "AA+",
+      "rating_type": "issuer",
+      "outlook": "stable",
+      "effective_date": "2024-05-10",
+      "rating_bucket": "IG",
+      "source_section_type": "nrsro_17g7"
+    }
+  ],
+  "meta": {
+    "total": 3,
+    "limit": 50,
+    "offset": 0
+  }
+}
+```
+
+## More Examples
+
+### Screen for Investment Grade Companies
+
+```bash
+curl "https://api.debtstack.ai/v1/ratings?rating_bucket=IG&latest=true&issuer_only=true" \
+  -H "X-API-Key: ds_xxxxx"
+```
+
+### Find High-Yield Ratings
+
+```bash
+curl "https://api.debtstack.ai/v1/ratings?rating_bucket=HY-BB&latest=true" \
+  -H "X-API-Key: ds_xxxxx"
+```
+
+### Compare Ratings Across MAG7
+
+```bash
+curl "https://api.debtstack.ai/v1/ratings?ticker=AAPL,MSFT,GOOGL,AMZN,NVDA,META,TSLA&latest=true&issuer_only=true" \
+  -H "X-API-Key: ds_xxxxx"
+```
