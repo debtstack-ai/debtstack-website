@@ -1,7 +1,7 @@
 // app/layout.tsx
 
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { Inter, Geist_Mono } from "next/font/google";
 import Script from "next/script";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Analytics } from "@vercel/analytics/react";
@@ -9,7 +9,7 @@ import { PostHogProviders } from "./providers";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
-const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrains" });
+const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono" });
 
 export const metadata: Metadata = {
   title: "DebtStack - Credit Data for AI Agents",
@@ -112,7 +112,7 @@ export default function RootLayout({
             `}
           </Script>
         </head>
-        <body className={`${inter.className} ${jetbrainsMono.variable}`}>
+        <body className={`${inter.className} ${geistMono.variable}`}>
           <PostHogProviders>
             {children}
           </PostHogProviders>

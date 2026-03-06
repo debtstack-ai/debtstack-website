@@ -3,12 +3,22 @@
 import { useState, useRef, useCallback } from 'react';
 import { SignUpButton } from '@clerk/nextjs';
 import { STARTER_PROMPTS, PROMPT_CATEGORIES, type StarterPrompt } from '@/lib/chat/prompts';
+import ChatShell from '@/app/dashboard/chat/components/ChatShell';
+
+const PREVIEW_COMPANIES = [
+  { ticker: 'T', name: 'AT&T Inc.', sector: 'Telecommunications', leverage: '3.1x' },
+  { ticker: 'F', name: 'Ford Motor Company', sector: 'Automotive', leverage: '5.2x' },
+  { ticker: 'CCL', name: 'Carnival Corporation', sector: 'Leisure', leverage: '4.8x' },
+  { ticker: 'BA', name: 'Boeing Company', sector: 'Aerospace & Defense', leverage: '—' },
+  { ticker: 'GM', name: 'General Motors Company', sector: 'Automotive', leverage: '2.4x' },
+];
 
 export default function ChatPreview() {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activePromptCategory, setActivePromptCategory] = useState<string | null>(null);
   const [inputValue, setInputValue] = useState('');
   const [showSignUpOverlay, setShowSignUpOverlay] = useState(false);
+  const [previewSearchTab, setPreviewSearchTab] = useState<'companies' | 'bonds'>('companies');
+  const [watchlistInput, setWatchlistInput] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const signUpButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -32,7 +42,6 @@ export default function ChatPreview() {
 
   const triggerSignUp = useCallback(() => {
     setShowSignUpOverlay(true);
-    // Programmatically click the hidden SignUpButton
     setTimeout(() => signUpButtonRef.current?.click(), 0);
   }, []);
 
@@ -53,33 +62,25 @@ export default function ChatPreview() {
   );
 
   return (
-    <div className="flex h-screen bg-[#EAECF0]" style={{ fontFamily: 'var(--font-jetbrains), monospace' }}>
+    <>
       {/* Hidden SignUpButton that we trigger programmatically */}
       <SignUpButton mode="modal" forceRedirectUrl="/dashboard/chat">
         <button ref={signUpButtonRef} className="hidden" aria-hidden="true" />
       </SignUpButton>
 
-      {/* Sidebar */}
-      {sidebarOpen && (
-        <aside className="w-[280px] flex-shrink-0 bg-white border-r border-gray-200 flex flex-col">
-          {/* Sidebar header */}
-          <div className="p-4 border-b border-gray-200">
-            <button
-              onClick={triggerSignUp}
-              className="w-full px-4 py-2.5 rounded-lg bg-gray-900 text-white text-sm font-medium hover:bg-gray-800 transition"
-            >
-              + New Chat
-            </button>
-            <input
-              type="text"
-              placeholder="Search chats..."
-              disabled
-              className="mt-3 w-full px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-900 placeholder-gray-400 focus:border-[#2383e2] focus:outline-none focus:ring-1 focus:ring-[#2383e2] disabled:opacity-50"
-            />
-          </div>
-
-          {/* Sidebar content - scrollable */}
-          <div className="flex-1 overflow-y-auto">
+      <ChatShell
+        onNewChat={triggerSignUp}
+        searchValue=""
+        onSearchChange={() => {}}
+        searchDisabled
+        headerTitle="Medici"
+        headerRight={
+          <span className="text-xs text-green-600 bg-green-50 px-2 py-1 rounded-full font-medium">
+            $5.00 free credits
+          </span>
+        }
+        sidebarContent={
+          <>
             {/* Empty history placeholder */}
             <div className="p-3">
               <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 px-1">
@@ -87,6 +88,108 @@ export default function ChatPreview() {
               </h3>
               <p className="text-xs text-gray-400 px-3 py-2">
                 Sign in to save chat history
+              </p>
+            </div>
+
+            {/* DataSearch preview */}
+            <div className="p-3 border-t border-gray-100">
+              <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 px-1">
+                Search Data
+              </h3>
+
+              {/* Tab toggle */}
+              <div className="flex gap-1 mb-2 px-1">
+                <button
+                  onClick={() => setPreviewSearchTab('companies')}
+                  className={`flex-1 px-2 py-1.5 rounded text-xs font-medium transition ${
+                    previewSearchTab === 'companies'
+                      ? 'bg-gray-900 text-white'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  Companies
+                </button>
+                <button
+                  onClick={() => setPreviewSearchTab('bonds')}
+                  className={`flex-1 px-2 py-1.5 rounded text-xs font-medium transition ${
+                    previewSearchTab === 'bonds'
+                      ? 'bg-gray-900 text-white'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  Bonds
+                </button>
+              </div>
+
+              {previewSearchTab === 'companies' ? (
+                <div>
+                  <input
+                    type="text"
+                    placeholder="Search by ticker or name..."
+                    disabled
+                    className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-900 placeholder-gray-400 mb-2 disabled:opacity-50"
+                  />
+                  <div className="max-h-[300px] overflow-y-auto space-y-0.5">
+                    {PREVIEW_COMPANIES.map((company) => (
+                      <button
+                        key={company.ticker}
+                        onClick={triggerSignUp}
+                        className="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-left hover:bg-blue-50 hover:text-[#2383e2] transition"
+                      >
+                        <span className="font-mono text-xs font-semibold text-gray-900 w-12 flex-shrink-0">
+                          {company.ticker}
+                        </span>
+                        <span className="flex-1 text-xs text-gray-600 truncate">
+                          {company.name}
+                        </span>
+                        <span className="text-[10px] text-gray-400 font-mono flex-shrink-0">
+                          {company.leverage}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  <input
+                    type="text"
+                    placeholder="Enter ticker (e.g. RIG)..."
+                    disabled
+                    className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-900 placeholder-gray-400 mb-2 font-mono disabled:opacity-50"
+                  />
+                  <p className="px-3 py-2 text-xs text-gray-400">
+                    Sign in to search bonds
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Watchlist preview */}
+            <div className="p-3 border-t border-gray-100">
+              <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 px-1">
+                Watchlist
+              </h3>
+              <div className="flex gap-2 mb-2 px-1">
+                <input
+                  type="text"
+                  value={watchlistInput}
+                  onChange={(e) => setWatchlistInput(e.target.value.toUpperCase())}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') triggerSignUp();
+                  }}
+                  placeholder="Add ticker..."
+                  maxLength={5}
+                  className="flex-1 px-2 py-1.5 rounded border border-gray-200 text-xs text-gray-900 placeholder-gray-400 focus:border-[#2383e2] focus:outline-none"
+                />
+                <button
+                  onClick={triggerSignUp}
+                  className="px-2 py-1.5 rounded bg-gray-100 text-xs text-gray-700 hover:bg-gray-200 transition"
+                >
+                  +
+                </button>
+              </div>
+              <p className="text-xs text-gray-400 px-1">
+                Add tickers for quick access
               </p>
             </div>
 
@@ -129,49 +232,18 @@ export default function ChatPreview() {
                 ))}
               </div>
             </div>
-
-            {/* Watchlist placeholder */}
-            <div className="p-3 border-t border-gray-100">
-              <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 px-1">
-                Watchlist
-              </h3>
-              <p className="text-xs text-gray-400 px-1">
-                Sign in to track tickers
-              </p>
-            </div>
-          </div>
-
-          {/* Back to home */}
-          <div className="p-3 border-t border-gray-200">
-            <a
-              href="/"
-              className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-700 transition"
-            >
-              <span>&larr;</span>
-              <span>Home</span>
-            </a>
-          </div>
-        </aside>
-      )}
-
-      {/* Main chat area */}
-      <div className="flex-1 flex flex-col min-w-0">
-        {/* Chat header */}
-        <header className="flex items-center gap-3 px-4 py-3 bg-white border-b border-gray-200">
-          <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="p-1.5 rounded-lg hover:bg-gray-100 transition text-gray-500"
-            title={sidebarOpen ? 'Close sidebar' : 'Open sidebar'}
+          </>
+        }
+        sidebarFooter={
+          <a
+            href="/"
+            className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-700 transition"
           >
-            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
-          <h1 className="text-sm font-medium text-gray-900 truncate flex-1">
-            Medici
-          </h1>
-        </header>
-
+            <span>&larr;</span>
+            <span>Home</span>
+          </a>
+        }
+      >
         {/* Empty state / welcome message */}
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center px-6">
@@ -179,8 +251,14 @@ export default function ChatPreview() {
             <p className="text-gray-500 max-w-md">
               DebtStack&apos;s credit data assistant. Ask about debt structures, bond pricing, leverage ratios, covenants, and more.
             </p>
-            <p className="text-sm text-gray-400 mt-4">
-              Sign up to start chatting — $5 free credits included.
+            <button
+              onClick={triggerSignUp}
+              className="mt-6 px-6 py-2.5 rounded-lg bg-gray-900 text-white text-sm font-medium hover:bg-gray-800 transition"
+            >
+              Sign up to start chatting
+            </button>
+            <p className="text-sm text-gray-400 mt-3">
+              $5 free credits included — no credit card required.
             </p>
           </div>
         </div>
@@ -213,7 +291,7 @@ export default function ChatPreview() {
             Enter to send, Shift+Enter for newline
           </p>
         </div>
-      </div>
+      </ChatShell>
 
       {/* Sign-up overlay (shown briefly while Clerk modal opens) */}
       {showSignUpOverlay && (
@@ -222,6 +300,6 @@ export default function ChatPreview() {
           onClick={() => setShowSignUpOverlay(false)}
         />
       )}
-    </div>
+    </>
   );
 }

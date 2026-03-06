@@ -81,7 +81,7 @@ debtstack-website/
   - Credit Packages ($10, $25, $50, $100): `STRIPE_CREDITS_*_PRICE_ID`
 
 ### Backend Communication
-- Backend URL: `https://api.debtstack.ai` (points to `credible-ai-production.up.railway.app`)
+- Backend URL: `https://api.debtstack.ai`
 - Frontend syncs users to backend on first login
 - Backend manages API keys, rate limits, and credit tracking
 

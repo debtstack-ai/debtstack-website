@@ -114,6 +114,531 @@ const TRUSTED_BY = [
   { name: 'Anthropic', logo: '/logos/anthropic.svg' },
 ];
 
+// ── Hero background variants ──────────────────────────────────────────
+
+// 1) Abstract geometric + aurora — large 3D-ish shapes with aurora gradient blobs
+function GeometricHero() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d')!;
+    let animId: number;
+    let time = 0;
+
+    type Shape = {
+      x: number; y: number; vx: number; vy: number;
+      size: number; rotation: number; rotSpeed: number;
+      tiltX: number; tiltY: number; tiltSpeed: number;
+      type: 'hexagon' | 'cube' | 'octagon' | 'diamond' | 'ring' | 'triangle3d';
+      opacity: number; color: [number, number, number];
+      depth: number; // 0-1, affects parallax speed and size scaling
+    };
+
+    const colorPalette: [number, number, number][] = [
+      [35, 131, 226], [6, 182, 212], [99, 102, 241], [14, 165, 233], [139, 92, 246],
+    ];
+
+    const shapes: Shape[] = [];
+
+    // Aurora blobs
+    const blobs = [
+      { cx: 0.25, cy: 0.35, rx: 380, ry: 220, color: [35, 131, 226] as [number, number, number], speed: 0.7 },
+      { cx: 0.72, cy: 0.4, rx: 320, ry: 260, color: [6, 182, 212] as [number, number, number], speed: 1.1 },
+      { cx: 0.5, cy: 0.75, rx: 420, ry: 200, color: [99, 102, 241] as [number, number, number], speed: 0.5 },
+      { cx: 0.15, cy: 0.65, rx: 280, ry: 210, color: [14, 165, 233] as [number, number, number], speed: 0.9 },
+    ];
+
+    const resize = () => {
+      canvas.width = canvas.offsetWidth * window.devicePixelRatio;
+      canvas.height = canvas.offsetHeight * window.devicePixelRatio;
+      ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+    };
+
+    const init = () => {
+      resize();
+      shapes.length = 0;
+      const w = canvas.offsetWidth;
+      const h = canvas.offsetHeight;
+      const types: Shape['type'][] = ['hexagon', 'cube', 'octagon', 'diamond', 'ring', 'triangle3d'];
+      for (let i = 0; i < 40; i++) {
+        const depth = 0.15 + Math.random() * 0.85;
+        shapes.push({
+          x: Math.random() * w,
+          y: Math.random() * h,
+          vx: (Math.random() - 0.5) * 0.3 * depth,
+          vy: (Math.random() - 0.5) * 0.25 * depth,
+          size: (40 + Math.random() * 100) * (0.5 + depth * 0.5),
+          rotation: Math.random() * Math.PI * 2,
+          rotSpeed: (Math.random() - 0.5) * 0.006,
+          tiltX: Math.random() * Math.PI * 2,
+          tiltY: Math.random() * Math.PI * 2,
+          tiltSpeed: 0.003 + Math.random() * 0.008,
+          type: types[Math.floor(Math.random() * types.length)],
+          opacity: (0.04 + Math.random() * 0.1) * depth,
+          color: colorPalette[Math.floor(Math.random() * colorPalette.length)],
+          depth,
+        });
+      }
+      // Sort by depth so far shapes draw first
+      shapes.sort((a, b) => a.depth - b.depth);
+    };
+
+    const drawHexagon = (cx: number, cy: number, r: number, sides: number) => {
+      ctx.beginPath();
+      for (let i = 0; i <= sides; i++) {
+        const angle = (Math.PI * 2 * i) / sides - Math.PI / 2;
+        const x = cx + r * Math.cos(angle);
+        const y = cy + r * Math.sin(angle);
+        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      }
+      ctx.closePath();
+    };
+
+    const draw = () => {
+      const w = canvas.offsetWidth;
+      const h = canvas.offsetHeight;
+      ctx.clearRect(0, 0, w, h);
+      time += 0.004;
+
+      // ── Aurora layer (drawn first, behind shapes) ──
+      for (const b of blobs) {
+        const bx = w * b.cx + Math.sin(time * b.speed) * 70;
+        const by = h * b.cy + Math.cos(time * b.speed * 0.7) * 50;
+        const rx = b.rx + Math.sin(time * b.speed * 1.3) * 35;
+        const ry = b.ry + Math.cos(time * b.speed) * 25;
+
+        // Draw as a blurred filled ellipse via shadow trick
+        ctx.save();
+        ctx.filter = 'blur(70px)';
+        const grad = ctx.createRadialGradient(bx, by, 0, bx, by, Math.max(rx, ry));
+        grad.addColorStop(0, `rgba(${b.color.join(',')},0.16)`);
+        grad.addColorStop(0.6, `rgba(${b.color.join(',')},0.06)`);
+        grad.addColorStop(1, `rgba(${b.color.join(',')},0)`);
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.ellipse(bx, by, rx, ry, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+
+      // ── Geometric shapes layer ──
+      for (const s of shapes) {
+        s.x += s.vx;
+        s.y += s.vy;
+        s.rotation += s.rotSpeed;
+        s.tiltX += s.tiltSpeed * 0.7;
+        s.tiltY += s.tiltSpeed;
+
+        if (s.x < -s.size) s.x = w + s.size;
+        if (s.x > w + s.size) s.x = -s.size;
+        if (s.y < -s.size) s.y = h + s.size;
+        if (s.y > h + s.size) s.y = -s.size;
+
+        // Simulate 3D tilt by scaling x/y axes
+        const scaleX = 0.6 + 0.4 * Math.abs(Math.cos(s.tiltX));
+        const scaleY = 0.6 + 0.4 * Math.abs(Math.cos(s.tiltY));
+
+        const [cr, cg, cb] = s.color;
+        const fillAlpha = s.opacity;
+        const strokeAlpha = s.opacity + 0.04;
+
+        ctx.save();
+        ctx.translate(s.x, s.y);
+        ctx.rotate(s.rotation);
+        ctx.scale(scaleX, scaleY);
+
+        // Gradient fill for depth
+        const grad = ctx.createLinearGradient(-s.size / 2, -s.size / 2, s.size / 2, s.size / 2);
+        grad.addColorStop(0, `rgba(${cr},${cg},${cb},${fillAlpha * 1.3})`);
+        grad.addColorStop(1, `rgba(${cr},${cg},${cb},${fillAlpha * 0.4})`);
+        ctx.fillStyle = grad;
+        ctx.strokeStyle = `rgba(${cr},${cg},${cb},${strokeAlpha})`;
+        ctx.lineWidth = 1.5;
+
+        const r = s.size / 2;
+
+        if (s.type === 'hexagon') {
+          drawHexagon(0, 0, r, 6);
+          ctx.fill();
+          ctx.stroke();
+          // Inner hexagon for depth
+          ctx.strokeStyle = `rgba(${cr},${cg},${cb},${strokeAlpha * 0.5})`;
+          drawHexagon(0, 0, r * 0.6, 6);
+          ctx.stroke();
+        } else if (s.type === 'octagon') {
+          drawHexagon(0, 0, r, 8);
+          ctx.fill();
+          ctx.stroke();
+          ctx.strokeStyle = `rgba(${cr},${cg},${cb},${strokeAlpha * 0.4})`;
+          drawHexagon(0, 0, r * 0.55, 8);
+          ctx.stroke();
+        } else if (s.type === 'cube') {
+          // Isometric cube face
+          const offset = r * 0.3;
+          // Back face
+          ctx.fillStyle = `rgba(${cr},${cg},${cb},${fillAlpha * 0.3})`;
+          ctx.fillRect(-r + offset, -r + offset, r * 1.2, r * 1.2);
+          ctx.strokeRect(-r + offset, -r + offset, r * 1.2, r * 1.2);
+          // Front face
+          ctx.fillStyle = grad;
+          ctx.fillRect(-r, -r, r * 1.2, r * 1.2);
+          ctx.strokeRect(-r, -r, r * 1.2, r * 1.2);
+          // Connecting edges
+          ctx.beginPath();
+          ctx.moveTo(-r, -r); ctx.lineTo(-r + offset, -r + offset);
+          ctx.moveTo(-r + r * 1.2, -r); ctx.lineTo(-r + r * 1.2 + offset, -r + offset);
+          ctx.moveTo(-r, -r + r * 1.2); ctx.lineTo(-r + offset, -r + r * 1.2 + offset);
+          ctx.moveTo(-r + r * 1.2, -r + r * 1.2); ctx.lineTo(-r + r * 1.2 + offset, -r + r * 1.2 + offset);
+          ctx.stroke();
+        } else if (s.type === 'diamond') {
+          ctx.beginPath();
+          ctx.moveTo(0, -r);
+          ctx.lineTo(r * 0.6, 0);
+          ctx.lineTo(0, r);
+          ctx.lineTo(-r * 0.6, 0);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+          // Center line for facet
+          ctx.strokeStyle = `rgba(${cr},${cg},${cb},${strokeAlpha * 0.4})`;
+          ctx.beginPath();
+          ctx.moveTo(-r * 0.6, 0);
+          ctx.lineTo(r * 0.6, 0);
+          ctx.stroke();
+        } else if (s.type === 'ring') {
+          ctx.beginPath();
+          ctx.arc(0, 0, r, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.arc(0, 0, r * 0.7, 0, Math.PI * 2);
+          ctx.stroke();
+          // Radial spokes
+          ctx.strokeStyle = `rgba(${cr},${cg},${cb},${strokeAlpha * 0.3})`;
+          for (let a = 0; a < 6; a++) {
+            const angle = (Math.PI * 2 * a) / 6;
+            ctx.beginPath();
+            ctx.moveTo(Math.cos(angle) * r * 0.7, Math.sin(angle) * r * 0.7);
+            ctx.lineTo(Math.cos(angle) * r, Math.sin(angle) * r);
+            ctx.stroke();
+          }
+        } else if (s.type === 'triangle3d') {
+          // Front face
+          ctx.beginPath();
+          ctx.moveTo(0, -r);
+          ctx.lineTo(r, r * 0.7);
+          ctx.lineTo(-r, r * 0.7);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+          // Inner triangle for depth
+          const ir = r * 0.5;
+          ctx.strokeStyle = `rgba(${cr},${cg},${cb},${strokeAlpha * 0.5})`;
+          ctx.beginPath();
+          ctx.moveTo(0, -ir);
+          ctx.lineTo(ir, ir * 0.7);
+          ctx.lineTo(-ir, ir * 0.7);
+          ctx.closePath();
+          ctx.stroke();
+          // Connect inner to outer vertices
+          ctx.strokeStyle = `rgba(${cr},${cg},${cb},${strokeAlpha * 0.25})`;
+          ctx.beginPath();
+          ctx.moveTo(0, -r); ctx.lineTo(0, -ir);
+          ctx.moveTo(r, r * 0.7); ctx.lineTo(ir, ir * 0.7);
+          ctx.moveTo(-r, r * 0.7); ctx.lineTo(-ir, ir * 0.7);
+          ctx.stroke();
+        }
+
+        ctx.restore();
+      }
+
+      // ── Connection lines between nearby shapes ──
+      for (let i = 0; i < shapes.length; i++) {
+        for (let j = i + 1; j < shapes.length; j++) {
+          const dx = shapes[i].x - shapes[j].x;
+          const dy = shapes[i].y - shapes[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 250) {
+            const alpha = 0.05 * (1 - dist / 250) * Math.min(shapes[i].depth, shapes[j].depth);
+            ctx.strokeStyle = `rgba(35,131,226,${alpha})`;
+            ctx.lineWidth = 1;
+            ctx.setLineDash([4, 4]);
+            ctx.beginPath();
+            ctx.moveTo(shapes[i].x, shapes[i].y);
+            ctx.lineTo(shapes[j].x, shapes[j].y);
+            ctx.stroke();
+            ctx.setLineDash([]);
+          }
+        }
+      }
+
+      animId = requestAnimationFrame(draw);
+    };
+
+    init();
+    draw();
+    window.addEventListener('resize', init);
+    return () => { cancelAnimationFrame(animId); window.removeEventListener('resize', init); };
+  }, []);
+
+  return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" style={{ pointerEvents: 'none' }} />;
+}
+
+// 2) Finance-themed — stylized yield curves, bar charts, bond ticks
+function FinanceHero() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d')!;
+    let animId: number;
+    let time = 0;
+
+    const resize = () => {
+      canvas.width = canvas.offsetWidth * window.devicePixelRatio;
+      canvas.height = canvas.offsetHeight * window.devicePixelRatio;
+      ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+    };
+    resize();
+    window.addEventListener('resize', resize);
+
+    const draw = () => {
+      const w = canvas.offsetWidth;
+      const h = canvas.offsetHeight;
+      ctx.clearRect(0, 0, w, h);
+      time += 0.005;
+
+      // Yield curve — left side
+      ctx.beginPath();
+      ctx.strokeStyle = 'rgba(35,131,226,0.12)';
+      ctx.lineWidth = 2;
+      for (let x = 0; x < w * 0.4; x++) {
+        const t = x / (w * 0.4);
+        const y = h * 0.7 - (Math.log(1 + t * 8) / Math.log(9)) * h * 0.35 + Math.sin(t * 6 + time * 2) * 8;
+        x === 0 ? ctx.moveTo(w * 0.05 + x, y) : ctx.lineTo(w * 0.05 + x, y);
+      }
+      ctx.stroke();
+
+      // Second curve offset
+      ctx.beginPath();
+      ctx.strokeStyle = 'rgba(6,182,212,0.1)';
+      ctx.lineWidth = 1.5;
+      for (let x = 0; x < w * 0.4; x++) {
+        const t = x / (w * 0.4);
+        const y = h * 0.75 - (Math.log(1 + t * 6) / Math.log(7)) * h * 0.3 + Math.sin(t * 5 + time * 2.5) * 6;
+        x === 0 ? ctx.moveTo(w * 0.05 + x, y) : ctx.lineTo(w * 0.05 + x, y);
+      }
+      ctx.stroke();
+
+      // Bar chart — right side
+      const barCount = 8;
+      const barW = 12;
+      const barGap = 20;
+      const barStartX = w * 0.65;
+      const barBaseY = h * 0.75;
+      for (let i = 0; i < barCount; i++) {
+        const barH = (30 + Math.sin(i * 0.8 + time * 1.5) * 15 + i * 8);
+        ctx.fillStyle = i % 2 === 0 ? 'rgba(35,131,226,0.1)' : 'rgba(6,182,212,0.08)';
+        ctx.fillRect(barStartX + i * (barW + barGap), barBaseY - barH, barW, barH);
+        ctx.strokeStyle = i % 2 === 0 ? 'rgba(35,131,226,0.15)' : 'rgba(6,182,212,0.12)';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(barStartX + i * (barW + barGap), barBaseY - barH, barW, barH);
+      }
+
+      // Floating bond ticks
+      const ticks = [
+        { x: w * 0.15, y: h * 0.2, label: 'T 4.5% 2035' },
+        { x: w * 0.75, y: h * 0.25, label: 'CHTR 5.85% 2035' },
+        { x: w * 0.85, y: h * 0.6, label: 'ATUS 5.25% 2028' },
+        { x: w * 0.1, y: h * 0.55, label: 'DISH 7.375% 2028' },
+      ];
+      ctx.font = '10px monospace';
+      for (const tk of ticks) {
+        const yOff = Math.sin(time * 1.5 + tk.x * 0.01) * 4;
+        ctx.fillStyle = 'rgba(35,131,226,0.12)';
+        const textW = ctx.measureText(tk.label).width;
+        ctx.fillRect(tk.x - 4, tk.y + yOff - 10, textW + 8, 16);
+        ctx.strokeStyle = 'rgba(35,131,226,0.18)';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(tk.x - 4, tk.y + yOff - 10, textW + 8, 16);
+        ctx.fillStyle = 'rgba(35,131,226,0.35)';
+        ctx.fillText(tk.label, tk.x, tk.y + yOff + 1);
+      }
+
+      // Horizontal grid lines
+      ctx.strokeStyle = 'rgba(35,131,226,0.04)';
+      ctx.lineWidth = 1;
+      for (let i = 1; i < 6; i++) {
+        const y = h * (i / 6);
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(w, y);
+        ctx.stroke();
+      }
+
+      animId = requestAnimationFrame(draw);
+    };
+
+    draw();
+    return () => { cancelAnimationFrame(animId); window.removeEventListener('resize', resize); };
+  }, []);
+
+  return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" style={{ pointerEvents: 'none' }} />;
+}
+
+// 3) Gradient mesh / aurora — large colorful gradient blobs
+function AuroraHero() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d')!;
+    let animId: number;
+    let time = 0;
+
+    const blobs = [
+      { cx: 0.3, cy: 0.4, rx: 350, ry: 200, color: [35, 131, 226], speed: 0.8 },
+      { cx: 0.7, cy: 0.3, rx: 300, ry: 250, color: [6, 182, 212], speed: 1.2 },
+      { cx: 0.5, cy: 0.7, rx: 400, ry: 180, color: [99, 102, 241], speed: 0.6 },
+      { cx: 0.2, cy: 0.6, rx: 250, ry: 200, color: [14, 165, 233], speed: 1.0 },
+      { cx: 0.8, cy: 0.65, rx: 280, ry: 220, color: [6, 182, 212], speed: 0.9 },
+    ];
+
+    const resize = () => {
+      canvas.width = canvas.offsetWidth * window.devicePixelRatio;
+      canvas.height = canvas.offsetHeight * window.devicePixelRatio;
+      ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+    };
+    resize();
+    window.addEventListener('resize', resize);
+
+    const draw = () => {
+      const w = canvas.offsetWidth;
+      const h = canvas.offsetHeight;
+      ctx.clearRect(0, 0, w, h);
+      time += 0.003;
+
+      for (const b of blobs) {
+        const x = w * b.cx + Math.sin(time * b.speed) * 60;
+        const y = h * b.cy + Math.cos(time * b.speed * 0.7) * 40;
+        const gradient = ctx.createRadialGradient(x, y, 0, x, y, Math.max(b.rx, b.ry));
+        gradient.addColorStop(0, `rgba(${b.color.join(',')},0.18)`);
+        gradient.addColorStop(0.5, `rgba(${b.color.join(',')},0.08)`);
+        gradient.addColorStop(1, `rgba(${b.color.join(',')},0)`);
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.ellipse(x, y, b.rx + Math.sin(time * b.speed * 1.3) * 30, b.ry + Math.cos(time * b.speed) * 20, 0, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      animId = requestAnimationFrame(draw);
+    };
+
+    draw();
+    return () => { cancelAnimationFrame(animId); window.removeEventListener('resize', resize); };
+  }, []);
+
+  return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" style={{ pointerEvents: 'none', filter: 'blur(60px)' }} />;
+}
+
+// 4) Grid + particles — dot grid with connection lines
+function ParticleGridHero() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d')!;
+    let animId: number;
+
+    const particles: { x: number; y: number; vx: number; vy: number; size: number }[] = [];
+
+    const resize = () => {
+      canvas.width = canvas.offsetWidth * window.devicePixelRatio;
+      canvas.height = canvas.offsetHeight * window.devicePixelRatio;
+      ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+    };
+
+    const init = () => {
+      resize();
+      particles.length = 0;
+      const w = canvas.offsetWidth;
+      const h = canvas.offsetHeight;
+      for (let i = 0; i < 50; i++) {
+        particles.push({
+          x: Math.random() * w,
+          y: Math.random() * h,
+          vx: (Math.random() - 0.5) * 0.5,
+          vy: (Math.random() - 0.5) * 0.5,
+          size: 1.5 + Math.random() * 2,
+        });
+      }
+    };
+
+    const draw = () => {
+      const w = canvas.offsetWidth;
+      const h = canvas.offsetHeight;
+      ctx.clearRect(0, 0, w, h);
+
+      // Static grid dots
+      ctx.fillStyle = 'rgba(35,131,226,0.08)';
+      const spacing = 40;
+      for (let x = spacing; x < w; x += spacing) {
+        for (let y = spacing; y < h; y += spacing) {
+          ctx.beginPath();
+          ctx.arc(x, y, 1, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      // Moving particles
+      for (const p of particles) {
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.x < 0 || p.x > w) p.vx *= -1;
+        if (p.y < 0 || p.y > h) p.vy *= -1;
+
+        ctx.fillStyle = 'rgba(35,131,226,0.25)';
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Connections
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 150) {
+            ctx.strokeStyle = `rgba(35,131,226,${0.08 * (1 - dist / 150)})`;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.stroke();
+          }
+        }
+      }
+
+      animId = requestAnimationFrame(draw);
+    };
+
+    init();
+    draw();
+    window.addEventListener('resize', init);
+    return () => { cancelAnimationFrame(animId); window.removeEventListener('resize', init); };
+  }, []);
+
+  return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" style={{ pointerEvents: 'none' }} />;
+}
+
+const HERO_VARIANTS = ['geometric', 'finance', 'aurora', 'particles'] as const;
+type HeroVariant = typeof HERO_VARIANTS[number];
+
 // Framer motion variants
 const ease = [0.16, 1, 0.3, 1] as const;
 
@@ -133,6 +658,7 @@ const staggerItem = {
 };
 
 export default function Home() {
+  const [heroVariant, setHeroVariant] = useState<HeroVariant>('geometric');
   const [activeExample, setActiveExample] = useState(0);
   const [typedText, setTypedText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -233,9 +759,34 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-[#EAECF0] text-black overflow-hidden">
+      {/* Header + Hero wrapper — canvas spans both */}
+      <div className="relative">
+        {/* Background graphics — switchable variants */}
+        {heroVariant === 'geometric' && <GeometricHero />}
+        {heroVariant === 'finance' && <FinanceHero />}
+        {heroVariant === 'aurora' && <AuroraHero />}
+        {heroVariant === 'particles' && <ParticleGridHero />}
+
+        {/* Variant switcher (dev mode) */}
+        <div className="absolute top-3 right-3 z-20 flex gap-1">
+          {HERO_VARIANTS.map((v) => (
+            <button
+              key={v}
+              onClick={() => setHeroVariant(v)}
+              className={`px-2 py-1 rounded text-xs font-medium transition-all ${
+                heroVariant === v
+                  ? 'bg-[#2383e2] text-white'
+                  : 'bg-white/70 text-gray-500 hover:text-black border border-gray-200'
+              }`}
+            >
+              {v}
+            </button>
+          ))}
+        </div>
+
       {/* Header */}
       <motion.header
-        className="px-6 py-4 border-b border-gray-200 relative z-10"
+        className="px-6 py-4 border-b border-gray-200/50 relative z-10"
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: 'easeOut' }}
@@ -288,11 +839,6 @@ export default function Home() {
 
       {/* Hero */}
       <section className="px-6 pt-8 pb-16 md:pt-12 md:pb-20 relative">
-        {/* Background effects */}
-        <div className="absolute inset-0 hero-grid opacity-60" />
-        <div className="hero-glow" />
-        <div className="hero-glow-secondary" />
-
         <div className="max-w-3xl mx-auto text-center relative z-10">
           <motion.h1
             className="text-5xl md:text-7xl font-bold mb-6 tracking-tight text-black"
@@ -358,6 +904,7 @@ export default function Home() {
           </motion.p>
         </div>
       </section>
+      </div>{/* end header+hero wrapper */}
 
       {/* Trusted By */}
       <motion.section
@@ -435,7 +982,7 @@ export default function Home() {
             <div className="hidden md:block w-px bg-gray-300 self-stretch" />
 
             {/* Right panel — Terminal Card */}
-            <div className="mt-6 md:mt-0 terminal-card p-5 md:p-6 md:h-[420px] overflow-hidden" style={{ fontFamily: 'var(--font-jetbrains), monospace', background: '#DFE1E6' }}>
+            <div className="mt-6 md:mt-0 terminal-card p-5 md:p-6 md:h-[420px] overflow-hidden" style={{ fontFamily: 'var(--font-geist-mono), monospace', background: '#DFE1E6' }}>
               {/* Query input */}
               <div className="flex items-center gap-3 mb-5 px-4 py-2.5 bg-[#D4D7DD] rounded-lg border border-[#C0C4CC]">
                 <span className="text-black text-xs shrink-0">$</span>
@@ -594,7 +1141,7 @@ export default function Home() {
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-[1fr_1px_280px] gap-0 md:gap-10 items-center">
             {/* Left panel — Step 1 card */}
-            <div className="order-2 md:order-none mt-6 md:mt-0 terminal-card p-5 md:p-6 md:h-[420px] overflow-hidden" style={{ fontFamily: 'var(--font-jetbrains), monospace', background: '#DFE1E6' }}>
+            <div className="order-2 md:order-none mt-6 md:mt-0 terminal-card p-5 md:p-6 md:h-[420px] overflow-hidden" style={{ fontFamily: 'var(--font-geist-mono), monospace', background: '#DFE1E6' }}>
               <div className="flex items-center gap-3 px-4 py-2.5 bg-[#D4D7DD] rounded-lg border border-[#C0C4CC]">
                 <span className="text-black text-xs shrink-0">$</span>
                 <span className="text-xs text-black">
@@ -696,7 +1243,7 @@ export default function Home() {
             {/* Right panel — Step 2 card */}
             <motion.div
               className={`mt-6 md:mt-0 terminal-card p-5 md:p-6 md:h-[420px] overflow-hidden ${provStep >= 3 ? '' : 'opacity-0 translate-y-2'}`}
-              style={{ fontFamily: 'var(--font-jetbrains), monospace', background: '#DFE1E6' }}
+              style={{ fontFamily: 'var(--font-geist-mono), monospace', background: '#DFE1E6' }}
               animate={provStep >= 3 ? { opacity: 1, y: 0 } : { opacity: 0, y: 8 }}
               transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
             >
