@@ -5,6 +5,13 @@ import ChatInput from './ChatInput';
 import ChatMessages, { Message, ToolCallStatus } from './ChatMessages';
 import ChatShell from './ChatShell';
 import DataSearch from './DataSearch';
+import {
+  fetchSessionList,
+  fetchSession,
+  saveSession as saveSessionRemote,
+  deleteSessionRemote,
+  migrateFromLocalStorage,
+} from '@/lib/chat/session-storage';
 
 interface ChatSession {
   id: string;
@@ -78,12 +85,64 @@ export default function ChatLayout({ apiKey }: ChatLayoutProps) {
   const [watchlist, setWatchlist] = useState<WatchlistItem[]>([]);
   const [watchlistInput, setWatchlistInput] = useState('');
   const abortRef = useRef<AbortController | null>(null);
+  const serverAvailableRef = useRef(true);
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Load from localStorage on mount
+  // Load from localStorage immediately, then sync with server
   useEffect(() => {
     setSessions(loadSessions());
     setWatchlist(loadWatchlist());
+
+    // Fetch server sessions in parallel
+    fetchSessionList()
+      .then(async (serverSessions) => {
+        // If server has sessions, use them as source of truth for the sidebar
+        if (serverSessions.length > 0) {
+          const localSessions = loadSessions();
+          // Merge: server sessions take priority, keep any local-only sessions
+          const serverIds = new Set(serverSessions.map((s) => s.id));
+          const localOnly = localSessions.filter((s) => !serverIds.has(s.id));
+          const merged: ChatSession[] = [
+            ...serverSessions.map((s) => ({
+              id: s.id,
+              title: s.title,
+              messages: [], // loaded on click
+              createdAt: s.created_at,
+              totalCost: s.total_cost,
+            })),
+            ...localOnly,
+          ];
+          setSessions(merged);
+        } else {
+          // Server empty — run migration from localStorage
+          await migrateFromLocalStorage();
+        }
+      })
+      .catch(() => {
+        // Server unavailable — stay with localStorage
+        serverAvailableRef.current = false;
+      });
   }, []);
+
+  // Debounced server save helper
+  const debouncedServerSave = useCallback(
+    (session: ChatSession) => {
+      if (!serverAvailableRef.current) return;
+      if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+      saveTimerRef.current = setTimeout(() => {
+        saveSessionRemote({
+          id: session.id,
+          title: session.title,
+          messages: session.messages,
+          totalCost: session.totalCost,
+          createdAt: session.createdAt,
+        }).catch(() => {
+          // Silent failure — localStorage is the fallback
+        });
+      }, 1000);
+    },
+    []
+  );
 
   // Save session whenever messages change
   useEffect(() => {
@@ -95,9 +154,12 @@ export default function ChatLayout({ apiKey }: ChatLayoutProps) {
           : s
       );
       saveSessions(updated);
+      // Debounced server save
+      const current = updated.find((s) => s.id === currentSessionId);
+      if (current) debouncedServerSave(current);
       return updated;
     });
-  }, [messages, sessionCost, currentSessionId]);
+  }, [messages, sessionCost, currentSessionId, debouncedServerSave]);
 
   const startNewChat = useCallback(() => {
     if (abortRef.current) abortRef.current.abort();
@@ -107,12 +169,41 @@ export default function ChatLayout({ apiKey }: ChatLayoutProps) {
     setIsStreaming(false);
   }, []);
 
-  const loadSession = useCallback((session: ChatSession) => {
+  const loadSession = useCallback(async (session: ChatSession) => {
     if (abortRef.current) abortRef.current.abort();
-    setMessages(session.messages);
-    setSessionCost(session.totalCost);
-    setCurrentSessionId(session.id);
     setIsStreaming(false);
+    setCurrentSessionId(session.id);
+
+    // If messages are loaded (from localStorage), use them immediately
+    if (session.messages.length > 0) {
+      setMessages(session.messages);
+      setSessionCost(session.totalCost);
+      return;
+    }
+
+    // Otherwise fetch from server (lazy load)
+    if (serverAvailableRef.current) {
+      try {
+        const full = await fetchSession(session.id);
+        const msgs = full.messages || [];
+        setMessages(msgs);
+        setSessionCost(full.total_cost);
+        // Update local cache
+        setSessions((prev) => {
+          const updated = prev.map((s) =>
+            s.id === session.id ? { ...s, messages: msgs, totalCost: full.total_cost } : s
+          );
+          saveSessions(updated);
+          return updated;
+        });
+      } catch {
+        setMessages([]);
+        setSessionCost(0);
+      }
+    } else {
+      setMessages([]);
+      setSessionCost(0);
+    }
   }, []);
 
   const deleteSession = useCallback((sessionId: string) => {
@@ -123,6 +214,10 @@ export default function ChatLayout({ apiKey }: ChatLayoutProps) {
     });
     if (currentSessionId === sessionId) {
       startNewChat();
+    }
+    // Delete from server (fire-and-forget)
+    if (serverAvailableRef.current) {
+      deleteSessionRemote(sessionId).catch(() => {});
     }
   }, [currentSessionId, startNewChat]);
 
@@ -167,6 +262,16 @@ export default function ChatLayout({ apiKey }: ChatLayoutProps) {
           return updated;
         });
         setCurrentSessionId(sessionId);
+        // Save new session to server (fire-and-forget)
+        if (serverAvailableRef.current) {
+          saveSessionRemote({
+            id: newSession.id,
+            title: newSession.title,
+            messages: [],
+            totalCost: 0,
+            createdAt: newSession.createdAt,
+          }).catch(() => {});
+        }
       }
 
       const userMessage: Message = { role: 'user', content: text };

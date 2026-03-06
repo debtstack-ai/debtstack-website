@@ -1,0 +1,99 @@
+import { Message } from '@/app/dashboard/chat/components/ChatMessages';
+
+export interface SessionSummary {
+  id: string;
+  title: string;
+  total_cost: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ServerSession {
+  id: string;
+  title: string;
+  messages: Message[];
+  total_cost: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export async function fetchSessionList(): Promise<SessionSummary[]> {
+  const res = await fetch('/api/chat-sessions');
+  if (!res.ok) throw new Error('Failed to fetch sessions');
+  const data = await res.json();
+  return data.sessions;
+}
+
+export async function fetchSession(id: string): Promise<ServerSession> {
+  const res = await fetch(`/api/chat-sessions/${id}`);
+  if (!res.ok) throw new Error('Failed to fetch session');
+  const data = await res.json();
+  return data.session;
+}
+
+export async function saveSession(session: {
+  id: string;
+  title: string;
+  messages: Message[];
+  totalCost: number;
+  createdAt: string;
+}): Promise<void> {
+  const res = await fetch('/api/chat-sessions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      id: session.id,
+      title: session.title,
+      messages: session.messages,
+      total_cost: session.totalCost,
+      created_at: session.createdAt,
+    }),
+  });
+  if (!res.ok) throw new Error('Failed to save session');
+}
+
+export async function deleteSessionRemote(id: string): Promise<void> {
+  const res = await fetch(`/api/chat-sessions/${id}`, { method: 'DELETE' });
+  if (!res.ok) throw new Error('Failed to delete session');
+}
+
+const MIGRATION_FLAG = 'debtstack_chat_migrated_v1';
+const STORAGE_KEY_HISTORY = 'debtstack_chat_history';
+
+interface LocalSession {
+  id: string;
+  title: string;
+  messages: Message[];
+  createdAt: string;
+  totalCost: number;
+}
+
+export async function migrateFromLocalStorage(): Promise<number> {
+  if (typeof window === 'undefined') return 0;
+  if (localStorage.getItem(MIGRATION_FLAG)) return 0;
+
+  let localSessions: LocalSession[];
+  try {
+    localSessions = JSON.parse(localStorage.getItem(STORAGE_KEY_HISTORY) || '[]');
+  } catch {
+    localSessions = [];
+  }
+
+  if (localSessions.length === 0) {
+    localStorage.setItem(MIGRATION_FLAG, '1');
+    return 0;
+  }
+
+  let migrated = 0;
+  for (const session of localSessions) {
+    try {
+      await saveSession(session);
+      migrated++;
+    } catch {
+      // Skip failed sessions — they stay in localStorage
+    }
+  }
+
+  localStorage.setItem(MIGRATION_FLAG, '1');
+  return migrated;
+}
