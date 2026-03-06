@@ -1,7 +1,7 @@
 ---
 title: "3 Errors LLMs Make When Processing Credit Data"
 date: "2026-02-25"
-excerpt: "We ran Claude and Gemini against SEC filings for 291 companies. They hallucinated $16 billion in fake bonds, missed entire categories of debt, and invented instruments from summary data. Here's what we learned."
+excerpt: "We've been running LLMs against SEC filings for a while now. We used different LLMs to extract complex credit data from hundreds of companies, thousands of 10-Ks, indentures, credit agreements"
 author: "DebtStack Team"
 ---
 
