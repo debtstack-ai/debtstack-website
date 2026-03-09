@@ -239,7 +239,7 @@ export default function DataSearch({ apiKey, onSelect }: DataSearchProps) {
                     </span>
                     {company.leverage_ratio != null && (
                       <span className="text-[10px] text-gray-400 font-mono flex-shrink-0">
-                        {company.leverage_ratio.toFixed(1)}x
+                        {Number(company.leverage_ratio).toFixed(1)}x
                       </span>
                     )}
                   </button>

@@ -58,9 +58,12 @@ export async function GET() {
           const result: YahooChartResult = data.chart?.result?.[0];
           if (!result?.meta) return { label, type, value: null, change: null, percentChange: null, previousClose: null, timestamp: null };
 
-          const { regularMarketPrice, chartPreviousClose, regularMarketTime } = result.meta;
-          const change = regularMarketPrice - chartPreviousClose;
-          const percentChange = chartPreviousClose !== 0 ? (change / chartPreviousClose) * 100 : 0;
+          const regularMarketPrice = Number(result.meta.regularMarketPrice);
+          const chartPreviousClose = Number(result.meta.chartPreviousClose);
+          const regularMarketTime = result.meta.regularMarketTime;
+          if (isNaN(regularMarketPrice)) return { label, type, value: null, change: null, percentChange: null, previousClose: null, timestamp: null };
+          const change = regularMarketPrice - (isNaN(chartPreviousClose) ? regularMarketPrice : chartPreviousClose);
+          const percentChange = chartPreviousClose !== 0 && !isNaN(chartPreviousClose) ? (change / chartPreviousClose) * 100 : 0;
 
           return {
             label,
