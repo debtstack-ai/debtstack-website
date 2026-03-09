@@ -18,20 +18,39 @@ const TICKER_LABELS = [
   'SPX', 'DXY', 'WTI', 'GOLD',
 ];
 
-function formatValue(item: MarketItem): string {
-  const val = typeof item.value === 'string' ? parseFloat(item.value) : item.value;
-  if (val === null || val === undefined || isNaN(val)) return '--';
-  switch (item.type) {
+// Safely convert any value to a number, returning null if not possible
+function toNum(v: unknown): number | null {
+  if (v === null || v === undefined) return null;
+  const n = Number(v);
+  return isFinite(n) ? n : null;
+}
+
+function formatValue(value: number, type: string): string {
+  switch (type) {
     case 'yield':
-      return `${val.toFixed(2)}%`;
+      return `${value.toFixed(2)}%`;
     case 'etf':
     case 'commodity':
-      return `$${val.toFixed(2)}`;
-    case 'index':
-      return val.toFixed(2);
+      return `$${value.toFixed(2)}`;
     default:
-      return val.toFixed(2);
+      return value.toFixed(2);
   }
+}
+
+// Sanitize raw API items — coerce all numeric fields through Number()
+function sanitizeItems(raw: unknown[]): MarketItem[] {
+  return raw.map((item: unknown) => {
+    const obj = item as Record<string, unknown>;
+    return {
+      label: String(obj.label ?? ''),
+      type: (obj.type ?? 'index') as MarketItem['type'],
+      value: toNum(obj.value),
+      change: toNum(obj.change),
+      percentChange: toNum(obj.percentChange),
+      previousClose: toNum(obj.previousClose),
+      timestamp: obj.timestamp ? String(obj.timestamp) : null,
+    };
+  });
 }
 
 export default function TreasuryTicker() {
@@ -44,7 +63,7 @@ export default function TreasuryTicker() {
       const res = await fetch('/api/treasury');
       if (!res.ok) throw new Error('API error');
       const data = await res.json();
-      setItems(data.items);
+      setItems(sanitizeItems(Array.isArray(data.items) ? data.items : []));
       setError(false);
     } catch {
       if (isInitial) setError(true);
@@ -88,21 +107,18 @@ export default function TreasuryTicker() {
       {item.value !== null ? (
         <>
           <span className="text-white text-xs font-mono font-medium">
-            {formatValue(item)}
+            {formatValue(item.value, item.type)}
           </span>
-          {item.change !== null && (() => {
-            const chg = typeof item.change === 'string' ? parseFloat(item.change) : item.change;
-            return !isNaN(chg) ? (
+          {item.change !== null && (
             <span
               className={`text-xs font-mono ${
-                chg >= 0 ? 'text-green-400' : 'text-red-400'
+                item.change >= 0 ? 'text-green-400' : 'text-red-400'
               }`}
             >
-              {chg >= 0 ? '\u25B2' : '\u25BC'}
-              {Math.abs(chg).toFixed(2)}
+              {item.change >= 0 ? '\u25B2' : '\u25BC'}
+              {Math.abs(item.change).toFixed(2)}
             </span>
-          ) : null;
-          })()}
+          )}
         </>
       ) : (
         <span className="text-gray-500 text-xs font-mono">--</span>
