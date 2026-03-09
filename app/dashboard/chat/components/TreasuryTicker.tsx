@@ -19,17 +19,18 @@ const TICKER_LABELS = [
 ];
 
 function formatValue(item: MarketItem): string {
-  if (item.value === null) return '--';
+  const val = typeof item.value === 'string' ? parseFloat(item.value) : item.value;
+  if (val === null || val === undefined || isNaN(val)) return '--';
   switch (item.type) {
     case 'yield':
-      return `${item.value.toFixed(2)}%`;
+      return `${val.toFixed(2)}%`;
     case 'etf':
     case 'commodity':
-      return `$${item.value.toFixed(2)}`;
+      return `$${val.toFixed(2)}`;
     case 'index':
-      return item.value.toFixed(2);
+      return val.toFixed(2);
     default:
-      return item.value.toFixed(2);
+      return val.toFixed(2);
   }
 }
 
@@ -89,16 +90,19 @@ export default function TreasuryTicker() {
           <span className="text-white text-xs font-mono font-medium">
             {formatValue(item)}
           </span>
-          {item.change !== null && (
+          {item.change !== null && (() => {
+            const chg = typeof item.change === 'string' ? parseFloat(item.change) : item.change;
+            return !isNaN(chg) ? (
             <span
               className={`text-xs font-mono ${
-                item.change >= 0 ? 'text-green-400' : 'text-red-400'
+                chg >= 0 ? 'text-green-400' : 'text-red-400'
               }`}
             >
-              {item.change >= 0 ? '\u25B2' : '\u25BC'}
-              {Math.abs(item.change).toFixed(2)}
+              {chg >= 0 ? '\u25B2' : '\u25BC'}
+              {Math.abs(chg).toFixed(2)}
             </span>
-          )}
+          ) : null;
+          })()}
         </>
       ) : (
         <span className="text-gray-500 text-xs font-mono">--</span>
