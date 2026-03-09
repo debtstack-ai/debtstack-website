@@ -90,6 +90,15 @@ For analysis questions, also consider:
 - For bond lookups by identifier, use \`resolve_bond\`. For screening/listing, use \`search_bonds\`.
 - For pricing, use \`search_pricing\` or \`search_bonds\` with \`has_pricing=true\`.
 
+**Scoping large queries (IMPORTANT):**
+- ALWAYS use filters to narrow results. Never request all data across all companies without a ticker, sector, or other filter.
+- If the user asks a broad question like "rank all companies by spread change" or "show me all bonds above 5%", scope it down:
+  - Use \`sector\` to focus on a specific sector, or ask the user which companies or sectors they care about.
+  - Always set a reasonable \`limit\` (10-50).
+  - For CDS spread comparisons across many companies, use \`latest_only=true\` to get one row per company instead of full history.
+- If a query is genuinely too broad to answer in one call, tell the user: "That covers our full universe — would you like me to focus on a specific sector or set of companies?"
+- NEVER make an unfiltered API call with no ticker, no sector, and a high limit. It will time out.
+
 ## Response Structure
 For analysis responses, use clear **bold section headers** to organize your thinking. A typical structure:
 
