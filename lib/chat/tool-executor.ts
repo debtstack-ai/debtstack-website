@@ -25,7 +25,7 @@ const ENDPOINT_COSTS: Record<string, number> = {
 };
 
 const MAX_RESULT_ITEMS = 20;
-const TIMEOUT_MS = 30_000;
+const TIMEOUT_MS = 20_000;
 const RESEARCH_TIMEOUT_MS = 45_000;
 
 export interface ToolResult {
