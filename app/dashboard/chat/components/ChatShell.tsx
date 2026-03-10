@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import TreasuryTicker from './TreasuryTicker';
 
 interface ChatShellProps {
@@ -31,37 +32,45 @@ export default function ChatShell({
   return (
     <div className="flex h-screen bg-[#EAECF0]">
       {/* Sidebar */}
-      {sidebarOpen && (
-        <aside className="w-[280px] flex-shrink-0 bg-white border-r border-gray-200 flex flex-col">
-          {/* Sidebar header */}
-          <div className="p-4 border-b border-gray-200">
-            <button
-              onClick={onNewChat}
-              className="w-full px-4 py-2.5 rounded-lg bg-gray-900 text-white text-sm font-medium hover:bg-gray-800 transition"
-            >
-              + New Chat
-            </button>
-            <input
-              type="text"
-              value={searchValue}
-              onChange={(e) => onSearchChange(e.target.value)}
-              placeholder="Search chats..."
-              disabled={searchDisabled}
-              className="mt-3 w-full px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-900 placeholder-gray-400 focus:border-[#2383e2] focus:outline-none focus:ring-1 focus:ring-[#2383e2] disabled:opacity-50"
-            />
-          </div>
+      <AnimatePresence initial={false}>
+        {sidebarOpen && (
+          <motion.aside
+            initial={{ width: 0, opacity: 0 }}
+            animate={{ width: 280, opacity: 1 }}
+            exit={{ width: 0, opacity: 0 }}
+            transition={{ duration: 0.2, ease: 'easeOut' }}
+            className="flex-shrink-0 bg-white border-r border-gray-200 flex flex-col overflow-hidden"
+          >
+            {/* Sidebar header */}
+            <div className="p-4 border-b border-gray-200 min-w-[280px]">
+              <button
+                onClick={onNewChat}
+                className="w-full px-4 py-2.5 rounded-lg bg-gray-900 text-white text-sm font-medium hover:bg-gray-800 transition"
+              >
+                + New Chat
+              </button>
+              <input
+                type="text"
+                value={searchValue}
+                onChange={(e) => onSearchChange(e.target.value)}
+                placeholder="Search chats..."
+                disabled={searchDisabled}
+                className="mt-3 w-full px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-900 placeholder-gray-400 focus:border-[#2383e2] focus:outline-none focus:ring-1 focus:ring-[#2383e2] disabled:opacity-50"
+              />
+            </div>
 
-          {/* Sidebar content - scrollable */}
-          <div className="flex-1 overflow-y-auto">
-            {sidebarContent}
-          </div>
+            {/* Sidebar content - scrollable */}
+            <div className="flex-1 overflow-y-auto min-w-[280px]">
+              {sidebarContent}
+            </div>
 
-          {/* Sidebar footer */}
-          <div className="p-3 border-t border-gray-200">
-            {sidebarFooter}
-          </div>
-        </aside>
-      )}
+            {/* Sidebar footer */}
+            <div className="p-3 border-t border-gray-200 min-w-[280px]">
+              {sidebarFooter}
+            </div>
+          </motion.aside>
+        )}
+      </AnimatePresence>
 
       {/* Main chat area */}
       <div className="flex-1 flex flex-col min-w-0">

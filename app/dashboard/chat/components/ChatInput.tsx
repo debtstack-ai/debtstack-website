@@ -5,9 +5,10 @@ import { useState, useRef, useCallback } from 'react';
 interface ChatInputProps {
   onSend: (message: string) => void;
   disabled?: boolean;
+  onStop?: () => void;
 }
 
-export default function ChatInput({ onSend, disabled }: ChatInputProps) {
+export default function ChatInput({ onSend, disabled, onStop }: ChatInputProps) {
   const [value, setValue] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -57,23 +58,49 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
           className="flex-1 resize-none rounded-xl border border-gray-300 px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:border-[#2383e2] focus:outline-none focus:ring-1 focus:ring-[#2383e2] disabled:opacity-50 disabled:cursor-not-allowed"
           style={{ lineHeight: '24px' }}
         />
-        <button
-          onClick={handleSend}
-          disabled={disabled || !value.trim()}
-          className="flex-shrink-0 rounded-xl bg-gray-900 px-4 py-3 text-sm font-medium text-white hover:bg-gray-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {disabled ? (
-            <span className="flex items-center gap-2">
-              <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+        {disabled && onStop ? (
+          <div className="flex-shrink-0 flex gap-2">
+            <button
+              disabled
+              className="rounded-xl bg-gray-900 px-4 py-3 text-sm font-medium text-white opacity-50 cursor-not-allowed"
+            >
+              <span className="flex items-center gap-2">
+                <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+                Thinking
+              </span>
+            </button>
+            <button
+              onClick={onStop}
+              className="rounded-xl border border-gray-300 px-3 py-3 text-sm font-medium text-gray-600 hover:bg-gray-100 transition"
+              title="Stop generating"
+            >
+              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+                <rect x="6" y="6" width="12" height="12" rx="2" />
               </svg>
-              Thinking
-            </span>
-          ) : (
-            'Send'
-          )}
-        </button>
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={handleSend}
+            disabled={disabled || !value.trim()}
+            className="flex-shrink-0 rounded-xl bg-gray-900 px-4 py-3 text-sm font-medium text-white hover:bg-gray-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {disabled ? (
+              <span className="flex items-center gap-2">
+                <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+                Thinking
+              </span>
+            ) : (
+              'Send'
+            )}
+          </button>
+        )}
       </div>
       <p className="text-xs text-gray-400 text-center mt-2">
         Enter to send, Shift+Enter for newline

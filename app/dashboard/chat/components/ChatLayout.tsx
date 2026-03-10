@@ -752,7 +752,11 @@ export default function ChatLayout({ apiKey }: ChatLayoutProps) {
       <ChatMessages messages={messages} onSuggestionClick={handleSuggestionClick} />
 
       {/* Input */}
-      <ChatInput onSend={sendMessage} disabled={isStreaming} />
+      <ChatInput
+        onSend={sendMessage}
+        disabled={isStreaming}
+        onStop={isStreaming ? () => abortRef.current?.abort() : undefined}
+      />
     </ChatShell>
   );
 }

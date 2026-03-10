@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { motion } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
@@ -150,23 +151,35 @@ function ToolCallPill({ tool }: { tool: ToolCallStatus }) {
 
   if (tool.status === 'pending') {
     return (
-      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gray-100 text-gray-500 text-xs italic">
+      <motion.span
+        layout
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1, backgroundColor: 'rgb(243 244 246)' }}
+        transition={{ duration: 0.2 }}
+        className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-gray-500 text-xs italic"
+      >
         <svg className="animate-spin h-3 w-3" viewBox="0 0 24 24" fill="none">
           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
         </svg>
         {label}
-      </span>
+      </motion.span>
     );
   }
 
   return (
-    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gray-50 text-gray-400 text-xs italic">
+    <motion.span
+      layout
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1, backgroundColor: 'rgb(249 250 251)' }}
+      transition={{ duration: 0.2 }}
+      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-gray-400 text-xs italic"
+    >
       <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
       </svg>
       {label}
-    </span>
+    </motion.span>
   );
 }
 
@@ -274,7 +287,12 @@ export default function ChatMessages({ messages, onSuggestionClick }: ChatMessag
     <div className="flex-1 overflow-y-auto px-4 py-6">
       <div className="max-w-3xl mx-auto space-y-6">
         {messages.map((msg, i) => (
-          <div key={i}>
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+          >
             {msg.role === 'user' ? (
               <div className="flex justify-end">
                 <div className="max-w-[80%] rounded-2xl bg-gray-900 text-white px-4 py-3 text-sm">
@@ -337,7 +355,7 @@ export default function ChatMessages({ messages, onSuggestionClick }: ChatMessag
                 </div>
               </div>
             )}
-          </div>
+          </motion.div>
         ))}
         <div ref={bottomRef} />
       </div>
