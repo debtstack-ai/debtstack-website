@@ -16,7 +16,7 @@ export async function GET(
     const { id } = await params;
     const pool = getPool();
     const { rows } = await pool.query(
-      `SELECT id, title, messages, total_cost, created_at, updated_at
+      `SELECT id, title, messages, total_cost, created_at, updated_at, workspace_id
        FROM chat_sessions
        WHERE id = $1 AND clerk_id = $2`,
       [id, userId]

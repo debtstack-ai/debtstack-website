@@ -11,6 +11,10 @@ import {
   saveSession as saveSessionRemote,
   deleteSessionRemote,
   migrateFromLocalStorage,
+  fetchWorkspaces,
+  createWorkspace,
+  deleteWorkspace as deleteWorkspaceRemote,
+  type Workspace,
 } from '@/lib/chat/session-storage';
 
 interface ChatSession {
@@ -19,6 +23,7 @@ interface ChatSession {
   messages: Message[];
   createdAt: string;
   totalCost: number;
+  workspaceId: string | null;
 }
 
 interface WatchlistItem {
@@ -49,7 +54,12 @@ function parseSuggestions(text: string): string[] {
 function loadSessions(): ChatSession[] {
   if (typeof window === 'undefined') return [];
   try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY_HISTORY) || '[]');
+    const raw = JSON.parse(localStorage.getItem(STORAGE_KEY_HISTORY) || '[]');
+    // Backfill workspaceId for sessions saved before workspaces existed
+    return raw.map((s: ChatSession & { workspaceId?: string | null }) => ({
+      ...s,
+      workspaceId: s.workspaceId ?? null,
+    }));
   } catch {
     return [];
   }
@@ -84,6 +94,10 @@ export default function ChatLayout({ apiKey }: ChatLayoutProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [watchlist, setWatchlist] = useState<WatchlistItem[]>([]);
   const [watchlistInput, setWatchlistInput] = useState('');
+  const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
+  const [activeWorkspaceId, setActiveWorkspaceId] = useState<string | null>(null);
+  const [showNewWorkspace, setShowNewWorkspace] = useState(false);
+  const [newWorkspaceName, setNewWorkspaceName] = useState('');
   const abortRef = useRef<AbortController | null>(null);
   const serverAvailableRef = useRef(true);
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -93,9 +107,14 @@ export default function ChatLayout({ apiKey }: ChatLayoutProps) {
     setSessions(loadSessions());
     setWatchlist(loadWatchlist());
 
-    // Fetch server sessions in parallel
-    fetchSessionList()
-      .then(async (serverSessions) => {
+    // Fetch server sessions and workspaces in parallel
+    Promise.all([
+      fetchSessionList(),
+      fetchWorkspaces(),
+    ])
+      .then(async ([serverSessions, serverWorkspaces]) => {
+        setWorkspaces(serverWorkspaces);
+
         // If server has sessions, use them as source of truth for the sidebar
         if (serverSessions.length > 0) {
           const localSessions = loadSessions();
@@ -109,6 +128,7 @@ export default function ChatLayout({ apiKey }: ChatLayoutProps) {
               messages: [], // loaded on click
               createdAt: s.created_at,
               totalCost: s.total_cost,
+              workspaceId: s.workspace_id,
             })),
             ...localOnly,
           ];
@@ -136,6 +156,7 @@ export default function ChatLayout({ apiKey }: ChatLayoutProps) {
           messages: session.messages,
           totalCost: session.totalCost,
           createdAt: session.createdAt,
+          workspaceId: session.workspaceId,
         }).catch(() => {
           // Silent failure — localStorage is the fallback
         });
@@ -191,7 +212,7 @@ export default function ChatLayout({ apiKey }: ChatLayoutProps) {
         // Update local cache
         setSessions((prev) => {
           const updated = prev.map((s) =>
-            s.id === session.id ? { ...s, messages: msgs, totalCost: full.total_cost } : s
+            s.id === session.id ? { ...s, messages: msgs, totalCost: full.total_cost, workspaceId: full.workspace_id } : s
           );
           saveSessions(updated);
           return updated;
@@ -255,6 +276,7 @@ export default function ChatLayout({ apiKey }: ChatLayoutProps) {
           messages: [],
           createdAt: new Date().toISOString(),
           totalCost: 0,
+          workspaceId: activeWorkspaceId,
         };
         setSessions((prev) => {
           const updated = [newSession, ...prev];
@@ -270,6 +292,7 @@ export default function ChatLayout({ apiKey }: ChatLayoutProps) {
             messages: [],
             totalCost: 0,
             createdAt: newSession.createdAt,
+            workspaceId: newSession.workspaceId,
           }).catch(() => {});
         }
       }
@@ -407,7 +430,7 @@ export default function ChatLayout({ apiKey }: ChatLayoutProps) {
         abortRef.current = null;
       }
     },
-    [messages, isStreaming, currentSessionId, apiKey]
+    [messages, isStreaming, currentSessionId, apiKey, activeWorkspaceId]
   );
 
   const handleSuggestionClick = useCallback(
@@ -417,11 +440,72 @@ export default function ChatLayout({ apiKey }: ChatLayoutProps) {
     [isStreaming, sendMessage]
   );
 
-  const filteredSessions = searchQuery
-    ? sessions.filter((s) =>
-        s.title.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    : sessions;
+  const handleCreateWorkspace = useCallback(async (name: string) => {
+    if (!name.trim() || !serverAvailableRef.current) return;
+    try {
+      const ws = await createWorkspace(name.trim());
+      setWorkspaces((prev) => [ws, ...prev]);
+      setActiveWorkspaceId(ws.id);
+      setShowNewWorkspace(false);
+      setNewWorkspaceName('');
+    } catch {
+      // Silent failure
+    }
+  }, []);
+
+  const handleDeleteWorkspace = useCallback(async (wsId: string) => {
+    if (!serverAvailableRef.current) return;
+    const ws = workspaces.find((w) => w.id === wsId);
+    if (!window.confirm(`Delete workspace "${ws?.name || 'Untitled'}"? Sessions will be moved to uncategorized.`)) return;
+    try {
+      await deleteWorkspaceRemote(wsId);
+      setWorkspaces((prev) => prev.filter((w) => w.id !== wsId));
+      // Unassign sessions from this workspace locally
+      setSessions((prev) => {
+        const updated = prev.map((s) =>
+          s.workspaceId === wsId ? { ...s, workspaceId: null } : s
+        );
+        saveSessions(updated);
+        return updated;
+      });
+      if (activeWorkspaceId === wsId) setActiveWorkspaceId(null);
+    } catch {
+      // Silent failure
+    }
+  }, [activeWorkspaceId, workspaces]);
+
+  const handleMoveSession = useCallback((sessionId: string, workspaceId: string | null) => {
+    setSessions((prev) => {
+      const updated = prev.map((s) =>
+        s.id === sessionId ? { ...s, workspaceId } : s
+      );
+      saveSessions(updated);
+      // Update workspace_id on server without overwriting messages
+      if (serverAvailableRef.current) {
+        const pool_query = async () => {
+          const res = await fetch('/api/chat-sessions/move', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ session_id: sessionId, workspace_id: workspaceId }),
+          });
+          if (!res.ok) throw new Error('Failed to move session');
+        };
+        pool_query().catch(() => {});
+      }
+      return updated;
+    });
+  }, []);
+
+  // Filter sessions by search and active workspace
+  const filteredSessions = sessions.filter((s) => {
+    if (searchQuery && !s.title.toLowerCase().includes(searchQuery.toLowerCase())) {
+      return false;
+    }
+    if (activeWorkspaceId !== null && s.workspaceId !== activeWorkspaceId) {
+      return false;
+    }
+    return true;
+  });
 
   const sessionTitle =
     messages.length > 0
@@ -443,11 +527,98 @@ export default function ChatLayout({ apiKey }: ChatLayoutProps) {
       }
       sidebarContent={
         <>
+          {/* Workspace selector */}
+          <div className="px-3 pt-3 pb-1">
+            {workspaces.length > 0 ? (
+              <>
+                <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 px-1">
+                  Workspaces
+                </h3>
+                <div className="flex flex-wrap gap-1 mb-1">
+                  <button
+                    onClick={() => setActiveWorkspaceId(null)}
+                    className={`px-2 py-1 rounded text-xs transition ${
+                      activeWorkspaceId === null
+                        ? 'bg-gray-900 text-white'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    }`}
+                  >
+                    All
+                  </button>
+                  {workspaces.map((ws) => (
+                    <button
+                      key={ws.id}
+                      onClick={() => setActiveWorkspaceId(ws.id)}
+                      className={`group/ws relative px-2 py-1 rounded text-xs transition ${
+                        activeWorkspaceId === ws.id
+                          ? 'bg-gray-900 text-white'
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      }`}
+                      style={ws.color ? { borderLeft: `3px solid ${ws.color}` } : undefined}
+                    >
+                      {ws.name}
+                      <span
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteWorkspace(ws.id);
+                        }}
+                        className="hidden group-hover/ws:inline ml-1 text-gray-400 hover:text-red-500 cursor-pointer"
+                        title="Delete workspace"
+                      >
+                        x
+                      </span>
+                    </button>
+                  ))}
+                  <button
+                    onClick={() => setShowNewWorkspace(true)}
+                    className="px-2 py-1 rounded text-xs bg-gray-50 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition"
+                    title="New workspace"
+                  >
+                    +
+                  </button>
+                </div>
+              </>
+            ) : (
+              <button
+                onClick={() => setShowNewWorkspace(true)}
+                className="text-xs text-gray-400 hover:text-gray-600 transition px-1"
+              >
+                + Create workspace
+              </button>
+            )}
+            {showNewWorkspace && (
+              <div className="flex gap-1 mt-1 px-1">
+                <input
+                  type="text"
+                  value={newWorkspaceName}
+                  onChange={(e) => setNewWorkspaceName(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') handleCreateWorkspace(newWorkspaceName);
+                    if (e.key === 'Escape') {
+                      setShowNewWorkspace(false);
+                      setNewWorkspaceName('');
+                    }
+                  }}
+                  placeholder="Workspace name..."
+                  autoFocus
+                  className="flex-1 px-2 py-1 rounded border border-gray-200 text-xs text-gray-900 placeholder-gray-400 focus:border-[#2383e2] focus:outline-none"
+                />
+                <button
+                  onClick={() => handleCreateWorkspace(newWorkspaceName)}
+                  disabled={!newWorkspaceName.trim()}
+                  className="px-2 py-1 rounded bg-gray-900 text-white text-xs disabled:opacity-50"
+                >
+                  Add
+                </button>
+              </div>
+            )}
+          </div>
+
           {/* Chat history */}
           {filteredSessions.length > 0 && (
             <div className="p-3">
               <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 px-1">
-                History
+                {activeWorkspaceId ? workspaces.find((w) => w.id === activeWorkspaceId)?.name || 'History' : 'History'}
               </h3>
               <div className="space-y-1">
                 {filteredSessions.map((session) => (
@@ -461,6 +632,26 @@ export default function ChatLayout({ apiKey }: ChatLayoutProps) {
                     onClick={() => loadSession(session)}
                   >
                     <span className="flex-1 truncate">{session.title}</span>
+                    {/* Move to workspace */}
+                    {workspaces.length > 0 && (
+                      <select
+                        value={session.workspaceId || ''}
+                        onClick={(e) => e.stopPropagation()}
+                        onChange={(e) => {
+                          e.stopPropagation();
+                          handleMoveSession(session.id, e.target.value || null);
+                        }}
+                        className="hidden group-hover:block w-14 h-5 text-[10px] bg-gray-100 text-gray-500 rounded border-0 cursor-pointer px-0.5"
+                        title="Move to workspace"
+                      >
+                        <option value="">None</option>
+                        {workspaces.map((ws) => (
+                          <option key={ws.id} value={ws.id}>
+                            {ws.name}
+                          </option>
+                        ))}
+                      </select>
+                    )}
                     <button
                       onClick={(e) => {
                         e.stopPropagation();

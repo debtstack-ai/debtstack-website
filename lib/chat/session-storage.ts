@@ -6,6 +6,7 @@ export interface SessionSummary {
   total_cost: number;
   created_at: string;
   updated_at: string;
+  workspace_id: string | null;
 }
 
 export interface ServerSession {
@@ -15,6 +16,16 @@ export interface ServerSession {
   total_cost: number;
   created_at: string;
   updated_at: string;
+  workspace_id: string | null;
+}
+
+export interface Workspace {
+  id: string;
+  name: string;
+  color: string | null;
+  created_at: string;
+  updated_at: string;
+  session_count: number;
 }
 
 export async function fetchSessionList(): Promise<SessionSummary[]> {
@@ -37,6 +48,7 @@ export async function saveSession(session: {
   messages: Message[];
   totalCost: number;
   createdAt: string;
+  workspaceId?: string | null;
 }): Promise<void> {
   const res = await fetch('/api/chat-sessions', {
     method: 'POST',
@@ -47,9 +59,43 @@ export async function saveSession(session: {
       messages: session.messages,
       total_cost: session.totalCost,
       created_at: session.createdAt,
+      workspace_id: session.workspaceId ?? null,
     }),
   });
   if (!res.ok) throw new Error('Failed to save session');
+}
+
+// Workspace CRUD
+export async function fetchWorkspaces(): Promise<Workspace[]> {
+  const res = await fetch('/api/workspaces');
+  if (!res.ok) throw new Error('Failed to fetch workspaces');
+  const data = await res.json();
+  return data.workspaces;
+}
+
+export async function createWorkspace(name: string, color?: string): Promise<Workspace> {
+  const res = await fetch('/api/workspaces', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, color }),
+  });
+  if (!res.ok) throw new Error('Failed to create workspace');
+  const data = await res.json();
+  return data.workspace;
+}
+
+export async function updateWorkspace(id: string, updates: { name?: string; color?: string }): Promise<void> {
+  const res = await fetch(`/api/workspaces/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(updates),
+  });
+  if (!res.ok) throw new Error('Failed to update workspace');
+}
+
+export async function deleteWorkspace(id: string): Promise<void> {
+  const res = await fetch(`/api/workspaces/${id}`, { method: 'DELETE' });
+  if (!res.ok) throw new Error('Failed to delete workspace');
 }
 
 export async function deleteSessionRemote(id: string): Promise<void> {
