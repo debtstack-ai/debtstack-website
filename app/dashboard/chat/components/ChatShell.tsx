@@ -30,7 +30,7 @@ export default function ChatShell({
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   return (
-    <div className="flex h-screen bg-[#EAECF0]">
+    <div className="flex h-screen bg-white">
       {/* Sidebar */}
       <AnimatePresence initial={false}>
         {sidebarOpen && (

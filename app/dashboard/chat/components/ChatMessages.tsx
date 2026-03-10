@@ -285,7 +285,7 @@ export default function ChatMessages({ messages, onSuggestionClick }: ChatMessag
 
   return (
     <div className="flex-1 overflow-y-auto px-4 py-6">
-      <div className="max-w-3xl mx-auto space-y-6">
+      <div className="max-w-[780px] mx-auto space-y-5">
         {messages.map((msg, i) => (
           <motion.div
             key={i}
@@ -295,64 +295,62 @@ export default function ChatMessages({ messages, onSuggestionClick }: ChatMessag
           >
             {msg.role === 'user' ? (
               <div className="flex justify-end">
-                <div className="max-w-[80%] rounded-2xl bg-gray-900 text-white px-4 py-3 text-sm">
+                <div className="max-w-[80%] rounded-2xl bg-gray-100 text-gray-900 px-4 py-3 text-sm">
                   {msg.content}
                 </div>
               </div>
             ) : (
-              <div className="flex justify-start">
-                <div className="max-w-[80%] space-y-3">
-                  {/* Tool call indicators */}
-                  {msg.toolCalls && msg.toolCalls.length > 0 && (
-                    <div className="flex flex-wrap gap-2">
-                      {msg.toolCalls.map((tool) => (
-                        <ToolCallPill key={tool.id} tool={tool} />
-                      ))}
-                    </div>
-                  )}
+              <div className="space-y-3">
+                {/* Tool call indicators */}
+                {msg.toolCalls && msg.toolCalls.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {msg.toolCalls.map((tool) => (
+                      <ToolCallPill key={tool.id} tool={tool} />
+                    ))}
+                  </div>
+                )}
 
-                  {/* Message content */}
-                  {msg.content && (
-                    <div className="rounded-2xl bg-white border border-gray-200 px-4 py-3 text-sm text-gray-900 prose prose-sm max-w-none prose-table:text-sm prose-th:text-left prose-th:px-2 prose-th:py-1 prose-td:px-2 prose-td:py-1">
-                      <ReactMarkdown
-                        remarkPlugins={[remarkGfm]}
-                        components={{
-                          table: ({ children }) => <CopyableTable>{children}</CopyableTable>,
-                        }}
+                {/* Message content */}
+                {msg.content && (
+                  <div className="text-sm text-gray-800 leading-relaxed prose prose-sm max-w-none prose-headings:text-gray-900 prose-headings:font-semibold prose-h3:text-[15px] prose-h3:mt-5 prose-h3:mb-2 prose-p:my-2 prose-ul:my-2 prose-ol:my-2 prose-li:my-0.5 prose-strong:text-gray-900 prose-strong:font-semibold prose-table:text-sm prose-th:text-left prose-th:px-2 prose-th:py-1 prose-td:px-2 prose-td:py-1 prose-hr:my-4 prose-hr:border-gray-200 prose-code:text-[13px] prose-code:bg-gray-100 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none">
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
+                      components={{
+                        table: ({ children }) => <CopyableTable>{children}</CopyableTable>,
+                      }}
+                    >
+                      {msg.content
+                        .replace(/<!--suggestions:\[[\s\S]*?\]-->/, '')
+                        .replace(/<!--request_coverage:.*?-->/, '')}
+                    </ReactMarkdown>
+                  </div>
+                )}
+
+                {/* Coverage request button */}
+                {msg.content && (() => {
+                  const coverage = parseCoverageRequest(msg.content);
+                  return coverage ? (
+                    <CoverageRequestButton
+                      ticker={coverage.ticker}
+                      companyName={coverage.company_name}
+                    />
+                  ) : null;
+                })()}
+
+                {/* Suggested follow-ups */}
+                {msg.suggestions && msg.suggestions.length > 0 && (
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    {msg.suggestions.map((s, j) => (
+                      <button
+                        key={j}
+                        onClick={() => onSuggestionClick(s)}
+                        className="px-3 py-1.5 rounded-full border border-gray-200 text-xs text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition"
                       >
-                        {msg.content
-                          .replace(/<!--suggestions:\[[\s\S]*?\]-->/, '')
-                          .replace(/<!--request_coverage:.*?-->/, '')}
-                      </ReactMarkdown>
-                    </div>
-                  )}
-
-                  {/* Coverage request button */}
-                  {msg.content && (() => {
-                    const coverage = parseCoverageRequest(msg.content);
-                    return coverage ? (
-                      <CoverageRequestButton
-                        ticker={coverage.ticker}
-                        companyName={coverage.company_name}
-                      />
-                    ) : null;
-                  })()}
-
-                  {/* Suggested follow-ups */}
-                  {msg.suggestions && msg.suggestions.length > 0 && (
-                    <div className="flex flex-wrap gap-2">
-                      {msg.suggestions.map((s, j) => (
-                        <button
-                          key={j}
-                          onClick={() => onSuggestionClick(s)}
-                          className="px-3 py-1.5 rounded-full border border-gray-200 bg-gray-50 text-xs text-gray-700 hover:bg-gray-100 hover:border-gray-300 transition"
-                        >
-                          {s}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                        {s}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
           </motion.div>
