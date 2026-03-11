@@ -29,7 +29,7 @@ export default function PrivacyPage() {
 
       <div className="max-w-3xl mx-auto px-6 py-16 md:py-24">
         <h1 className="text-4xl font-bold mb-8">Privacy Policy</h1>
-        <p className="text-sm text-gray-500 mb-12">Last updated: February 19, 2026</p>
+        <p className="text-sm text-gray-500 mb-12">Last updated: March 11, 2026</p>
 
         <div className="space-y-8 text-gray-600 text-sm leading-relaxed">
           <section>
@@ -39,7 +39,8 @@ export default function PrivacyPage() {
               <li><strong className="text-gray-900">Account information:</strong> Email address and name provided during registration through Clerk.</li>
               <li><strong className="text-gray-900">Usage data:</strong> API call logs, endpoints accessed, timestamps, and request metadata for billing and analytics.</li>
               <li><strong className="text-gray-900">Payment information:</strong> Processed securely by Stripe. We do not store credit card numbers.</li>
-              <li><strong className="text-gray-900">Chat data:</strong> Conversations with Medici (our chat assistant) are stored locally in your browser. We do not persist chat history on our servers.</li>
+              <li><strong className="text-gray-900">Chat data:</strong> Conversations with Medici (our chat assistant) are stored in your browser and on our servers for session continuity. You may delete any session at any time.</li>
+              <li><strong className="text-gray-900">Advertising data:</strong> If you arrive at DebtStack via a Google Ads advertisement, Google may set cookies on your browser to track the ad click and subsequent actions (such as account registration). This data is used solely to measure advertising effectiveness and is processed by Google in accordance with their privacy policy.</li>
             </ul>
           </section>
 
@@ -63,22 +64,34 @@ export default function PrivacyPage() {
               <li><strong className="text-gray-900">PostHog:</strong> Product analytics (pageviews, feature usage).</li>
               <li><strong className="text-gray-900">Sentry:</strong> Error tracking and performance monitoring.</li>
               <li><strong className="text-gray-900">Google Gemini:</strong> Powers the Medici chat assistant.</li>
+              <li><strong className="text-gray-900">Google Analytics &amp; Google Ads:</strong> Website traffic analytics and advertising conversion tracking. Google may use cookies to measure ad performance and attribute sign-ups to advertising campaigns. You can opt out of Google&apos;s advertising cookies at <a href="https://adssettings.google.com" className="text-[#2383e2] hover:underline">adssettings.google.com</a>.</li>
             </ul>
             <p className="mt-3">Each service has its own privacy policy governing how they handle your data.</p>
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-gray-900 mb-3">4. Data Security</h2>
+            <h2 className="text-xl font-semibold text-gray-900 mb-3">4. Cookies and Tracking</h2>
+            <p className="mb-3">DebtStack uses cookies and similar technologies for:</p>
+            <ul className="list-disc pl-6 space-y-2">
+              <li><strong className="text-gray-900">Essential cookies:</strong> Authentication session management (Clerk).</li>
+              <li><strong className="text-gray-900">Analytics cookies:</strong> Google Analytics collects anonymized usage data (pages visited, session duration) to help us improve the service.</li>
+              <li><strong className="text-gray-900">Advertising cookies:</strong> Google Ads conversion tracking cookies measure whether ad clicks result in sign-ups or purchases. These cookies are set by Google and governed by Google&apos;s privacy policy. No personally identifiable information is shared with Google for advertising purposes beyond what Google collects through its own cookies.</li>
+            </ul>
+            <p className="mt-3">You can control cookie preferences through your browser settings. Disabling cookies may affect the functionality of the Service.</p>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-semibold text-gray-900 mb-3">5. Data Security</h2>
             <p>We implement appropriate technical and organizational measures to protect your data, including encrypted API key storage, HTTPS for all communications, and secure authentication via Clerk.</p>
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-gray-900 mb-3">5. Data Retention</h2>
+            <h2 className="text-xl font-semibold text-gray-900 mb-3">6. Data Retention</h2>
             <p>We retain your account information and usage logs for as long as your account is active. API call logs are retained for billing reconciliation. You may request deletion of your account and associated data at any time by contacting us.</p>
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-gray-900 mb-3">6. Your Rights</h2>
+            <h2 className="text-xl font-semibold text-gray-900 mb-3">7. Your Rights</h2>
             <p className="mb-3">You have the right to:</p>
             <ul className="list-disc pl-6 space-y-2">
               <li>Access the personal data we hold about you.</li>
@@ -89,7 +102,7 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-gray-900 mb-3">7. Contact</h2>
+            <h2 className="text-xl font-semibold text-gray-900 mb-3">8. Contact</h2>
             <p>For privacy-related inquiries, contact us at <a href="mailto:debtstackai@gmail.com" className="text-[#2383e2] hover:underline">debtstackai@gmail.com</a>.</p>
           </section>
         </div>

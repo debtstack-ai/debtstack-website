@@ -29,7 +29,7 @@ export default function TermsPage() {
 
       <div className="max-w-3xl mx-auto px-6 py-16 md:py-24">
         <h1 className="text-4xl font-bold mb-8">Terms of Service</h1>
-        <p className="text-sm text-gray-500 mb-12">Last updated: February 19, 2026</p>
+        <p className="text-sm text-gray-500 mb-12">Last updated: March 11, 2026</p>
 
         <div className="space-y-8 text-gray-600 text-sm leading-relaxed">
           <section>
@@ -96,12 +96,24 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-gray-900 mb-3">10. Changes to Terms</h2>
+            <h2 className="text-xl font-semibold text-gray-900 mb-3">10. Analytics and Advertising</h2>
+            <p className="mb-3">DebtStack uses Google Analytics to understand how visitors use the website and Google Ads to advertise the Service. By using the Service, you acknowledge that:</p>
+            <ul className="list-disc pl-6 space-y-2">
+              <li>Google Analytics collects anonymized usage data (pages visited, session duration, referral source) using cookies.</li>
+              <li>Google Ads conversion tracking may set cookies on your browser to attribute sign-ups and purchases to advertising campaigns.</li>
+              <li>This data is processed by Google in accordance with <a href="https://policies.google.com/privacy" className="text-[#2383e2] hover:underline">Google&apos;s Privacy Policy</a>.</li>
+              <li>You may opt out of Google&apos;s advertising cookies at <a href="https://adssettings.google.com" className="text-[#2383e2] hover:underline">adssettings.google.com</a> or install the <a href="https://tools.google.com/dlpage/gaoptout" className="text-[#2383e2] hover:underline">Google Analytics Opt-out Browser Add-on</a>.</li>
+            </ul>
+            <p className="mt-3">For full details on data collection, see our <a href="/privacy" className="text-[#2383e2] hover:underline">Privacy Policy</a>.</p>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-semibold text-gray-900 mb-3">11. Changes to Terms</h2>
             <p>We may update these terms from time to time. Continued use of the Service after changes constitutes acceptance of the updated terms. We will notify users of material changes via email.</p>
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-gray-900 mb-3">11. Contact</h2>
+            <h2 className="text-xl font-semibold text-gray-900 mb-3">12. Contact</h2>
             <p>For questions about these terms, contact us at <a href="mailto:debtstackai@gmail.com" className="text-[#2383e2] hover:underline">debtstackai@gmail.com</a>.</p>
           </section>
         </div>
