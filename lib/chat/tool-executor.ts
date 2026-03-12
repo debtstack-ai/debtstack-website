@@ -19,6 +19,7 @@ const ENDPOINT_COSTS: Record<string, number> = {
   search_covenants: 0.05,
   search_ratings: 0.05,
   get_cds_spreads: 0.05,
+  get_etf_flows: 0.05,
   get_changes: 0.1,
   web_search: 0.03,
   research_company: 0.0,
@@ -305,6 +306,22 @@ export async function executeTool(
         params.set("limit", String(args.limit ?? 50));
         response = await fetchWithTimeout(
           `${BACKEND_URL}/v1/market/cds?${params}`,
+          { headers }
+        );
+        break;
+      }
+
+      case "get_etf_flows": {
+        const params = new URLSearchParams();
+        if (args.etf_ticker) params.set("etf_ticker", String(args.etf_ticker).toUpperCase());
+        if (args.asset_class) params.set("asset_class", String(args.asset_class));
+        if (args.from_date) params.set("from_date", String(args.from_date));
+        if (args.to_date) params.set("to_date", String(args.to_date));
+        if (args.view) params.set("view", String(args.view));
+        if (args.latest_only) params.set("latest_only", String(args.latest_only));
+        params.set("limit", String(args.limit ?? 50));
+        response = await fetchWithTimeout(
+          `${BACKEND_URL}/v1/market/flows?${params}`,
           { headers }
         );
         break;

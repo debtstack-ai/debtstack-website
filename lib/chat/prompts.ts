@@ -5,7 +5,7 @@ export interface StarterPrompt {
   id: string;
   label: string;
   prompt: string;
-  category: "screening" | "deep_dive" | "covenants" | "comparisons";
+  category: "screening" | "deep_dive" | "covenants" | "comparisons" | "market";
   icon: string;
 }
 
@@ -14,6 +14,7 @@ export const PROMPT_CATEGORIES = {
   deep_dive: { label: "Deep Dive", icon: "🏢" },
   covenants: { label: "Covenants", icon: "📜" },
   comparisons: { label: "Comparisons", icon: "⚖️" },
+  market: { label: "Market", icon: "📊" },
 } as const;
 
 export const STARTER_PROMPTS: StarterPrompt[] = [
@@ -151,5 +152,21 @@ export const STARTER_PROMPTS: StarterPrompt[] = [
     prompt: "Compare credit ratings for the MAG7 companies",
     category: "comparisons",
     icon: "⭐",
+  },
+
+  // Market
+  {
+    id: "mk1",
+    label: "HY fund flows",
+    prompt: "Are investors flowing into or out of high yield this week?",
+    category: "market",
+    icon: "💸",
+  },
+  {
+    id: "mk2",
+    label: "IG vs HY flows",
+    prompt: "Compare fund flows between investment grade and high yield over the last month",
+    category: "market",
+    icon: "🔄",
   },
 ];

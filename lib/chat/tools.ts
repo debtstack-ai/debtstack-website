@@ -380,6 +380,52 @@ export const DEBTSTACK_TOOLS: FunctionDeclaration[] = [
     },
   },
   {
+    name: "get_etf_flows",
+    description:
+      "Get ETF fund flow data for credit market sentiment. " +
+      "Shows estimated daily flows into/out of major credit ETFs (LQD, HYG, JNK, BND, EMB, etc.). " +
+      "Use 'aggregate' view for asset-class-level signals (IG, HY, EM, leveraged loans). " +
+      "Example: 'Are investors flowing into HY?' or 'Show me IG fund flows this week'",
+    parameters: {
+      type: SchemaType.OBJECT,
+      properties: {
+        etf_ticker: {
+          type: SchemaType.STRING,
+          description: "ETF ticker(s), comma-separated (e.g., 'LQD,HYG')",
+        },
+        asset_class: {
+          type: SchemaType.STRING,
+          format: "enum",
+          enum: ["ig", "hy", "leveraged_loan", "em_bond", "broad"],
+          description: "Asset class filter",
+        },
+        from_date: {
+          type: SchemaType.STRING,
+          description: "Start date (YYYY-MM-DD)",
+        },
+        to_date: {
+          type: SchemaType.STRING,
+          description: "End date (YYYY-MM-DD)",
+        },
+        view: {
+          type: SchemaType.STRING,
+          format: "enum",
+          enum: ["etf", "aggregate"],
+          description: "View mode: 'etf' for per-ETF data, 'aggregate' for asset-class-level signals (default 'etf')",
+        },
+        latest_only: {
+          type: SchemaType.BOOLEAN,
+          description: "Return only most recent data (default false)",
+        },
+        limit: {
+          type: SchemaType.INTEGER,
+          description: "Maximum results (default 50)",
+        },
+      },
+      required: [],
+    },
+  },
+  {
     name: "get_changes",
     description:
       "See what changed in a company's debt structure since a date. " +
