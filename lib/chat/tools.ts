@@ -446,4 +446,119 @@ export const DEBTSTACK_TOOLS: FunctionDeclaration[] = [
       required: ["ticker", "since"],
     },
   },
+
+  // ─── Analysis / Compute Tools ────────────────────────────────────────
+  {
+    name: "analyze_financials",
+    description:
+      "Compute financial ratio analysis with trends for a company. " +
+      "Returns profitability (margins, ROE, ROA), solvency (D/E, D/A), " +
+      "efficiency (asset turnover), cash flow (FCF, FCF/debt), " +
+      "QoQ/YoY growth, and trend classification. " +
+      "Prefer this over manually computing ratios from get_financials. " +
+      "Example: 'Analyze AAL's financial trends'",
+    parameters: {
+      type: SchemaType.OBJECT,
+      properties: {
+        ticker: {
+          type: SchemaType.STRING,
+          description: "Company ticker (e.g., 'AAL', 'AAPL')",
+        },
+        quarters: {
+          type: SchemaType.INTEGER,
+          description: "Number of quarters to analyze (default 8, max 12)",
+        },
+      },
+      required: ["ticker"],
+    },
+  },
+  {
+    name: "analyze_liquidity",
+    description:
+      "Assess a company's liquidity position. " +
+      "Returns cash, revolver capacity, maturity schedule (6m/12m/24m/36m), " +
+      "liquidity coverage ratio, cash runway, and overall assessment. " +
+      "Example: 'How is AAL's liquidity?' or 'Does RIG have enough cash?'",
+    parameters: {
+      type: SchemaType.OBJECT,
+      properties: {
+        ticker: {
+          type: SchemaType.STRING,
+          description: "Company ticker (e.g., 'AAL', 'RIG')",
+        },
+      },
+      required: ["ticker"],
+    },
+  },
+  {
+    name: "analyze_capital_structure",
+    description:
+      "Analyze a company's debt stack in detail. " +
+      "Returns seniority breakdown, type breakdown, fixed/floating mix, " +
+      "weighted avg coupon and YTM, year-by-year maturity profile, " +
+      "and D/E ratio. " +
+      "Example: 'Break down CHTR's capital structure'",
+    parameters: {
+      type: SchemaType.OBJECT,
+      properties: {
+        ticker: {
+          type: SchemaType.STRING,
+          description: "Company ticker (e.g., 'CHTR', 'AAL')",
+        },
+      },
+      required: ["ticker"],
+    },
+  },
+  {
+    name: "analyze_valuation",
+    description:
+      "Multi-methodology valuation with implied share prices. " +
+      "Returns up to 7 methods: EV/EBITDA comps, EV/Revenue comps, P/E comps, " +
+      "P/BV comps, P/PPNR comps (banks), P/FFO comps (REITs), and DCF. " +
+      "Each method produces an implied share price with % vs current. " +
+      "Use for 'what's it worth?' questions. " +
+      "Example: 'What's AAPL worth?' or 'Value JPM'",
+    parameters: {
+      type: SchemaType.OBJECT,
+      properties: {
+        ticker: {
+          type: SchemaType.STRING,
+          description: "Company ticker (e.g., 'AAPL', 'MSFT')",
+        },
+        method: {
+          type: SchemaType.STRING,
+          format: "enum",
+          enum: ["comps", "dcf", "all"],
+          description: "Valuation method: 'comps' (multiples only), 'dcf' (DCF only), 'all' (both, default)",
+        },
+      },
+      required: ["ticker"],
+    },
+  },
+  {
+    name: "compare_peers",
+    description:
+      "Side-by-side peer comparison across companies. " +
+      "Returns key metrics (leverage, margins, coverage, FCF, EV/EBITDA, spreads, ratings) " +
+      "with per-metric rankings. Pass tickers or a sector. " +
+      "Example: 'Compare AAL vs DAL vs UAL' or 'Compare airline companies'",
+    parameters: {
+      type: SchemaType.OBJECT,
+      properties: {
+        tickers: {
+          type: SchemaType.STRING,
+          description: "Comma-separated tickers, up to 10 (e.g., 'AAL,DAL,UAL')",
+        },
+        sector: {
+          type: SchemaType.STRING,
+          description: "Find peers by sector (e.g., 'Airlines', 'Technology')",
+        },
+        limit: {
+          type: SchemaType.INTEGER,
+          description: "Number of companies (default 5, max 10)",
+        },
+      },
+      required: [],
+    },
+  },
 ];

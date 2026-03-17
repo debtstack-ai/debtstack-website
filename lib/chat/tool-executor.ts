@@ -21,6 +21,11 @@ const ENDPOINT_COSTS: Record<string, number> = {
   get_cds_spreads: 0.05,
   get_etf_flows: 0.05,
   get_changes: 0.1,
+  analyze_financials: 0.1,
+  analyze_liquidity: 0.1,
+  analyze_capital_structure: 0.1,
+  analyze_valuation: 0.1,
+  compare_peers: 0.1,
   web_search: 0.03,
   research_company: 0.0,
 };
@@ -334,6 +339,60 @@ export async function executeTool(
         if (since) params.set("since", since);
         response = await fetchWithTimeout(
           `${BACKEND_URL}/v1/companies/${ticker}/changes?${params}`,
+          { headers }
+        );
+        break;
+      }
+
+      case "analyze_financials": {
+        const params = new URLSearchParams();
+        params.set("ticker", normalizeTicker(String(args.ticker ?? "")));
+        if (args.quarters) params.set("quarters", String(args.quarters));
+        response = await fetchWithTimeout(
+          `${BACKEND_URL}/v1/analysis/financials?${params}`,
+          { headers }
+        );
+        break;
+      }
+
+      case "analyze_liquidity": {
+        const params = new URLSearchParams();
+        params.set("ticker", normalizeTicker(String(args.ticker ?? "")));
+        response = await fetchWithTimeout(
+          `${BACKEND_URL}/v1/analysis/liquidity?${params}`,
+          { headers }
+        );
+        break;
+      }
+
+      case "analyze_capital_structure": {
+        const params = new URLSearchParams();
+        params.set("ticker", normalizeTicker(String(args.ticker ?? "")));
+        response = await fetchWithTimeout(
+          `${BACKEND_URL}/v1/analysis/capital-structure?${params}`,
+          { headers }
+        );
+        break;
+      }
+
+      case "analyze_valuation": {
+        const params = new URLSearchParams();
+        params.set("ticker", normalizeTicker(String(args.ticker ?? "")));
+        if (args.method) params.set("method", String(args.method));
+        response = await fetchWithTimeout(
+          `${BACKEND_URL}/v1/analysis/valuation?${params}`,
+          { headers }
+        );
+        break;
+      }
+
+      case "compare_peers": {
+        const params = new URLSearchParams();
+        if (args.tickers) params.set("tickers", normalizeTicker(String(args.tickers)));
+        if (args.sector) params.set("sector", String(args.sector));
+        params.set("limit", String(args.limit ?? 5));
+        response = await fetchWithTimeout(
+          `${BACKEND_URL}/v1/analysis/peers?${params}`,
           { headers }
         );
         break;
