@@ -24,6 +24,55 @@ interface ChatMessage {
 }
 
 const GEMINI_TIMEOUT_MS = 45_000;
+const MAX_TOOL_RESULT_CHARS = 8_000;
+
+/**
+ * Truncate a tool result's JSON representation so it doesn't blow up
+ * Gemini's context window on synthesis rounds. Keeps the structure but
+ * trims arrays and drops verbose nested objects.
+ */
+function truncateForGemini(result: object): object {
+  const json = JSON.stringify(result);
+  if (json.length <= MAX_TOOL_RESULT_CHARS) return result;
+
+  // Deep-trim: walk the object and shorten arrays / drop heavy leaves
+  function trim(val: unknown, depth: number): unknown {
+    if (val === null || val === undefined) return val;
+    if (typeof val !== "object") {
+      // Truncate long strings (e.g. document snippets)
+      if (typeof val === "string" && (val as string).length > 500) {
+        return (val as string).slice(0, 500) + "…";
+      }
+      return val;
+    }
+    if (Array.isArray(val)) {
+      const maxItems = depth <= 1 ? 10 : 5;
+      const sliced = val.slice(0, maxItems);
+      const trimmed = sliced.map((v) => trim(v, depth + 1));
+      if (val.length > maxItems) {
+        return [...trimmed, `(${val.length - maxItems} more items omitted)`];
+      }
+      return trimmed;
+    }
+    // Plain object — drop deeply nested keys beyond depth 4
+    if (depth > 4) return "(nested data omitted)";
+    const obj = val as Record<string, unknown>;
+    const out: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(obj)) {
+      out[k] = trim(v, depth + 1);
+    }
+    return out;
+  }
+
+  const trimmed = trim(result, 0) as object;
+  const trimmedJson = JSON.stringify(trimmed);
+
+  // If still too large after structural trim, hard-cut the JSON
+  if (trimmedJson.length > MAX_TOOL_RESULT_CHARS) {
+    return JSON.parse(trimmedJson.slice(0, MAX_TOOL_RESULT_CHARS - 50) + ',"_truncated":"result too large"}');
+  }
+  return trimmed;
+}
 
 function sseEvent(event: string, data: unknown): string {
   return `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`;
@@ -236,12 +285,13 @@ export async function POST(request: NextRequest) {
                 encoder.encode(sseEvent("tool_result", resultMeta))
               );
 
+              const rawResponse = toolResult.error
+                ? { error: toolResult.error }
+                : (toolResult.data as object);
               functionResponseParts.push({
                 functionResponse: {
                   name: toolName,
-                  response: toolResult.error
-                    ? { error: toolResult.error }
-                    : (toolResult.data as object),
+                  response: truncateForGemini(rawResponse),
                 },
               });
             } else if (part.text) {
