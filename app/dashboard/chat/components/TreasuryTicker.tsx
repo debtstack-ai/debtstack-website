@@ -26,14 +26,15 @@ function toNum(v: unknown): number | null {
 }
 
 function formatValue(value: number, type: string): string {
+  const v = typeof value === 'number' && isFinite(value) ? value : 0;
   switch (type) {
     case 'yield':
-      return `${value.toFixed(2)}%`;
+      return `${v.toFixed(2)}%`;
     case 'etf':
     case 'commodity':
-      return `$${value.toFixed(2)}`;
+      return `$${v.toFixed(2)}`;
     default:
-      return value.toFixed(2);
+      return v.toFixed(2);
   }
 }
 
@@ -116,7 +117,7 @@ export default function TreasuryTicker() {
               }`}
             >
               {item.change >= 0 ? '\u25B2' : '\u25BC'}
-              {Math.abs(item.change).toFixed(2)}
+              {(typeof item.change === 'number' ? Math.abs(item.change) : 0).toFixed(2)}
             </span>
           )}
         </>

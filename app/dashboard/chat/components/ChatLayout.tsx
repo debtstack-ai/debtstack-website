@@ -521,7 +521,7 @@ export default function ChatLayout({ apiKey }: ChatLayoutProps) {
       headerRight={
         sessionCost > 0 ? (
           <span className="text-xs text-gray-400 font-mono">
-            API cost: ${sessionCost.toFixed(2)}
+            API cost: ${(Number(sessionCost) || 0).toFixed(2)}
           </span>
         ) : undefined
       }

@@ -69,8 +69,8 @@ export async function GET() {
             label,
             type,
             value: regularMarketPrice,
-            change: parseFloat(change.toFixed(3)),
-            percentChange: parseFloat(percentChange.toFixed(2)),
+            change: isFinite(change) ? parseFloat(change.toFixed(3)) : 0,
+            percentChange: isFinite(percentChange) ? parseFloat(percentChange.toFixed(2)) : 0,
             previousClose: chartPreviousClose,
             timestamp: new Date(regularMarketTime * 1000).toISOString(),
           };
