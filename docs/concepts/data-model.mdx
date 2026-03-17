@@ -5,7 +5,7 @@ description: 'Understanding DebtStack data structures'
 
 ## Overview
 
-DebtStack extracts and structures corporate debt data from SEC filings. The data is organized around companies, entities, debt instruments, and their relationships.
+DebtStack extracts and structures corporate debt data from SEC filings. The data is organized around companies, entities, debt instruments, credit ratings, market data, and their relationships.
 
 ## Core Objects
 
@@ -118,6 +118,75 @@ Assets pledged to secure debt instruments.
 - `vehicles` - Aircraft, ships, cars
 - `energy_assets` - Oil/gas reserves
 
+### Credit Rating
+
+A credit rating from S&P, Moody's, or Fitch. Ratings exist at both the issuer level (overall creditworthiness) and instrument level (specific debt obligation).
+
+```json
+{
+  "ticker": "CHTR",
+  "company_name": "Charter Communications, Inc.",
+  "agency": "sp",
+  "rating": "BB+",
+  "rating_type": "issuer",
+  "rating_bucket": "HY-BB",
+  "outlook": "stable",
+  "effective_date": "2024-08-15",
+  "source_section_type": "nrsro_17g7"
+}
+```
+
+**Rating Types:**
+- `issuer` — Overall issuer creditworthiness (headline rating)
+- `senior_secured` — Secured debt rating (often notched up from issuer)
+- `senior_unsecured` — Unsecured debt rating
+- `subordinated` — Junior debt rating (notched down from issuer)
+- `corporate_family` — Moody's Corporate Family Rating (probability of default)
+
+**Rating Buckets:**
+- `IG` — Investment grade (BBB-/Baa3 and above)
+- `HY-BB` — Upper high yield (BB+ to BB-)
+- `HY-B` — Mid high yield (B+ to B-)
+- `HY-CCC` — Distressed (CCC+ and below)
+- `NR` — Not rated
+
+**Agencies:** `sp` (S&P), `moodys` (Moody's), `fitch` (Fitch)
+
+**Sources:** `nrsro_17g7` (SEC Rule 17g-7(b) regulatory disclosures), `llm_extraction` (extracted from SEC filings)
+
+Instrument-level ratings include `debt_instrument_id`, `instrument_name`, and `cusip` linking to the specific debt obligation.
+
+See the [Ratings endpoint](/api-reference/ratings/search) for details.
+
+### CDS Spread
+
+Credit default swap spread time series, derived from bond spread-to-treasury pricing. Economically equivalent to CDS spreads (CDS-bond basis is typically within 20 bps for investment grade).
+
+```json
+{
+  "ticker": "CHTR",
+  "company_name": "Charter Communications, Inc.",
+  "spread_date": "2026-03-04",
+  "tenor": "5Y",
+  "spread_bps": 185.3,
+  "trade_count": 8,
+  "bond_count": 5,
+  "source": "bond_spread_proxy"
+}
+```
+
+**Tenors:** `1Y`, `3Y`, `5Y`, `7Y`, `10Y`
+
+**Fields:**
+- `spread_bps` — Median spread to treasury in basis points
+- `trade_count` — Number of TRACE trades underlying the computation
+- `bond_count` — Number of distinct bonds in the tenor bucket
+- `source` — Data source (`bond_spread_proxy`)
+
+Negative spreads are possible for premium investment grade issuers (floor: -200 bps).
+
+See the [CDS Spreads endpoint](/api-reference/market/cds) for details.
+
 ## Data Conventions
 
 ### Monetary Values
@@ -158,12 +227,15 @@ All dates use **ISO 8601** format: `YYYY-MM-DD`
 ```mermaid
 graph TD
     Company[Company] --> Entity1[HoldCo]
+    Company -.->|has| Ratings[Credit Ratings]
+    Company -.->|has| CDS[CDS Spreads]
     Entity1 --> Entity2[OpCo]
     Entity1 --> Entity3[FinCo]
     Entity2 --> Debt1[Senior Notes]
     Entity3 --> Debt2[Term Loan]
     Entity1 -.->|guarantees| Debt1
     Entity2 -.->|guarantees| Debt1
+    Ratings -.->|can link to| Debt1
 ```
 
 - A **Company** has many **Entities**
@@ -171,6 +243,9 @@ graph TD
 - An **Entity** can guarantee other entities' **Debt Instruments**
 - A **Debt Instrument** can have multiple **Guarantors**
 - A **Debt Instrument** can have **Collateral**
+- A **Company** has **Credit Ratings** (issuer-level from S&P, Moody's, Fitch)
+- A **Credit Rating** can link to a specific **Debt Instrument** (instrument-level ratings)
+- A **Company** has **CDS Spreads** (daily time series across 5 tenors)
 
 ## Document Sections
 
@@ -195,4 +270,4 @@ See the [Documents Search endpoint](/api-reference/documents/search) for details
 
 ## Coverage
 
-211 companies covering S&P 100 and NASDAQ 100, with thousands of debt instruments, real-time bond pricing from FINRA TRACE, and searchable SEC filing sections. Expanding to 500+ companies.
+314 companies covering S&P 100, NASDAQ 100, and broader S&P 500, with thousands of debt instruments, credit ratings across 253 companies, CDS spread time series for 111 companies, real-time bond pricing from FINRA TRACE, and searchable SEC filing sections.
