@@ -89,6 +89,12 @@ function DashboardContent() {
       setUserData(data);
       if (data.is_new) {
         setIsNewUser(true);
+        // Fire Google Ads signup conversion
+        if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
+          window.gtag('event', 'conversion', {
+            send_to: 'AW-17954437494/hsRYCMryzYocEPbyq_FC',
+          });
+        }
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong');
