@@ -506,7 +506,7 @@ export default function Home() {
                 Comprehensive
               </h2>
               <p className="text-gray-500 text-sm leading-relaxed mb-6">
-                300+ corporate issuers, 5,800+ bonds. Debt structures, credit ratings, CDS spreads, TRACE pricing, and covenant terms through a single API.
+                500+ corporate issuers, 10,000+ bonds. Debt structures, credit ratings, CDS spreads, TRACE pricing, and covenant terms through a single API.
               </p>
 
               {/* Tabs */}
@@ -884,7 +884,7 @@ export default function Home() {
             {[
               {
                 title: 'Credit Analysts',
-                desc: 'Screen 300+ issuers by leverage, seniority, and maturity. Pull debt structures, credit ratings, CDS spreads, and covenants for any name in the universe.',
+                desc: 'Screen 500+ issuers by leverage, seniority, and maturity. Pull debt structures, credit ratings, CDS spreads, and covenants for any name in the universe.',
               },
               {
                 title: 'AI Agent Builders',
@@ -892,7 +892,7 @@ export default function Home() {
               },
               {
                 title: 'Quant Researchers',
-                desc: 'Programmatic access to 5,800+ bonds with pricing, credit spreads, rating history, and corporate structure data via REST API.',
+                desc: 'Programmatic access to 10,000+ bonds with pricing, credit spreads, rating history, and corporate structure data via REST API.',
               },
             ].map((card) => (
               <motion.div
