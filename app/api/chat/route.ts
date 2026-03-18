@@ -13,13 +13,81 @@ export const maxDuration = 120;
 
 const MAX_TOOL_ROUNDS = 5;
 const MAX_MESSAGES = 50;
-const MODEL = "claude-sonnet-4-6";
+const MODEL_SONNET = "claude-sonnet-4-6";
+const MODEL_HAIKU = "claude-haiku-4-5-20251001";
 const CLAUDE_TIMEOUT_MS = 45_000;
 const MAX_TOOL_RESULT_CHARS = 8_000;
 
 interface ChatMessage {
   role: "user" | "assistant";
   content: string;
+}
+
+/**
+ * Detect whether a user message is a simple lookup (Haiku) or analysis (Sonnet).
+ * Simple lookups: single-entity data retrieval, no interpretation needed.
+ * Analysis: multi-tool workflows, comparisons, recommendations, valuations.
+ */
+function isSimpleLookup(message: string): boolean {
+  const lower = message.toLowerCase().trim();
+
+  // Analysis triggers → Sonnet
+  const analysisPatterns = [
+    /\banalyz/,                    // analyze, analysis
+    /\bcompare\b/,                 // compare companies/bonds
+    /\bvalu(e|ation)/,             // value, valuation
+    /\bwhat.s .+ worth/,           // "what's X worth"
+    /\bfair value\b/,
+    /\bovervalued|undervalued/,
+    /\bdistress/,                  // distress assessment
+    /\bdefault risk/,
+    /\bbankrupt/,
+    /\brecovery\b/,                // recovery analysis
+    /\bfulcrum\b/,
+    /\bwaterfall\b/,
+    /\brelative value\b/,
+    /\bbest.*(bond|investment)/,   // "best bond to buy"
+    /\bwhich.*(bond|should)/,      // "which bond should I"
+    /\bcheap.*(vs|or|versus)/,
+    /\brisk.reward/,
+    /\bcovenant.*(headroom|analysis|breach)/,
+    /\bliquidity.*(position|check|runway)/,
+    /\bmaturity wall\b/,
+    /\bcapital structure\b/,
+    /\bdebt stack\b/,
+    /\bholdco.*(vs|versus).*opco/,
+    /\bstructural subordination/,
+    /\bcredit (risk|profile|quality|snapshot)/,
+    /\bhow is .+ doing/,           // "how is AAL doing?"
+    /\bin trouble\b/,
+    /\bshould i (invest|buy)/,
+    /\brecommend/,
+    /\brank\b/,
+    /\bscreen\b.*\b(by|for)\b/,   // "screen for high yield"
+  ];
+
+  for (const pattern of analysisPatterns) {
+    if (pattern.test(lower)) return false;
+  }
+
+  // Simple lookup patterns → Haiku
+  const lookupPatterns = [
+    /^(show|list|get|what|tell)\b.*\b(bonds?|debt|leverage|rating|spread|price|coupon|maturity|financials)\b/,
+    /^what.s .+'s (leverage|rating|spread|debt|bonds)/,
+    /\blook up\b/,
+    /\bcusip\b/,
+    /\bisin\b/,
+  ];
+
+  for (const pattern of lookupPatterns) {
+    if (pattern.test(lower)) return true;
+  }
+
+  // Short messages without analysis keywords are likely simple
+  if (lower.split(/\s+/).length <= 8) return true;
+
+  // Default to Sonnet for anything ambiguous
+  return false;
 }
 
 /**
@@ -149,6 +217,11 @@ export async function POST(request: NextRequest) {
         : SYSTEM_PROMPT;
       console.log(`[chat] Knowledge retrieval: ${knowledgeContext ? `${knowledgeContext.length} chars injected` : 'no matches'}`);
 
+      // Route simple lookups to Haiku, analysis to Sonnet
+      const simple = isSimpleLookup(latestUserMessage);
+      const model = simple ? MODEL_HAIKU : MODEL_SONNET;
+      console.log(`[chat] Model: ${model} (${simple ? 'simple lookup' : 'analysis'})`);
+
       let totalCost = INFERENCE_COST_PER_TURN;
 
       try {
@@ -167,7 +240,7 @@ export async function POST(request: NextRequest) {
 
           const response = await withTimeout(
             client.messages.create({
-              model: MODEL,
+              model,
               max_tokens: 4096,
               system: [{ type: "text", text: augmentedPrompt, cache_control: { type: "ephemeral" } }],
               tools: DEBTSTACK_TOOLS,
