@@ -1,12 +1,10 @@
 // lib/chat/tools.ts
-// Gemini tool definitions for DebtStack API, ported from credible/sdk/debtstack/mcp_server.py
+// Anthropic Tool definitions for DebtStack API, converted from Gemini FunctionDeclarations
+// Original source: credible/sdk/debtstack/mcp_server.py
 
-import {
-  SchemaType,
-  type FunctionDeclaration,
-} from "@google/generative-ai";
+import Anthropic from "@anthropic-ai/sdk";
 
-export const DEBTSTACK_TOOLS: FunctionDeclaration[] = [
+export const DEBTSTACK_TOOLS: Anthropic.Tool[] = [
   {
     name: "search_companies",
     description:
@@ -14,40 +12,39 @@ export const DEBTSTACK_TOOLS: FunctionDeclaration[] = [
       "Use to find companies with specific characteristics, compare leverage across peers, " +
       "or screen for structural subordination risk. " +
       "Example: 'Find tech companies with leverage above 4x'",
-    parameters: {
-      type: SchemaType.OBJECT,
+    input_schema: {
+      type: "object" as const,
       properties: {
         ticker: {
-          type: SchemaType.STRING,
+          type: "string",
           description: "Comma-separated tickers (e.g., 'AAPL,MSFT,GOOGL')",
         },
         sector: {
-          type: SchemaType.STRING,
+          type: "string",
           description: "Filter by sector (e.g., 'Technology', 'Energy')",
         },
         min_leverage: {
-          type: SchemaType.NUMBER,
+          type: "number",
           description: "Minimum leverage ratio",
         },
         max_leverage: {
-          type: SchemaType.NUMBER,
+          type: "number",
           description: "Maximum leverage ratio",
         },
         has_structural_sub: {
-          type: SchemaType.BOOLEAN,
+          type: "boolean",
           description: "Filter for structural subordination",
         },
         sort: {
-          type: SchemaType.STRING,
+          type: "string",
           description:
             "Sort field, prefix with - for descending (e.g., '-net_leverage_ratio')",
         },
         limit: {
-          type: SchemaType.INTEGER,
+          type: "integer",
           description: "Maximum results (default 10)",
         },
       },
-      required: [],
     },
   },
   {
@@ -56,37 +53,35 @@ export const DEBTSTACK_TOOLS: FunctionDeclaration[] = [
       "Search bonds by ticker, seniority, yield, spread, and maturity. " +
       "Use for yield hunting, finding high-yield opportunities, or analyzing maturity walls. " +
       "Example: 'Find senior unsecured bonds yielding above 8%'",
-    parameters: {
-      type: SchemaType.OBJECT,
+    input_schema: {
+      type: "object" as const,
       properties: {
         ticker: {
-          type: SchemaType.STRING,
+          type: "string",
           description: "Company ticker(s)",
         },
         seniority: {
-          type: SchemaType.STRING,
-          format: "enum",
+          type: "string",
           enum: ["senior_secured", "senior_unsecured", "subordinated"],
           description: "Bond seniority level. Use 'senior_secured' for secured bonds, 'senior_unsecured' for unsecured, 'subordinated' for sub debt.",
         },
         min_ytm: {
-          type: SchemaType.NUMBER,
+          type: "number",
           description: "Minimum yield to maturity (%)",
         },
         has_pricing: {
-          type: SchemaType.BOOLEAN,
+          type: "boolean",
           description: "Only bonds with pricing data",
         },
         maturity_before: {
-          type: SchemaType.STRING,
+          type: "string",
           description: "Maturity before date (YYYY-MM-DD)",
         },
         limit: {
-          type: SchemaType.INTEGER,
+          type: "integer",
           description: "Maximum results (default 10)",
         },
       },
-      required: [],
     },
   },
   {
@@ -95,11 +90,11 @@ export const DEBTSTACK_TOOLS: FunctionDeclaration[] = [
       "Look up a bond by CUSIP, ISIN, or description. " +
       "Use when you have a partial bond identifier and need full details. " +
       "Example: 'RIG 8% 2027' or 'CUSIP 893830AK8'",
-    parameters: {
-      type: SchemaType.OBJECT,
+    input_schema: {
+      type: "object" as const,
       properties: {
         query: {
-          type: SchemaType.STRING,
+          type: "string",
           description:
             "Bond identifier - CUSIP, ISIN, or description (e.g., 'RIG 8% 2027')",
         },
@@ -113,11 +108,11 @@ export const DEBTSTACK_TOOLS: FunctionDeclaration[] = [
       "Find all entities that guarantee a bond. " +
       "Use to understand guarantee coverage and structural subordination risk. " +
       "Pass a CUSIP or bond description.",
-    parameters: {
-      type: SchemaType.OBJECT,
+    input_schema: {
+      type: "object" as const,
       properties: {
         bond_id: {
-          type: SchemaType.STRING,
+          type: "string",
           description: "Bond CUSIP or identifier",
         },
       },
@@ -130,11 +125,11 @@ export const DEBTSTACK_TOOLS: FunctionDeclaration[] = [
       "Get the full corporate structure for a company. " +
       "Shows parent-subsidiary hierarchy, entity types, and debt at each level. " +
       "Use to understand structural subordination and where debt sits in the org.",
-    parameters: {
-      type: SchemaType.OBJECT,
+    input_schema: {
+      type: "object" as const,
       properties: {
         ticker: {
-          type: SchemaType.STRING,
+          type: "string",
           description: "Company ticker (e.g., 'RIG', 'CHTR')",
         },
       },
@@ -147,27 +142,26 @@ export const DEBTSTACK_TOOLS: FunctionDeclaration[] = [
       "Get bond pricing from FINRA TRACE. " +
       "Returns current price, yield to maturity, and spread to treasury. " +
       "Use to find distressed bonds or compare relative value.",
-    parameters: {
-      type: SchemaType.OBJECT,
+    input_schema: {
+      type: "object" as const,
       properties: {
         ticker: {
-          type: SchemaType.STRING,
+          type: "string",
           description: "Company ticker(s)",
         },
         cusip: {
-          type: SchemaType.STRING,
+          type: "string",
           description: "Bond CUSIP(s)",
         },
         min_ytm: {
-          type: SchemaType.NUMBER,
+          type: "number",
           description: "Minimum yield to maturity (%)",
         },
         limit: {
-          type: SchemaType.INTEGER,
+          type: "integer",
           description: "Maximum results (default 10)",
         },
       },
-      required: [],
     },
   },
   {
@@ -176,20 +170,19 @@ export const DEBTSTACK_TOOLS: FunctionDeclaration[] = [
       "Search SEC filing sections for specific terms. " +
       "Section types: debt_footnote, credit_agreement, indenture, covenants, mda_liquidity. " +
       "Use to find covenant language, credit agreement terms, or debt descriptions.",
-    parameters: {
-      type: SchemaType.OBJECT,
+    input_schema: {
+      type: "object" as const,
       properties: {
         query: {
-          type: SchemaType.STRING,
+          type: "string",
           description: "Search terms",
         },
         ticker: {
-          type: SchemaType.STRING,
+          type: "string",
           description: "Company ticker(s)",
         },
         section_type: {
-          type: SchemaType.STRING,
-          format: "enum",
+          type: "string",
           enum: [
             "debt_footnote",
             "credit_agreement",
@@ -202,7 +195,7 @@ export const DEBTSTACK_TOOLS: FunctionDeclaration[] = [
           description: "Section type to search",
         },
         limit: {
-          type: SchemaType.INTEGER,
+          type: "integer",
           description: "Maximum results (default 10)",
         },
       },
@@ -216,15 +209,15 @@ export const DEBTSTACK_TOOLS: FunctionDeclaration[] = [
       "and extracting debt instruments. ONLY use when: (1) the user explicitly asks " +
       "to research a non-covered company, AND (2) search_companies returned no data. " +
       "Results are live SEC filing research, NOT DebtStack database data.",
-    parameters: {
-      type: SchemaType.OBJECT,
+    input_schema: {
+      type: "object" as const,
       properties: {
         ticker: {
-          type: SchemaType.STRING,
+          type: "string",
           description: "Stock ticker (e.g., 'F', 'GM')",
         },
         company_name: {
-          type: SchemaType.STRING,
+          type: "string",
           description: "Full company name (optional, helps with identification)",
         },
       },
@@ -238,19 +231,19 @@ export const DEBTSTACK_TOOLS: FunctionDeclaration[] = [
       "Returns revenue, EBITDA, cash, total debt, operating income, capex, and more. " +
       "Use period='TTM' for trailing twelve months, 'latest' for most recent quarter. " +
       "Essential for assessing earnings trajectory, cash position, and deleveraging progress.",
-    parameters: {
-      type: SchemaType.OBJECT,
+    input_schema: {
+      type: "object" as const,
       properties: {
         ticker: {
-          type: SchemaType.STRING,
+          type: "string",
           description: "Company ticker (e.g., 'AAL', 'RIG')",
         },
         period: {
-          type: SchemaType.STRING,
+          type: "string",
           description: "Period: 'TTM' (trailing 12 months), 'latest' (most recent quarter), or specific like '2025Q3'",
         },
         limit: {
-          type: SchemaType.INTEGER,
+          type: "integer",
           description: "Maximum results (default 4 for quarterly history)",
         },
       },
@@ -264,29 +257,27 @@ export const DEBTSTACK_TOOLS: FunctionDeclaration[] = [
       "Returns financial covenants (leverage tests, coverage ratios), negative covenants, " +
       "and protective covenants. Use to assess covenant headroom and how close a company " +
       "is to breaching its financial tests.",
-    parameters: {
-      type: SchemaType.OBJECT,
+    input_schema: {
+      type: "object" as const,
       properties: {
         ticker: {
-          type: SchemaType.STRING,
+          type: "string",
           description: "Company ticker (e.g., 'CHTR', 'AAL')",
         },
         covenant_type: {
-          type: SchemaType.STRING,
-          format: "enum",
+          type: "string",
           enum: ["financial", "negative", "protective"],
           description: "Filter by covenant type",
         },
         test_metric: {
-          type: SchemaType.STRING,
+          type: "string",
           description: "Filter by test metric (e.g., 'leverage_ratio', 'interest_coverage')",
         },
         limit: {
-          type: SchemaType.INTEGER,
+          type: "integer",
           description: "Maximum results (default 10)",
         },
       },
-      required: [],
     },
   },
   {
@@ -296,47 +287,44 @@ export const DEBTSTACK_TOOLS: FunctionDeclaration[] = [
       "Use to look up credit ratings, screen by rating bucket (IG, HY-BB, HY-B, HY-CCC), " +
       "or compare ratings across companies. " +
       "Example: 'What are Apple's credit ratings?' or 'Which companies are rated BB?'",
-    parameters: {
-      type: SchemaType.OBJECT,
+    input_schema: {
+      type: "object" as const,
       properties: {
         ticker: {
-          type: SchemaType.STRING,
+          type: "string",
           description: "Company ticker(s), comma-separated (e.g., 'AAPL,MSFT')",
         },
         rating_bucket: {
-          type: SchemaType.STRING,
-          format: "enum",
+          type: "string",
           enum: ["IG", "HY-BB", "HY-B", "HY-CCC", "NR"],
           description: "Rating bucket filter",
         },
         rating_type: {
-          type: SchemaType.STRING,
-          format: "enum",
+          type: "string",
           enum: ["issuer", "senior_secured", "senior_unsecured", "subordinated", "corporate_family"],
           description: "Rating type filter",
         },
         sp_rating: {
-          type: SchemaType.STRING,
+          type: "string",
           description: "S&P rating filter (e.g., 'BB+', 'BBB-')",
         },
         moodys_rating: {
-          type: SchemaType.STRING,
+          type: "string",
           description: "Moody's rating filter (e.g., 'Ba1', 'Baa3')",
         },
         issuer_only: {
-          type: SchemaType.BOOLEAN,
+          type: "boolean",
           description: "Show only issuer-level ratings (default false)",
         },
         latest: {
-          type: SchemaType.BOOLEAN,
+          type: "boolean",
           description: "Return only the most recent rating per company/agency (default false)",
         },
         limit: {
-          type: SchemaType.INTEGER,
+          type: "integer",
           description: "Maximum results (default 50)",
         },
       },
-      required: [],
     },
   },
   {
@@ -346,37 +334,35 @@ export const DEBTSTACK_TOOLS: FunctionDeclaration[] = [
       "Returns credit spread levels in basis points derived from TRACE bond pricing. " +
       "Use for credit spread analysis, comparing relative credit risk, or tracking spread trends. " +
       "Example: 'Show me Apple's CDS spreads' or 'Compare 5Y spreads for MAG7'",
-    parameters: {
-      type: SchemaType.OBJECT,
+    input_schema: {
+      type: "object" as const,
       properties: {
         ticker: {
-          type: SchemaType.STRING,
+          type: "string",
           description: "Company ticker(s), comma-separated (e.g., 'AAPL,MSFT')",
         },
         tenor: {
-          type: SchemaType.STRING,
-          format: "enum",
+          type: "string",
           enum: ["1Y", "3Y", "5Y", "7Y", "10Y"],
           description: "CDS tenor (default 5Y)",
         },
         from_date: {
-          type: SchemaType.STRING,
+          type: "string",
           description: "Start date (YYYY-MM-DD)",
         },
         to_date: {
-          type: SchemaType.STRING,
+          type: "string",
           description: "End date (YYYY-MM-DD)",
         },
         latest_only: {
-          type: SchemaType.BOOLEAN,
+          type: "boolean",
           description: "Return only most recent spread per company (default false)",
         },
         limit: {
-          type: SchemaType.INTEGER,
+          type: "integer",
           description: "Maximum results (default 50)",
         },
       },
-      required: [],
     },
   },
   {
@@ -386,43 +372,40 @@ export const DEBTSTACK_TOOLS: FunctionDeclaration[] = [
       "Shows estimated daily flows into/out of major credit ETFs (LQD, HYG, JNK, BND, EMB, etc.). " +
       "Use 'aggregate' view for asset-class-level signals (IG, HY, EM, leveraged loans). " +
       "Example: 'Are investors flowing into HY?' or 'Show me IG fund flows this week'",
-    parameters: {
-      type: SchemaType.OBJECT,
+    input_schema: {
+      type: "object" as const,
       properties: {
         etf_ticker: {
-          type: SchemaType.STRING,
+          type: "string",
           description: "ETF ticker(s), comma-separated (e.g., 'LQD,HYG')",
         },
         asset_class: {
-          type: SchemaType.STRING,
-          format: "enum",
+          type: "string",
           enum: ["ig", "hy", "leveraged_loan", "em_bond", "broad"],
           description: "Asset class filter",
         },
         from_date: {
-          type: SchemaType.STRING,
+          type: "string",
           description: "Start date (YYYY-MM-DD)",
         },
         to_date: {
-          type: SchemaType.STRING,
+          type: "string",
           description: "End date (YYYY-MM-DD)",
         },
         view: {
-          type: SchemaType.STRING,
-          format: "enum",
+          type: "string",
           enum: ["etf", "aggregate"],
           description: "View mode: 'etf' for per-ETF data, 'aggregate' for asset-class-level signals (default 'etf')",
         },
         latest_only: {
-          type: SchemaType.BOOLEAN,
+          type: "boolean",
           description: "Return only most recent data (default false)",
         },
         limit: {
-          type: SchemaType.INTEGER,
+          type: "integer",
           description: "Maximum results (default 50)",
         },
       },
-      required: [],
     },
   },
   {
@@ -431,15 +414,15 @@ export const DEBTSTACK_TOOLS: FunctionDeclaration[] = [
       "See what changed in a company's debt structure since a date. " +
       "Returns new issuances, matured debt, leverage changes, and pricing movements. " +
       "Use to monitor companies for material changes.",
-    parameters: {
-      type: SchemaType.OBJECT,
+    input_schema: {
+      type: "object" as const,
       properties: {
         ticker: {
-          type: SchemaType.STRING,
+          type: "string",
           description: "Company ticker",
         },
         since: {
-          type: SchemaType.STRING,
+          type: "string",
           description: "Compare since date (YYYY-MM-DD)",
         },
       },
@@ -457,15 +440,15 @@ export const DEBTSTACK_TOOLS: FunctionDeclaration[] = [
       "QoQ/YoY growth, and trend classification. " +
       "Prefer this over manually computing ratios from get_financials. " +
       "Example: 'Analyze AAL's financial trends'",
-    parameters: {
-      type: SchemaType.OBJECT,
+    input_schema: {
+      type: "object" as const,
       properties: {
         ticker: {
-          type: SchemaType.STRING,
+          type: "string",
           description: "Company ticker (e.g., 'AAL', 'AAPL')",
         },
         quarters: {
-          type: SchemaType.INTEGER,
+          type: "integer",
           description: "Number of quarters to analyze (default 8, max 12)",
         },
       },
@@ -479,11 +462,11 @@ export const DEBTSTACK_TOOLS: FunctionDeclaration[] = [
       "Returns cash, revolver capacity, maturity schedule (6m/12m/24m/36m), " +
       "liquidity coverage ratio, cash runway, and overall assessment. " +
       "Example: 'How is AAL's liquidity?' or 'Does RIG have enough cash?'",
-    parameters: {
-      type: SchemaType.OBJECT,
+    input_schema: {
+      type: "object" as const,
       properties: {
         ticker: {
-          type: SchemaType.STRING,
+          type: "string",
           description: "Company ticker (e.g., 'AAL', 'RIG')",
         },
       },
@@ -498,11 +481,11 @@ export const DEBTSTACK_TOOLS: FunctionDeclaration[] = [
       "weighted avg coupon and YTM, year-by-year maturity profile, " +
       "and D/E ratio. " +
       "Example: 'Break down CHTR's capital structure'",
-    parameters: {
-      type: SchemaType.OBJECT,
+    input_schema: {
+      type: "object" as const,
       properties: {
         ticker: {
-          type: SchemaType.STRING,
+          type: "string",
           description: "Company ticker (e.g., 'CHTR', 'AAL')",
         },
       },
@@ -518,16 +501,15 @@ export const DEBTSTACK_TOOLS: FunctionDeclaration[] = [
       "Each method produces an implied share price with % vs current. " +
       "Use for 'what's it worth?' questions. " +
       "Example: 'What's AAPL worth?' or 'Value JPM'",
-    parameters: {
-      type: SchemaType.OBJECT,
+    input_schema: {
+      type: "object" as const,
       properties: {
         ticker: {
-          type: SchemaType.STRING,
+          type: "string",
           description: "Company ticker (e.g., 'AAPL', 'MSFT')",
         },
         method: {
-          type: SchemaType.STRING,
-          format: "enum",
+          type: "string",
           enum: ["comps", "dcf", "all"],
           description: "Valuation method: 'comps' (multiples only), 'dcf' (DCF only), 'all' (both, default)",
         },
@@ -542,23 +524,22 @@ export const DEBTSTACK_TOOLS: FunctionDeclaration[] = [
       "Returns key metrics (leverage, margins, coverage, FCF, EV/EBITDA, spreads, ratings) " +
       "with per-metric rankings. Pass tickers or a sector. " +
       "Example: 'Compare AAL vs DAL vs UAL' or 'Compare airline companies'",
-    parameters: {
-      type: SchemaType.OBJECT,
+    input_schema: {
+      type: "object" as const,
       properties: {
         tickers: {
-          type: SchemaType.STRING,
+          type: "string",
           description: "Comma-separated tickers, up to 10 (e.g., 'AAL,DAL,UAL')",
         },
         sector: {
-          type: SchemaType.STRING,
+          type: "string",
           description: "Find peers by sector (e.g., 'Airlines', 'Technology')",
         },
         limit: {
-          type: SchemaType.INTEGER,
+          type: "integer",
           description: "Number of companies (default 5, max 10)",
         },
       },
-      required: [],
     },
   },
 ];

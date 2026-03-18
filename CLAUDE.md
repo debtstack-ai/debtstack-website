@@ -14,7 +14,7 @@ DebtStack Website is the Next.js frontend for DebtStack.ai - an API platform pro
 - **Analytics**: Vercel Analytics + PostHog (events, funnels, session replay)
 - **Error Tracking**: Sentry (client + server)
 - **Styling**: Tailwind CSS v4
-- **AI**: Google Generative AI SDK (`@google/generative-ai`) — powers Medici, the Gemini-based chat assistant
+- **AI**: Migrating from Google Generative AI SDK → Anthropic SDK (`@anthropic-ai/sdk`) — powers Medici with Claude Sonnet 4.6 + 8 auto-triggered skills
 - **Language**: TypeScript
 - **Deployment**: Railway
 
@@ -24,7 +24,7 @@ DebtStack Website is the Next.js frontend for DebtStack.ai - an API platform pro
 debtstack-website/
 ├── app/                    # Next.js App Router pages
 │   ├── api/               # API routes
-│   │   ├── chat/          # Chat SSE streaming endpoint (Gemini + tool-use)
+│   │   ├── chat/          # Chat SSE streaming endpoint (Claude + skills + tool-use)
 │   │   ├── stripe/        # Stripe checkout & portal
 │   │   ├── user/          # User sync with backend
 │   │   └── waitlist/      # Waitlist signup
@@ -43,11 +43,21 @@ debtstack-website/
 ├── lib/                    # Shared utilities
 │   ├── stripe.ts          # Stripe client & tier config
 │   └── chat/              # Medici chat assistant utilities
-│       ├── tools.ts       # 19 Gemini tool definitions (14 data + 5 analysis compute tools)
-│       ├── system-prompt.ts # Medici system prompt for Gemini
-│       ├── tool-executor.ts # Execute tools against DebtStack API
+│       ├── tools.ts       # 19 Anthropic Tool[] definitions (converted from Gemini format)
+│       ├── system-prompt.ts # Slim system prompt (~4KB voice/tone/conventions — workflow routing moved to skills)
+│       ├── tool-executor.ts # Execute tools against DebtStack API (model-agnostic)
 │       ├── knowledge.ts   # RAG retrieval: embed query → pgvector → knowledge chunks
 │       └── prompts.ts     # Starter prompt library (14 prompts, 4 categories)
+├── .claude/
+│   └── skills/            # 8 SKILL.md files (auto-triggered analytical workflows)
+│       ├── valuation-analysis/
+│       ├── distress-assessment/
+│       ├── credit-snapshot/
+│       ├── recovery-analysis/
+│       ├── relative-value/
+│       ├── capital-structure/
+│       ├── covenant-deep-dive/
+│       └── liquidity-check/
 ├── public/                 # Static assets
 ├── sentry.client.config.ts # Sentry browser config
 ├── sentry.server.config.ts # Sentry server config
@@ -95,20 +105,22 @@ debtstack-website/
 - Custom events tracked: `viewed_pricing`, `clicked_subscribe`, `viewed_dashboard`, `copied_api_key`
 - Guarded by `NEXT_PUBLIC_POSTHOG_KEY` — silently disabled when not set
 
-### Medici — Chat Assistant (Gemini + DebtStack API)
+### Medici — Chat Assistant (MIGRATING: Gemini → Claude + Skills)
 - **Medici** is DebtStack's named chat assistant (named after the Medici banking family that pioneered modern finance)
 - Full-page chat at `/dashboard/chat` — authenticated users ask credit questions in natural language
-- Gemini 2.5 Pro (`gemini-2.5-pro`) acts as agent, calling 9 DebtStack API tools via tool-use loop
-- **Architecture**: Browser → `POST /api/chat` (SSE) → RAG knowledge retrieval → Gemini (up to 5 tool-use rounds) → `api.debtstack.ai` (user's API key)
-- **API route** (`app/api/chat/route.ts`): Authenticated via Clerk, streams SSE events (`text`, `tool_call`, `tool_result`, `done`, `error`)
-- **Tool definitions** (`lib/chat/tools.ts`): 19 tools — 14 data retrieval (`search_companies`, `search_bonds`, `resolve_bond`, `get_guarantors`, `get_corporate_structure`, `search_pricing`, `search_documents`, `get_financials`, `search_covenants`, `search_ratings`, `get_cds_spreads`, `get_etf_flows`, `get_changes`, `research_company`) + 5 analysis compute (`analyze_financials`, `analyze_liquidity`, `analyze_capital_structure`, `analyze_valuation`, `compare_peers`)
-- **RAG Knowledge Retrieval** (`lib/chat/knowledge.ts`): On each user message, embeds query with Gemini `gemini-embedding-001`, searches `knowledge_chunks` table (Neon pgvector) for top 3 similar chunks, and prepends them to the system prompt as `## Credit Analysis Frameworks`. 78 chunks from 13 knowledge files (7 Moyer frameworks + 3 Whitman frameworks + 3 case studies: Toys R Us, Caesars, J.Crew/Nine West). Source files live in `credible/medici/knowledge/` — see `credible/medici/CLAUDE.md` for full file inventory, management instructions, and ingestion commands.
+- **Model migration in progress**: Gemini 2.5 Pro → **Claude Sonnet 4.6** via Anthropic SDK with prompt caching
+- **Skills**: 8 SKILL.md files in `.claude/skills/` — auto-triggered analytical workflows (valuation, distress, credit snapshot, recovery, relative value, capital structure, covenant, liquidity). Each skill defines trigger patterns, allowed tools, tool sequence, and interpretation rules.
+- **Architecture (target)**: Browser → `POST /api/chat` (SSE) → skill matching + RAG knowledge → Claude Sonnet 4.6 (autonomous tool loop) → `api.debtstack.ai` (user's API key)
+- **Architecture (current)**: Browser → `POST /api/chat` (SSE) → RAG knowledge retrieval → Gemini (up to 5 tool-use rounds) → `api.debtstack.ai` (user's API key)
+- **API route** (`app/api/chat/route.ts`): Authenticated via Clerk, streams SSE events (`text`, `tool_call`, `tool_result`, `done`, `error`). Being rewritten from Gemini SDK to Anthropic SDK.
+- **Tool definitions**: 19 tools — 14 data retrieval + 5 analysis compute. `tools.ts` converting from Gemini `FunctionDeclaration[]` to Anthropic `Tool[]` format. `tool-executor.ts` kept as-is (model-agnostic, calls `api.debtstack.ai`).
+- **RAG Knowledge Retrieval** (`lib/chat/knowledge.ts`): On each user message, embeds query with Gemini `gemini-embedding-001`, searches `knowledge_chunks` table (Neon pgvector) for top 3 similar chunks. 78 chunks from 13 knowledge files. Will supplement skills at Level 2B.
 - **Safety**: Max 5 tool-use rounds, max 50 messages/conversation, 15s timeout per API call, results truncated to 20 items
 - **State**: Chat history + watchlists in `localStorage` (no server-side state, no new DB tables)
 - **Gating**: Requires `userData.api_key` to be available (full key, not just prefix) — users without it see a "regenerate key" prompt
 - **Branding**: All UI references use "Medici" (nav links, welcome screen, input placeholder, header). System prompt identifies as "Medici, the credit data assistant built by DebtStack.ai"
-- **Cost**: DebtStack API costs ($0.05-$0.15/tool call, $0.10 for analysis tools) + $0.01/turn inference fee tracked per session + ~$0.00001/turn for query embedding
-- **Features**: Chat history with search, starter prompt library (14 prompts in 4 categories), suggested follow-ups (parsed from Gemini response), ticker watchlists, live SEC research for non-covered companies, RAG-powered credit analysis frameworks
+- **Cost (target)**: DebtStack API costs ($0.05-$0.15/tool call, $0.10 for analysis tools) + ~$0.02/turn inference (Claude Sonnet 4.6 with prompt caching) + ~$0.00001/turn for query embedding
+- **Features**: Chat history with search, starter prompt library (14 prompts in 4 categories), suggested follow-ups, ticker watchlists, live SEC research for non-covered companies, RAG-powered credit analysis frameworks, 8 auto-triggered analytical skills
 - **Live SEC Research**: `research_company` tool fetches 10-K from EDGAR, extracts debt instruments via Gemini. Results labeled "Live SEC Filing Research". Coverage request button (parsed from `<!--request_coverage:...-->` tag) lets users request full coverage.
 
 ### Sentry
@@ -147,7 +159,10 @@ NEXT_PUBLIC_APP_URL=https://debtstack.ai
 NEXT_PUBLIC_POSTHOG_KEY=phc_...
 NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 
-# Google Gemini (required for Medici chat assistant)
+# Anthropic (required for Medici chat assistant — replacing Gemini)
+ANTHROPIC_API_KEY=sk-ant-...
+
+# Google Gemini (still used for RAG embeddings via gemini-embedding-001; chat model migrating to Claude)
 GEMINI_API_KEY=...
 
 # Sentry (optional — error tracking disabled if not set)

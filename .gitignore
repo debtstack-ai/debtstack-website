@@ -48,5 +48,6 @@ companies_temp.json
 temp_companies.json
 nul
 
-# claude code
-.claude/
+# claude code — ignore all except skills (checked in for Medici)
+.claude/*
+!.claude/skills/
