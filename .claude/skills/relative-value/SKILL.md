@@ -20,10 +20,20 @@ allowed-tools:
 
 ## Tool Sequence
 
-1. **`search_companies`** — credit profile for each issuer (leverage, coverage, sector)
-2. **`search_bonds`** with `has_pricing=true` — full stack with yields, spreads, prices
+**IMPORTANT: Never call `search_bonds` or `search_pricing` with just a sector and no tickers. These calls time out on broad queries. Always narrow to specific tickers first.**
+
+### When user asks about a specific set of bonds/companies:
+1. **`search_companies`** with tickers — credit profile for each issuer
+2. **`search_bonds`** with tickers + `has_pricing=true` — stack with pricing
 3. **`compare_peers`** — side-by-side metrics with rankings
-4. **`search_ratings`** with `latest=true` — rating comparison for spread context
+4. **`search_ratings`** with `latest=true` — rating comparison
+
+### When user asks about a sector (e.g., "undervalued bonds in energy"):
+1. **`search_companies`** with `sector` filter + `sort=-net_leverage_ratio` + `limit=10` — get the top companies first
+2. Pick 3-5 most interesting tickers from the results
+3. **`search_bonds`** with those specific tickers + `has_pricing=true` — now scoped and fast
+4. **`compare_peers`** with those tickers — rankings
+5. **`search_ratings`** — rating context
 5. **`get_cds_spreads`** — CDS spread levels for market-implied risk comparison
 
 ## Relative Value Framework
