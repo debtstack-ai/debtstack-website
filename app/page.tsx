@@ -394,7 +394,7 @@ export default function Home() {
           >
             Credit Data
             <br />
-            <span className="text-[#2383e2]">Built for Every Workflow</span>
+            <span className="text-[#2383e2]">for AI Agents</span>
           </motion.h1>
           <motion.p
             className="text-lg md:text-xl text-gray-500 mb-10 max-w-2xl mx-auto leading-relaxed"
@@ -402,7 +402,7 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.25 }}
           >
-            Debt structures, bond pricing, credit ratings, CDS spreads, covenant analysis, and corporate hierarchies. Access via chat, REST API, or agent tooling.
+            500+ companies. 10,000+ bonds. Credit ratings, CDS spreads, covenants, and corporate structures — pre-computed from SEC filings and served in milliseconds.
           </motion.p>
 
           <motion.div
@@ -412,6 +412,11 @@ export default function Home() {
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.4 }}
           >
             <SignedOut>
+              <SignUpButton mode="modal" forceRedirectUrl="/dashboard">
+                <button className="bg-gray-900 text-white px-6 py-3 rounded-lg text-sm font-semibold hover:bg-gray-800 transition hover:shadow-lg">
+                  Get Started Free
+                </button>
+              </SignUpButton>
               <a
                 href="/chat"
                 className="bg-[#2383e2] text-white px-6 py-3 rounded-lg text-sm font-semibold hover:bg-[#1a6bc4] transition hover:shadow-lg hover:shadow-[#2383e2]/20"
@@ -422,7 +427,7 @@ export default function Home() {
                 href="https://docs.debtstack.ai"
                 className="text-gray-600 px-6 py-3 rounded-lg text-sm font-semibold hover:text-black transition border border-gray-300 hover:border-gray-400"
               >
-                Explore the API
+                API Docs
               </a>
             </SignedOut>
             <SignedIn>
@@ -436,7 +441,7 @@ export default function Home() {
                 href="https://docs.debtstack.ai"
                 className="text-gray-600 px-6 py-3 rounded-lg text-sm font-semibold hover:text-black transition border border-gray-300 hover:border-gray-400"
               >
-                Explore the API
+                API Docs
               </a>
             </SignedIn>
           </motion.div>
@@ -446,7 +451,7 @@ export default function Home() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.6 }}
           >
-            No monthly commitment. Pay only for what you use.
+            Free credits to start. No credit card required.
           </motion.p>
         </div>
       </section>
@@ -920,7 +925,7 @@ export default function Home() {
             Start querying credit data today
           </h2>
           <p className="text-sm text-gray-500 mb-8">
-            No monthly commitment. Pay only for what you use.
+            Free credits included. No credit card required.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <SignedOut>
