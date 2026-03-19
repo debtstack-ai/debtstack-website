@@ -20,14 +20,14 @@ Extracting accurate corporate structure and debt data from SEC filings is surpri
 
 ## Current Database
 
-**500+ companies** covering S&P 100, NASDAQ 100, and broader S&P 500, with 10,000+ debt instruments, credit ratings, CDS spreads, real-time bond pricing, and searchable SEC filing sections.
+**457 companies** covering S&P 100, NASDAQ 100, and broader S&P 500, with 8,600+ debt instruments, credit ratings, CDS spreads, ETF fund flows, credit spread indices, real-time bond pricing, and searchable SEC filing sections.
 
 <CardGroup cols={2}>
   <Card
     title="Structured Data"
     icon="database"
   >
-    500+ companies with debt instruments, credit ratings, covenants, guarantees, collateral, and keyword/semantic/hybrid search across indentures, credit agreements, and SEC filings
+    457 companies with debt instruments, credit ratings, covenants, guarantees, collateral, and keyword/semantic/hybrid search across indentures, credit agreements, and SEC filings
   </Card>
   <Card
     title="AI-Optimized"
@@ -45,7 +45,7 @@ Extracting accurate corporate structure and debt data from SEC filings is surpri
     title="Credit Ratings & Spreads"
     icon="star"
   >
-    S&P, Moody's, Fitch ratings + CDS spread time series across 250+ companies
+    S&P, Moody's, Fitch ratings (846 ratings across 367 companies) + CDS spread time series across 111 companies
   </Card>
   <Card
     title="Document Search"
@@ -93,9 +93,9 @@ print(response.json())
 # {"data": [{"ticker": "TSLA", "name": "Tesla, Inc.", "net_leverage_ratio": 1.8}]}
 ```
 
-## 14 Core Primitives
+## 16 Core Primitives
 
-DebtStack offers 14 atomic API endpoints optimized for AI agents:
+DebtStack offers 16 atomic API endpoints optimized for AI agents:
 
 | Primitive | Endpoint | Cost | Purpose |
 |-----------|----------|------|---------|
@@ -107,6 +107,8 @@ DebtStack offers 14 atomic API endpoints optimized for AI agents:
 | Covenants | `GET /v1/covenants` | $0.05 | Search structured covenant data |
 | Ratings | `GET /v1/ratings` | $0.05 | Credit rating history (S&P, Moody's, Fitch) |
 | CDS Spreads | `GET /v1/market/cds` | $0.05 | CDS spread time series |
+| ETF Fund Flows | `GET /v1/market/flows` | $0.05 | Credit market sentiment via ETF flows |
+| Credit Spread Indices | `GET /v1/market/spreads` | $0.05 | ICE BofA OAS indices from FRED |
 | Compare Covenants | `GET /v1/covenants/compare` | Business | Compare covenants across companies |
 | Company Changes | `GET /v1/companies/{ticker}/changes` | $0.10 | Track debt structure changes |
 | Traverse Entities | `POST /v1/entities/traverse` | $0.15 | Follow guarantor chains |

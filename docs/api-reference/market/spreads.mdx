@@ -1,0 +1,219 @@
+---
+title: Credit Spread Indices
+api: GET /v1/market/spreads
+description: 'ICE BofA credit spread indices from FRED'
+---
+
+## Overview
+
+Get ICE BofA option-adjusted spread (OAS) indices from FRED. Returns daily spreads in basis points for investment-grade and high-yield corporate bond indices. Use alongside `/v1/market/cds` to compare company-level spreads against market benchmarks.
+
+## Request
+
+### Series Filters
+
+<ParamField query="series_id" type="string">
+  FRED series ID(s), comma-separated.
+
+  Example: `BAMLC0A0CM,BAMLH0A0HYM2`
+</ParamField>
+
+<ParamField query="category" type="string">
+  Index category: `broad`, `rating`, `maturity`
+</ParamField>
+
+### Date Filters
+
+<ParamField query="from_date" type="string">
+  Start date (YYYY-MM-DD).
+</ParamField>
+
+<ParamField query="to_date" type="string">
+  End date (YYYY-MM-DD).
+</ParamField>
+
+### Convenience
+
+<ParamField query="latest_only" type="boolean" default="false">
+  Return only the most recent observation per series.
+</ParamField>
+
+### Response Options
+
+<ParamField query="fields" type="string">
+  Comma-separated fields to return.
+
+  Example: `observation_date,series_id,spread_bps,index_name`
+</ParamField>
+
+<ParamField query="sort" type="string" default="-observation_date">
+  Sort field. Prefix `-` for descending.
+</ParamField>
+
+<ParamField query="limit" type="integer" default="50">
+  Results per page. Maximum 500.
+</ParamField>
+
+<ParamField query="offset" type="integer" default="0">
+  Pagination offset.
+</ParamField>
+
+## Available Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `observation_date` | string | Observation date (YYYY-MM-DD) |
+| `series_id` | string | FRED series identifier |
+| `spread_bps` | integer | Option-adjusted spread in basis points |
+| `index_name` | string | Human-readable index name |
+| `index_category` | string | Category: broad, rating, or maturity |
+| `source` | string | Data source (FRED) |
+
+## Available Series
+
+### Broad Indices
+
+| Series ID | Name | Category |
+|-----------|------|----------|
+| `BAMLC0A0CM` | IG Corporate OAS | broad |
+| `BAMLH0A0HYM2` | HY Index OAS | broad |
+
+### By Rating
+
+| Series ID | Name | Category |
+|-----------|------|----------|
+| `BAMLC0A1CAAA` | AAA OAS | rating |
+| `BAMLC0A2CAA` | AA OAS | rating |
+| `BAMLC0A3CA` | A OAS | rating |
+| `BAMLC0A4CBBB` | BBB OAS | rating |
+| `BAMLH0A1HYBB` | BB OAS | rating |
+| `BAMLH0A2HYB` | B OAS | rating |
+| `BAMLH0A3HYC` | CCC OAS | rating |
+
+### By Maturity (Investment Grade)
+
+| Series ID | Name | Category |
+|-----------|------|----------|
+| `BAMLC1A0C13Y` | IG 1-3Y OAS | maturity |
+| `BAMLC2A0C35Y` | IG 3-5Y OAS | maturity |
+| `BAMLC3A0C57Y` | IG 5-7Y OAS | maturity |
+| `BAMLC4A0C710Y` | IG 7-10Y OAS | maturity |
+
+## Coverage
+
+- **13 ICE BofA OAS series** (2 broad, 7 rating, 4 maturity)
+- **~10,000 records** from January 2023 to present
+- **Updated daily** at 6:30 PM ET
+
+## Examples
+
+### Get Latest IG and HY Spreads
+
+<CodeGroup>
+```bash curl
+curl "https://api.debtstack.ai/v1/market/spreads?category=broad&latest_only=true" \
+  -H "X-API-Key: ds_xxxxx"
+```
+
+```python Python
+import requests
+
+response = requests.get(
+    "https://api.debtstack.ai/v1/market/spreads",
+    params={"category": "broad", "latest_only": True},
+    headers={"X-API-Key": "ds_xxxxx"}
+)
+
+for idx in response.json()["data"]:
+    print(f"{idx['index_name']}: {idx['spread_bps']} bps")
+```
+</CodeGroup>
+
+### Response
+
+```json
+{
+  "data": [
+    {
+      "observation_date": "2026-03-18",
+      "series_id": "BAMLC0A0CM",
+      "spread_bps": 95,
+      "index_name": "IG Corporate OAS",
+      "index_category": "broad",
+      "source": "fred"
+    },
+    {
+      "observation_date": "2026-03-18",
+      "series_id": "BAMLH0A0HYM2",
+      "spread_bps": 342,
+      "index_name": "HY Index OAS",
+      "index_category": "broad",
+      "source": "fred"
+    }
+  ],
+  "count": 2,
+  "meta": {
+    "total": 2,
+    "limit": 50,
+    "offset": 0
+  }
+}
+```
+
+### BBB Spread History
+
+```bash
+curl "https://api.debtstack.ai/v1/market/spreads?series_id=BAMLC0A4CBBB&from_date=2025-01-01" \
+  -H "X-API-Key: ds_xxxxx"
+```
+
+### Compare All Rating Buckets
+
+```bash
+curl "https://api.debtstack.ai/v1/market/spreads?category=rating&latest_only=true&sort=spread_bps" \
+  -H "X-API-Key: ds_xxxxx"
+```
+
+## Use Cases
+
+### Company Spread vs Benchmark
+
+```python
+# Compare a company's CDS spread to its rating bucket
+import requests
+
+API_KEY = "ds_xxxxx"
+headers = {"X-API-Key": API_KEY}
+
+# Get company CDS spread
+cds = requests.get(
+    "https://api.debtstack.ai/v1/market/cds",
+    params={"ticker": "CHTR", "tenor": "5Y", "latest_only": True},
+    headers=headers
+).json()["data"][0]
+
+# Get BBB benchmark (Charter is BBB-)
+benchmark = requests.get(
+    "https://api.debtstack.ai/v1/market/spreads",
+    params={"series_id": "BAMLC0A4CBBB", "latest_only": True},
+    headers=headers
+).json()["data"][0]
+
+diff = cds["spread_bps"] - benchmark["spread_bps"]
+print(f"CHTR 5Y: {cds['spread_bps']} bps vs BBB index: {benchmark['spread_bps']} bps")
+print(f"Spread differential: {diff:+.0f} bps ({'wide' if diff > 0 else 'tight'} to benchmark)")
+```
+
+### IG Term Structure
+
+```python
+# Get the IG OAS term structure
+response = requests.get(
+    "https://api.debtstack.ai/v1/market/spreads",
+    params={"category": "maturity", "latest_only": True, "sort": "series_id"},
+    headers={"X-API-Key": "ds_xxxxx"}
+)
+
+for idx in response.json()["data"]:
+    print(f"{idx['index_name']}: {idx['spread_bps']} bps")
+```

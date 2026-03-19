@@ -1,0 +1,248 @@
+---
+title: ETF Fund Flows
+api: GET /v1/market/flows
+description: 'ETF fund flow data for credit market sentiment'
+---
+
+## Overview
+
+Get ETF fund flow data for credit market sentiment analysis. Flows are estimated from daily changes in ETF shares outstanding multiplied by NAV per share. Positive flows indicate net inflows (creation units), negative flows indicate redemptions.
+
+Fund flow data is the strongest short-term predictor of spread direction — typically costs $15-50K/year from EPFR. DebtStack provides it as part of the standard API.
+
+## Views
+
+The endpoint supports two view modes:
+
+- **`etf`** (default): Per-ETF daily data (shares outstanding, NAV, estimated flow)
+- **`aggregate`**: Asset-class-level aggregates (daily, weekly, 4-week rolling)
+
+## Request
+
+### ETF Filters
+
+<ParamField query="etf_ticker" type="string">
+  ETF ticker(s), comma-separated.
+
+  Example: `LQD,HYG`
+</ParamField>
+
+<ParamField query="asset_class" type="string">
+  Asset class filter: `ig`, `hy`, `leveraged_loan`, `em_bond`, `broad`
+</ParamField>
+
+### View Mode
+
+<ParamField query="view" type="string" default="etf">
+  View mode: `etf` for per-ETF data, `aggregate` for asset-class aggregates.
+</ParamField>
+
+### Date Filters
+
+<ParamField query="from_date" type="string">
+  Start date (YYYY-MM-DD).
+</ParamField>
+
+<ParamField query="to_date" type="string">
+  End date (YYYY-MM-DD).
+</ParamField>
+
+### Convenience
+
+<ParamField query="latest_only" type="boolean" default="false">
+  Return only the most recent observation per ETF or asset class.
+</ParamField>
+
+### Response Options
+
+<ParamField query="fields" type="string">
+  Comma-separated fields to return.
+</ParamField>
+
+<ParamField query="sort" type="string" default="-flow_date">
+  Sort field. Prefix `-` for descending.
+</ParamField>
+
+<ParamField query="limit" type="integer" default="50">
+  Results per page. Maximum 200.
+</ParamField>
+
+<ParamField query="offset" type="integer" default="0">
+  Pagination offset.
+</ParamField>
+
+## Available Fields
+
+### ETF View
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `flow_date` | string | Observation date |
+| `etf_ticker` | string | ETF ticker symbol |
+| `asset_class` | string | Asset class category |
+| `shares_outstanding` | number | Shares outstanding |
+| `nav_per_share` | number | NAV per share ($) |
+| `estimated_flow_usd` | number | Estimated daily flow ($) |
+| `cumulative_flow_usd` | number | Cumulative flow ($) |
+| `source` | string | Data source |
+
+### Aggregate View
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `flow_date` | string | Observation date |
+| `asset_class` | string | Asset class category |
+| `daily_net_flow_usd` | number | Daily net flow ($) |
+| `weekly_net_flow_usd` | number | Weekly net flow ($) |
+| `four_week_flow_usd` | number | 4-week rolling flow ($) |
+| `etf_count` | integer | Number of ETFs in aggregate |
+
+## Tracked ETFs
+
+| ETF | Asset Class | Description |
+|-----|-------------|-------------|
+| LQD | ig | iShares iBoxx $ Investment Grade Corporate Bond |
+| VCIT | ig | Vanguard Intermediate-Term Corporate Bond |
+| VCSH | ig | Vanguard Short-Term Corporate Bond |
+| USIG | ig | iShares Broad USD Investment Grade Corporate Bond |
+| HYG | hy | iShares iBoxx $ High Yield Corporate Bond |
+| JNK | hy | SPDR Bloomberg High Yield Bond |
+| SHYG | hy | iShares 0-5 Year High Yield Corporate Bond |
+| BND | broad | Vanguard Total Bond Market |
+| EMB | em_bond | iShares J.P. Morgan USD Emerging Markets Bond |
+| SRLN | leveraged_loan | SPDR Blackstone Senior Loan |
+
+## Examples
+
+### Latest Flows by Asset Class
+
+<CodeGroup>
+```bash curl
+curl "https://api.debtstack.ai/v1/market/flows?view=aggregate&latest_only=true" \
+  -H "X-API-Key: ds_xxxxx"
+```
+
+```python Python
+import requests
+
+response = requests.get(
+    "https://api.debtstack.ai/v1/market/flows",
+    params={"view": "aggregate", "latest_only": True},
+    headers={"X-API-Key": "ds_xxxxx"}
+)
+
+for flow in response.json()["data"]:
+    daily = flow["daily_net_flow_usd"] / 1e6
+    weekly = flow["weekly_net_flow_usd"] / 1e6
+    print(f"{flow['asset_class']}: ${daily:+.0f}M daily, ${weekly:+.0f}M weekly")
+```
+</CodeGroup>
+
+### Response (Aggregate View)
+
+```json
+{
+  "data": [
+    {
+      "flow_date": "2026-03-18",
+      "asset_class": "hy",
+      "daily_net_flow_usd": -245000000,
+      "weekly_net_flow_usd": -812000000,
+      "four_week_flow_usd": -1530000000,
+      "etf_count": 3
+    },
+    {
+      "flow_date": "2026-03-18",
+      "asset_class": "ig",
+      "daily_net_flow_usd": 180000000,
+      "weekly_net_flow_usd": 425000000,
+      "four_week_flow_usd": 1200000000,
+      "etf_count": 4
+    }
+  ],
+  "count": 5,
+  "meta": {
+    "total": 5,
+    "limit": 50,
+    "offset": 0,
+    "view": "aggregate"
+  }
+}
+```
+
+### Per-ETF Daily Flows
+
+```bash
+curl "https://api.debtstack.ai/v1/market/flows?asset_class=hy&from_date=2026-03-01&fields=flow_date,etf_ticker,estimated_flow_usd" \
+  -H "X-API-Key: ds_xxxxx"
+```
+
+### Response (ETF View)
+
+```json
+{
+  "data": [
+    {
+      "flow_date": "2026-03-18",
+      "etf_ticker": "HYG",
+      "estimated_flow_usd": -180000000
+    },
+    {
+      "flow_date": "2026-03-18",
+      "etf_ticker": "JNK",
+      "estimated_flow_usd": -45000000
+    }
+  ],
+  "count": 54,
+  "meta": {
+    "total": 54,
+    "limit": 50,
+    "offset": 0,
+    "view": "etf"
+  }
+}
+```
+
+## Methodology
+
+Flows are estimated using the ETF creation/redemption proxy:
+
+1. Pull daily shares outstanding and NAV per share from Yahoo Finance
+2. Calculate daily flow: `(shares_today - shares_yesterday) × NAV`
+3. Aggregate by asset class for weekly and 4-week rolling windows
+4. Covers ~15-20% of total bond fund assets but correlates ~85%+ with full institutional flows
+
+## Use Cases
+
+### Detect Risk-Off Sentiment
+
+```python
+# Check if HY is seeing outflows (risk-off signal)
+response = requests.get(
+    "https://api.debtstack.ai/v1/market/flows",
+    params={"view": "aggregate", "asset_class": "hy", "latest_only": True},
+    headers={"X-API-Key": "ds_xxxxx"}
+)
+
+hy = response.json()["data"][0]
+if hy["weekly_net_flow_usd"] < -500_000_000:
+    print("Warning: Significant HY outflows — risk-off signal")
+```
+
+### IG vs HY Flow Divergence
+
+```python
+# Compare IG and HY flows for rotation signal
+response = requests.get(
+    "https://api.debtstack.ai/v1/market/flows",
+    params={"view": "aggregate", "asset_class": "ig,hy", "latest_only": True},
+    headers={"X-API-Key": "ds_xxxxx"}
+)
+
+flows = {f["asset_class"]: f for f in response.json()["data"]}
+ig_weekly = flows["ig"]["weekly_net_flow_usd"]
+hy_weekly = flows["hy"]["weekly_net_flow_usd"]
+
+if ig_weekly > 0 and hy_weekly < 0:
+    print("Flight to quality: IG inflows + HY outflows")
+```

@@ -136,7 +136,9 @@
           {
             "group": "Market Data",
             "pages": [
-              "api-reference/market/cds"
+              "api-reference/market/cds",
+              "api-reference/market/flows",
+              "api-reference/market/spreads"
             ]
           },
           {

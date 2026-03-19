@@ -6,6 +6,10 @@ description: 'Get bond pricing from FINRA TRACE'
 
 ## Overview
 
+<Warning>
+  **Deprecated**: The `/v1/pricing` endpoint is deprecated. Use `/v1/bonds` with `has_pricing=true` and pricing fields instead. This endpoint will be removed in a future version.
+</Warning>
+
 Retrieve bond pricing data including last trade price, yield to maturity (YTM), and spread to treasury. Pricing data is sourced from FINRA TRACE.
 
 <Note>
