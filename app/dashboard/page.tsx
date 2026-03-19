@@ -107,6 +107,14 @@ function DashboardContent() {
     if (userData?.api_key) {
       await navigator.clipboard.writeText(userData.api_key);
       posthog?.capture('copied_api_key');
+      // Google Ads micro-conversion: API key copied
+      if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
+        window.gtag('event', 'conversion', {
+          send_to: 'AW-17954437494/G0BJCMLzg4wcEPbyq_FC',
+          value: 5.0,
+          currency: 'USD',
+        });
+      }
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }
@@ -146,6 +154,14 @@ function DashboardContent() {
   };
 
   const handleUpgrade = async (tier: 'pro' | 'business') => {
+    // Google Ads micro-conversion: subscribe click
+    if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
+      window.gtag('event', 'conversion', {
+        send_to: 'AW-17954437494/Ip9yCI6w-4scEPbyq_FC',
+        value: 8.0,
+        currency: 'USD',
+      });
+    }
     try {
       setUpgrading(true);
       setError(null);

@@ -97,10 +97,26 @@ export default function PricingPage() {
 
   useEffect(() => {
     posthog?.capture('viewed_pricing');
+    // Google Ads micro-conversion: pricing page view
+    if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
+      window.gtag('event', 'conversion', {
+        send_to: 'AW-17954437494/Sj82COXvg4wcEPbyq_FC',
+        value: 1.0,
+        currency: 'USD',
+      });
+    }
   }, [posthog]);
 
   const handleUpgrade = async (tier: 'pro' | 'business') => {
     posthog?.capture('clicked_subscribe', { tier });
+    // Google Ads micro-conversion: subscribe click
+    if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
+      window.gtag('event', 'conversion', {
+        send_to: 'AW-17954437494/Ip9yCI6w-4scEPbyq_FC',
+        value: 8.0,
+        currency: 'USD',
+      });
+    }
     try {
       setLoading(tier);
       setError(null);
